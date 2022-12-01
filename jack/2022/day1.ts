@@ -17,7 +17,7 @@ function day1(filePath: string) {
 
   const sortedCalories = elfsCalories.sort((a, b) => b - a)
   const max = sortedCalories[0]
-  const top3 = [sortedCalories[0], sortedCalories[1], sortedCalories[2]].reduce((acc, cal) => acc + cal, 0)
+  const top3 = sortedCalories[0] + sortedCalories[1] + sortedCalories[2]
 
   const answer = {
     part1: max,
