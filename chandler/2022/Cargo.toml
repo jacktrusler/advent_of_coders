@@ -3,6 +3,102 @@ name = "chandler"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "day1"
+path = "src/day1/main.rs"
+
+[[bin]]
+name = "day2"
+path = "src/day2/main.rs"
+
+[[bin]]
+name = "day3"
+path = "src/day3/main.rs"
+
+[[bin]]
+name = "day4"
+path = "src/day4/main.rs"
+
+[[bin]]
+name = "day5"
+path = "src/day5/main.rs"
+
+[[bin]]
+name = "day6"
+path = "src/day6/main.rs"
+
+[[bin]]
+name = "day7"
+path = "src/day7/main.rs"
+
+[[bin]]
+name = "day8"
+path = "src/day8/main.rs"
+
+[[bin]]
+name = "day9"
+path = "src/day9/main.rs"
+
+[[bin]]
+name = "day10"
+path = "src/day10/main.rs"
+
+[[bin]]
+name = "day11"
+path = "src/day11/main.rs"
+
+[[bin]]
+name = "day12"
+path = "src/day12/main.rs"
+
+[[bin]]
+name = "day13"
+path = "src/day13/main.rs"
+
+[[bin]]
+name = "day14"
+path = "src/day14/main.rs"
+
+[[bin]]
+name = "day15"
+path = "src/day15/main.rs"
+
+[[bin]]
+name = "day16"
+path = "src/day16/main.rs"
+
+[[bin]]
+name = "day17"
+path = "src/day17/main.rs"
+
+[[bin]]
+name = "day18"
+path = "src/day18/main.rs"
+
+[[bin]]
+name = "day19"
+path = "src/day19/main.rs"
+
+[[bin]]
+name = "day20"
+path = "src/day20/main.rs"
+
+[[bin]]
+name = "day21"
+path = "src/day21/main.rs"
+
+[[bin]]
+name = "day22"
+path = "src/day22/main.rs"
+
+[[bin]]
+name = "day23"
+path = "src/day23/main.rs"
+
+[[bin]]
+name = "day24"
+path = "src/day24/main.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
