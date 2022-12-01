@@ -55,4 +55,15 @@ fn main() {
     }
     println!("Elf {}: {}", count, current_elf.total_calories);
     //part 2
+    // sort the elves by calories
+    elves.sort_by(|a, b| b.total_calories.cmp(&a.total_calories));
+    // get first three elements
+    let top_3_elves = &elves[0..3];
+
+    let mut total = 0;
+    for elf in top_3_elves.iter() {
+        total += elf.total_calories;
+    }
+
+    println!("Total calories of the top 3: {}", total);
 }
