@@ -1,0 +1,20 @@
+#!/usr/bin/python3
+
+def main():
+    elvesHandle = open("theboys.txt", "r")
+    rawElves = elvesHandle.read().splitlines()
+    theCrew = []
+    curElfCal = 0
+    for eline in rawElves:
+        if eline  == "":
+            theCrew.append(curElfCal)
+            curElfCal = 0;
+        else:
+            curElfCal = curElfCal + int(eline)
+    theCrew.sort(reverse=True)
+    honchoCals = 0
+    for i in range(3):
+        honchoCals = honchoCals + theCrew[i]
+    print(honchoCals)
+if __name__ == "__main__":
+    main()
