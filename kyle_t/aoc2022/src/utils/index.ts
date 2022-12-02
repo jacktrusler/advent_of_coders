@@ -10,19 +10,19 @@
  *
  * For example:
  *
- *   correct:
+ *   ✅correct
  *
  *     import _ from 'lodash'
  *     import myLib from '../utils/myLib.js'
  *     import { myUtil } from '../utils/index.js'
  *
- *   incorrect:
+ *   ❌incorrect:
  *
  *     import _ from 'lodash'
  *     import myLib from '../utils/myLib.ts'
  *     import { myUtil } from '../utils/index.ts'
  *
- *   also incorrect:
+ *   ❌also incorrect:
  *
  *     import _ from 'lodash'
  *     import myLib from '../utils/myLib'
