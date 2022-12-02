@@ -1,22 +1,36 @@
 import argparse
 import cProfile
 from pathlib import Path
+import re
+import time
 
 from aoc.io import set_main_file
 from aoc.register import registered_functions
 
 
 NUM_WORDS = {1: 'ONE', 2: 'TWO'}
+
+def get_answers(func):
+    for i, answer in enumerate(func()):
+        print(f'PART {NUM_WORDS[i+1]}: {answer}')
+    
+
 def run(profile: bool = False):
     for func, filename in registered_functions().items():
         set_main_file(filename)
+        info = re.match(r'.*\\(?P<year>\d+)\\day(?P<day>\d+)\\(?P<filename>.*).py', filename).groupdict()
+        print(f'********************************************')
+        print(f'** {info["year"]}/day{info["day"]}: {info["filename"].replace("_", " ").title()}')
 
         if profile:
             pr = cProfile.Profile()
             pr.enable()
-        
+
+        start = time.perf_counter()
         for i, answer in enumerate(func()):
             print(f'PART {NUM_WORDS[i+1]}: {answer}')
+        end = time.perf_counter()
+        print(f'Time elapsed: {round((end - start) * 1000, 3)} ms')
 
         if profile:
             pr.disable()
