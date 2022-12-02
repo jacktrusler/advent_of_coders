@@ -15,7 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^16.11.6",
-    "aocrunner": "^1.6.1",
+    "aocrunner": "^1.8.1",
     "prettier": "^2.4.1"
   },
   "dependencies": {},
