@@ -5,19 +5,12 @@
     "removeComments": true,
     "declaration": true,
     "outDir": "./dist",
-    "preserveConstEnums": true,
     "strict": false,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "src/**/*.test.ts",
-    "src/**/*.temp.ts"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "src/**/*.test.ts", "src/**/*.temp.ts"]
 }
