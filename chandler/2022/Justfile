@@ -1,0 +1,22 @@
+default:
+    just --list
+
+run number="1":
+    cargo run --bin day{{number}} --release
+
+init:
+    #!/bin/bash
+    set -euo pipefail
+    cd src
+    for i in {1..24}; do
+        mkdir -p day$i
+        cp main.rs day$i
+    done
+    cd ..
+
+run-all:
+    #!/bin/bash
+    set -euo pipefail
+    for i in {1..24}; do
+        cargo run --bin day$i --release
+    done

@@ -1,0 +1,18 @@
+#!/usr/bin/python3
+
+def main():
+    elvesHandle = open("elves.txt", "r")
+    rawElves = elvesHandle.read().splitlines()
+    mostCal = 0
+    curElfCal = 0
+    for eline in rawElves:
+        if eline  == "":
+            if curElfCal > mostCal:
+                mostCal = curElfCal
+            curElfCal = 0;
+        else:
+            curElfCal = curElfCal + int(eline)
+    print(f'Most Cal: {mostCal}')
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,4 @@
+{
+    "terminal.integrated.env.windows": {"PYTHONPATH": "PYTHONPATH;${workspaceFolder};${fileWorkspaceFolder}"},
+    "python.envFile": "${workspaceFolder}/.env"
+}
