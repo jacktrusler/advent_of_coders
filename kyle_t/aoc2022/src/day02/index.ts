@@ -1,5 +1,6 @@
 import run from "aocrunner";
 
+// Let's Get it! 🤘📰✂
 const allTheMoves = (allTheInput: string) => {
   return allTheInput.split("\n");
 };
