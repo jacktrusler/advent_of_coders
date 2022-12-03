@@ -11,7 +11,7 @@
 
 [![Day](https://badgen.net/badge/01/%E2%98%85%E2%98%85/green)](#d01)
 [![Day](https://badgen.net/badge/02/%E2%98%85%E2%98%85/green)](#d02)
-[![Day](https://badgen.net/badge/03/%E2%98%86%E2%98%86/gray)](#d03)
+[![Day](https://badgen.net/badge/03/%E2%98%86%E2%98%86/green)](#d03)
 [![Day](https://badgen.net/badge/04/%E2%98%86%E2%98%86/gray)](#d04)
 [![Day](https://badgen.net/badge/05/%E2%98%86%E2%98%86/gray)](#d05)
 [![Day](https://badgen.net/badge/06/%E2%98%86%E2%98%86/gray)](#d06)
@@ -59,4 +59,14 @@ Runtime: 0.867 ms
 ### Notes
 
 ...
+
+## <a name="d03"></a> Day 03: Rucksack Reorganization
+
+[Task description](https://adventofcode.com/2022/day/3) - [Complete solution](day03/rucksack_reorganization.py.py) - [Back to top](#top)  
+
+Runtime: 1.367 ms  
+
+### Notes
+
+...  
 
