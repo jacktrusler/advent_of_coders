@@ -14,7 +14,7 @@ class Outcome(IntEnum):
     LOSS = 0
 
 
-def translator1(opponent: str, me: str) -> dict[tuple, int]:
+def translator1(opponent: str, me: str) -> int:
     match me:
         case 'X':
             choice = Option.ROCK
@@ -27,7 +27,7 @@ def translator1(opponent: str, me: str) -> dict[tuple, int]:
             result = Outcome.DRAW if opponent == 'C' else (Outcome.WIN if opponent == 'B' else Outcome.LOSS)
     return choice + result
 
-def translator2(opponent: str, me: str) -> dict[tuple, int]:
+def translator2(opponent: str, me: str) -> int:
     match me:
         case 'X':
             result = Outcome.LOSS
