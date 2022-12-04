@@ -2,7 +2,6 @@
   "compilerOptions": {
     "outDir": "dist",
     "module": "commonjs",
-    "rootDir": "2022",
     "sourceMap": true,
     "lib": ["esnext", "dom"],
     "strict": true,
