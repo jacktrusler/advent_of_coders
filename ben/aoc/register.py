@@ -1,7 +1,4 @@
 import functools
-import re
-import time
-import timeit
 
 
 NUM_WORDS = {1: 'ONE', 2: 'TWO'}
