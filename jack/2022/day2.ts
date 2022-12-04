@@ -33,7 +33,7 @@ const combosP2 = {
 } as const;
 
 function day2(filePath: string) {
-  const strData: string[] = readFileSync(filePath, 'utf-8').trim().split('\n')
+  const strData: string[] = readFileSync(filePath, 'utf-8').replace(/\n$/, "").split('\n')
 
   const answerP1 = strData.reduce((acc, str) => acc + combosP1[str as ComboKey], 0)
   const answerP2 = strData.reduce((acc, str) => acc + combosP2[str as ComboKey], 0)
