@@ -35,27 +35,17 @@ function day3(filePath: string) {
 
   //part 2
   let allR = allRucksacks.length
-  let threeSacks: any = [];
+  let threeSacks: string[] = [];
   for (let i = 0; i < allR; i = i + 3) {
-    const group = [];
-    group.push(allRucksacks[i])
-    group.push(allRucksacks[i + 1])
-    group.push(allRucksacks[i + 2])
-    threeSacks.push(group)
+    for (const l of allRucksacks[i]) {
+      if (allRucksacks[i + 1].includes(l) && allRucksacks[i + 2].includes(l)) {
+        threeSacks.push(l)
+        break;
+      }
+    }
   }
 
-  const letArr: string[] = threeSacks
-    .map((group: any) => {
-      for (const l of group[0]) {
-        if (group[1].includes(l)) {
-          if (group[2].includes(l)) {
-            return l
-          }
-        }
-      }
-    })
-
-  const answerP2 = letArr.reduce((acc, l) => {
+  const answerP2 = threeSacks.reduce((acc, l) => {
     let lCode = l.charCodeAt(0);
     if (lCode > 90) {
       return acc + lCode - 96
