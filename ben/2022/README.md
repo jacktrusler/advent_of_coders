@@ -196,7 +196,7 @@ Using the `range` function, we can easily step over our list of rucksacks, takin
 
 [Task description](https://adventofcode.com/2022/day/4) - [Complete solution](day04/camp_cleanup.py) - [Back to top](#top)  
 
-Runtime: 6.560 ms  
+Runtime: 1.161 ms  
 
 ### Part One
 
@@ -237,13 +237,15 @@ If `a` ends before `b` starts (or vice versa), then there is no overlap. The inv
     def overlap(min_a: int, max_a: int, min_b: int, max_b: int) -> bool:
         return not (max_a < min_b or max_b < min_a)
 
+    part_two = len([x for x in assignments if overlap(*x)])
+
 Tada! Believe it or not, I found this solution to be about 4 times faster than the `set`-based solution, though both were more than sufficiently fast.
 
 ## <a name="d05"></a> Day 05: Supply Stacks
 
 [Task description](https://adventofcode.com/2022/day/5) - [Complete solution](day05/supply_stacks.py) - [Back to top](#top)  
 
-Runtime: ...  
+Runtime: 2.254 ms  
 
 ### Part One
 
