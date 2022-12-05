@@ -1,5 +1,5 @@
-local h = require("lib.helpers")
-local file = 'day1.txt'
+local h = require("2022.lib.helpers")
+local file = '2022/day1.txt'
 local lines = h.lines_from(file)
 local sum = 0
 local totals = {}
