@@ -8,4 +8,7 @@ day1("./day1.txt")
 day2("./day2.txt")
 day3("./day3.txt")
 day4("./day4.txt")
+const t0 = performance.now();
 day5("./day5.txt")
+const t1 = performance.now();
+console.log(`Day 5 took ${t1 - t0} milliseconds.`)
