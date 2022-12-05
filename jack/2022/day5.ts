@@ -13,7 +13,7 @@ import { readFileSync } from "fs";
  */
 
 //top ---> bottom
-const shipContainers = [
+const shipContainers = () => [
   ['Z', 'V', 'T', 'B', 'J', 'G', 'R'],
   ['L', 'V', 'R', 'J'],
   ['F', 'Q', 'S'],
@@ -41,7 +41,7 @@ function day5(filePath: string) {
       .map((numStr) => Number(numStr))
     )
   //Make a deep copy of nested arrays
-  const shipCopy: string[][] = JSON.parse(JSON.stringify(shipContainers))
+  const shipCopy: string[][] = shipContainers()
   //instructions = [[6,5,7], [4,9,3]] -> move x from [i] to [j]
   //part 1
   instructions.map((inst) => {
@@ -50,14 +50,16 @@ function day5(filePath: string) {
       shipCopy[inst[2] - 1].unshift(container as string)
     }
   })
+
   //part 2
+  const shipCopy2: string[][] = shipContainers()
   instructions.map((inst) => {
-    let container = shipContainers[inst[1] - 1].splice(0, inst[0])
-    shipContainers[inst[2] - 1] = [...container, ...shipContainers[inst[2] - 1]]
+    let container = shipCopy2[inst[1] - 1].splice(0, inst[0])
+    shipCopy2[inst[2] - 1] = [...container, ...shipCopy2[inst[2] - 1]]
   })
 
   answer.part1 = shipCopy.map((container) => container[0]).join()
-  answer.part2 = shipContainers.map((container) => container[0]).join()
+  answer.part2 = shipCopy2.map((container) => container[0]).join()
   console.log(answer)
   return answer
 }
