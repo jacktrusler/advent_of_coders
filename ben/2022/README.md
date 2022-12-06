@@ -11,9 +11,9 @@
 
 [![Day](https://badgen.net/badge/01/%E2%98%85%E2%98%85/green)](#d01)
 [![Day](https://badgen.net/badge/02/%E2%98%85%E2%98%85/green)](#d02)
-[![Day](https://badgen.net/badge/03/%E2%98%86%E2%98%86/green)](#d03)
-[![Day](https://badgen.net/badge/04/%E2%98%86%E2%98%86/green)](#d04)
-[![Day](https://badgen.net/badge/05/%E2%98%86%E2%98%86/gray)](#d05)
+[![Day](https://badgen.net/badge/03/%E2%98%85%E2%98%85/green)](#d03)
+[![Day](https://badgen.net/badge/04/%E2%98%85%E2%98%85/green)](#d04)
+[![Day](https://badgen.net/badge/05/%E2%98%85%E2%98%85/green)](#d05)
 [![Day](https://badgen.net/badge/06/%E2%98%86%E2%98%86/gray)](#d06)
 [![Day](https://badgen.net/badge/07/%E2%98%86%E2%98%86/gray)](#d07)
 [![Day](https://badgen.net/badge/08/%E2%98%86%E2%98%86/gray)](#d08)
@@ -90,7 +90,7 @@ Runtime: 0.867 ms
 
 ### Part One
 
-For part two, we have to take a series of character inputs and use them to play Rock, Paper, Scissors. Each line gives two values: one is the opponent's choice ('A' for rock, 'B' for paper, 'C' for scissors), the other is our choice ('X' for rock, 'Y' for paper, 'Z' for scissors). We can represent this input as a list of tuples.
+For day two, we have to take a series of character inputs and use them to play Rock, Paper, Scissors. Each line gives two values: one is the opponent's choice ('A' for rock, 'B' for paper, 'C' for scissors), the other is our choice ('X' for rock, 'Y' for paper, 'Z' for scissors). We can represent this input as a list of tuples.
 
     # Note: aoc.read_lines() is simply a fancy utility function that will split the input data by line
     rounds = [tuple(x.split(' ')) for x in aoc.read_lines()]
@@ -196,27 +196,129 @@ Using the `range` function, we can easily step over our list of rucksacks, takin
 
 [Task description](https://adventofcode.com/2022/day/4) - [Complete solution](day04/camp_cleanup.py) - [Back to top](#top)  
 
-Runtime: 6.560 ms  
+Runtime: 1.161 ms  
 
 ### Part One
 
-Another day of advent of code, another day of sets. For this day, our input is a list of section IDs that each pair of elves is assigned to clean in the format `x1-x2,y1-y2`. We can use regex to pretty cleanly grab these values out of the line.
+Today's problem asks us to essentially find the overlap between two ranges. On paper, this should be a slam dunk use of sets. However, on further thought, sets might not be ideal. While still a perfectly valid solution, creating a set out of each of these inputs involves creating the full ranges, which hurts us both in time and memory. Instead, we have all the information we need when parsing the lines. If we assume elf `a` and elf `b`, our input provides a list of `amin`, `amax`, `bmin`, and `bmax`
 
-    m = tuple(map(int, re.match(r'(\d+)-(\d+),(\d+)-(\d+)', line).groups()))
-
-Our goal is then to find out if the range of x (`x1-x2`) contains the entire range of y (`y1-y2`) or vice versa. This is another way of asking whether or not the set of x values is a subset of y values. This can be found using the `<=` or `>=` operators between two sets.
-
-    def parse_line(line: str) -> tuple[set,set]:
-        m = tuple(map(int, re.match(r'(\d+)-(\d+),(\d+)-(\d+)', line).groups()))
-        return set(range(m[0], m[1]+1)), set(range(m[2], m[3]+1))
-
+    def parse_line(line: str) -> tuple[int,int,int,int]:
+        a, b = line.split(',')
+        amin, amax = map(int, a.split('-'))
+        bmin, bmax = map(int, b.split('-'))
+        return amin, amax, bmin, bmax
     assignments = [parse_line(x) for x in aoc.read_lines()]
-    part_one = len([x for x in assignments if x[0] <= x[1] or x[1] <= x[0]])
+
+Our goal is then to find out if the range of `a` (`amin-amax`) contains the entire range of `b` (`bmin-bmax`) or vice versa:
+
+    amin            amax        amin       amax
+    |---------------|           |----------|
+       |--------|               |---------------|
+       bmin     bmax            bmin            bmax
+
+As seen above, this occurs when both `amin <= bmin and amax >= bmax` or when `bmin <= amin and bmax >= amax`. We can simply compare the various min/max values to each other to determine this for each line.
+
+    def contains(min_a: int, max_a: int, min_b: int, max_b: int) -> bool:
+        return min_a <= min_b and max_a >= max_b or min_b <= min_a and max_b >= max_a
+
+    part_one = len([x for x in assignments if contains(*x)])
 
 ### Part Two
 
-For part two, we just need to see if there's any overlap between the two elves. This can be very easily found using the `intersection` of the two sets.
+For part two, we just need to see if there's any overlap between the two assignments. Instead of checking for when this is true, it's much easier to find when it is false.
 
-    part_two = len([x for x in assignments if x[0] & x[1]])
+    amin         amax
+    |------------|
+                    |------|
+                    bmin   bmax
 
-Tada! Not much else to say here, really.
+If `a` ends before `b` starts (or vice versa), then there is no overlap. The inverse of that will tell us when overlap occurs for a given line.
+
+    def overlap(min_a: int, max_a: int, min_b: int, max_b: int) -> bool:
+        return not (max_a < min_b or max_b < min_a)
+
+    part_two = len([x for x in assignments if overlap(*x)])
+
+Tada! Believe it or not, I found this solution to be about 4 times faster than the `set`-based solution, though both were more than sufficiently fast.
+
+## <a name="d05"></a> Day 05: Supply Stacks
+
+[Task description](https://adventofcode.com/2022/day/5) - [Complete solution](day05/supply_stacks.py) - [Back to top](#top)  
+
+Runtime: 2.254 ms  
+
+### Part One
+
+Today's issue has us dealing with moving crates between a series of stacks. The first question we have to ask is "how do we want to represent the data?". Each movement will involve moving `n` crates from some stack `a` to some stack `b`. While my gut instinct was to use a series of `deque` objects, since this is just a series of LIFO stacks, the fact that we have to move multiple crates at once actually makes me rather use a series of lists. This is because there's no way to pop multiple values from a `deque` at the same time, whereas with lists, I can slice multiple values off at once. So we can represent our stacks of crates using this structure.
+
+    Stacks = dict[int, list[str]]
+
+With our data structure in place, let's read the input, which is split into two chunks: our initial state of stacks and the movements we need to perform. Let's start with the initial state.
+
+        [D]        # <-- This is the final element of a stack
+    [N] [C]    
+    [Z] [M] [P]    # <-- This is the 0th element of a stack
+     1   2   3     # <-- Last row is the ID of a given stack
+
+Here we see how the input is structured. We want to look at it from the bottom-up to make our initial state of `Stacks`. Let's create a function that does that.
+
+    def parse_state(state: str) -> Stacks:
+        lines = state.splitlines()
+        crates, stacks = lines[:-1], lines[-1]
+        return {int(stack_no): [row[i] for row in reversed(crates) if row[i] != ' '] 
+                for i, stack_no in enumerate(stacks) if stack_no != ' '}
+
+    initial_state, movements = aoc.read_chunks()
+    stacks = parse_state(initial_state)
+
+The bottom line (`stacks`) contains our stack_ids and a bunch of spaces we don't care about. Meanwhile, every other line (`crates`) contains the letters of our crates and a bunch of other characters we don't care about. Notice that the letter of a crate is always in the same index as the stack id itself. If we enumerate over `stacks` (taking care to skip spaces), we are left with every index that contains the letters in that stack. Then we can loop backwards over `crates` and grab that index in each row (once again skipping blank lines).
+
+With that out of the way, all that's left is to move the crates around. We can use regex to parse our movement lines, like so:
+
+    m = re.match(r'move (\d+) from (\d+) to (\d+)', movement).groups()
+    amount, start, end = int(m[0]), int(m[1]), int(m[2])
+
+Once we have that, it's as simple as pulling `amount` number of crates from `start` stack and placing them into `end` stack. Be sure you remember to remove the crates from the `start` stack along the way.
+
+    def move(stacks: Stacks, movement: str) -> Stacks:
+        m = re.match(r'move (\d+) from (\d+) to (\d+)', movement).groups()
+        amount, start, end = int(m[0]), int(m[1]), int(m[2])
+        to_move = stacks[start][-amount:]        # Grab the crates that need moved
+        stacks[start] = stacks[start][:-amount]  # Remove those crates from the start stack
+        stacks[end].extend(reversed(to_move))    # Place them into the end stack
+        return stacks
+
+Finally, let's call this function once for each movement. The `reduce` function in the `functools` library helps a lot here. Given a function, an iterable, and an initial state, you can apply the function from left to right on the iterable and obtain the final value. For instance `reduce(lambda x,y: x*y, numbers, 1)` will multiply every value of numbers together, starting with the value 1.
+
+    stacks = reduce(lambda x,y: move(x, y), movements.splitlines(), stacks)
+    part_one = ''.join([q[-1] for q in stacks.values()])
+
+### Part Two
+
+Part two doesn't change things a whole lot for us. Instead of reversing the crates that are moved, we want to keep them in the same order. To do that, we can just edit our move function a little bit:
+
+    def move(stacks: Stacks, movement: str, reverse=True) -> Stacks:
+        m = re.match(r'move (\d+) from (\d+) to (\d+)', movement).groups()
+        amount, start, end = int(m[0]), int(m[1]), int(m[2])
+        to_move = stacks[start][-amount:]
+        stacks[start] = stacks[start][:-amount]
+        stacks[end].extend(reversed(to_move) if reverse else to_move)
+        return stacks
+
+A new optional argument `reverse` was added. If `reverse` is `True`, we will reverse the moved crates (like in part 1). However, now we can pass `False` in, and it will give us our answer for part two.
+
+    stacks = reduce(lambda x,y: move(x, y, reverse=False), movements.splitlines(), stacks)
+    part_two = ''.join([q[-1] for q in stacks.values()])
+
+If you're trying to do both parts in one script, it should be noted that our move function **mutates** our `Stacks` state. Because of this, you can't keep using the same state object for both parts, because the initial state will have changed after part one. We can use the `deepcopy` function from the `copy` module to copy the state of our `Stacks` object before we modify it.
+
+    from copy import deepcopy
+
+    stacks1 = deepcopy(stacks)
+    stacks1 = reduce(lambda x,y: move(x, y), movements, stacks1)
+    part_one = ''.join([q[-1] for q in stacks1.values()])
+
+    stacks2 = deepcopy(stacks)
+    stacks2 = reduce(lambda x,y: move(x, y, reverse=False), movements, stacks2)
+    part_two = ''.join([q[-1] for q in stacks2.values()])
+
