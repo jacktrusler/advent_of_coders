@@ -5,32 +5,23 @@ const answer = {
   part2: 0,
 }
 
+function findFirstMarker(dataStream: string, packetSize: number): number {
+  const len = dataStream.length
+  for (let i = 0; i < len - packetSize; i++) {
+    const s = new Set(dataStream.slice(i, i + packetSize));
+    if (s.size === packetSize) {
+      return i + packetSize;
+    }
+  }
+  console.log("No unique marker found!")
+  return -1;
+}
+
 function day6(filePath: string) {
   //signal input
   const si = readFileSync(filePath).toString()
-  //start-of-packet-marker
-  let sopm;
-  let packetLen = 4
-  const len = si.length
-  //part1
-  for (let i = 0; i < len; i++) {
-    const packet = new Set(si.slice(i, i + packetLen))
-    if (packet.size === 4) {
-      sopm = i + packetLen;
-      break;
-    }
-  }
-  answer.part1 = sopm as number;
-  //part2
-  packetLen = 14
-  for (let i = 0; i < len; i++) {
-    const packet = new Set(si.slice(i, i + packetLen))
-    if (packet.size === 14) {
-      sopm = i + packetLen;
-      break;
-    }
-  }
-  answer.part2 = sopm as number;
+  answer.part1 = findFirstMarker(si, 4)
+  answer.part2 = findFirstMarker(si, 14)
   console.log(answer)
   return answer
 }
