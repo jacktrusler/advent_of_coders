@@ -29,7 +29,7 @@ def create(year: int, day: int, name: str):
     with open(year_md, 'r+') as f:
         lines = f.readlines()
         idx = next(i for i, x in enumerate(lines) if f'badge/{day_str}' in x)
-        lines[idx] = lines[idx].replace('gray', 'green')
+        lines[idx] = lines[idx].replace('gray', 'green').replace('%86', '%85')
         f.seek(0)
         f.writelines(lines)
 
