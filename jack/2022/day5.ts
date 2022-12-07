@@ -1,7 +1,8 @@
 import { readFileSync } from "fs";
 
-/** 
-            [G] [W]         [Q]    
+/**
+. top ---> bottom
+.           [G] [W]         [Q]    
 [Z]         [Q] [M]     [J] [F]    
 [V]         [V] [S] [F] [N] [R]    
 [T]         [F] [C] [H] [F] [W] [P]
@@ -9,10 +10,9 @@ import { readFileSync } from "fs";
 [J] [V] [F] [N] [T] [T] [C] [Z] [W]
 [G] [R] [Q] [H] [Q] [W] [Z] [G] [B]
 [R] [J] [S] [Z] [R] [S] [D] [L] [J]
- 1   2   3   4   5   6   7   8   9
+_1   2   3   4   5   6   7   8   9
  */
 
-//top ---> bottom
 const shipContainers = () => [
   ['Z', 'V', 'T', 'B', 'J', 'G', 'R'],
   ['L', 'V', 'R', 'J'],
