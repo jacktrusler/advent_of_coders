@@ -1,0 +1,1 @@
+![hmm today I will learn python <= (clueless)](https://i.kym-cdn.com/photos/images/original/001/048/994/82f.png)
