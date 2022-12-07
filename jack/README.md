@@ -32,7 +32,7 @@
 [![Day](https://badgen.net/badge/04/%E2%98%85%E2%98%85/green)](2022)
 [![Day](https://badgen.net/badge/05/%E2%98%85%E2%98%85/green)](2022)
 [![Day](https://badgen.net/badge/06/%E2%98%85%E2%98%85/green)](2022)
-[![Day](https://badgen.net/badge/07/%E2%98%86%E2%98%86/gray)](2022)
+[![Day](https://badgen.net/badge/07/%E2%98%85%E2%98%85/green)](2022)
 [![Day](https://badgen.net/badge/08/%E2%98%86%E2%98%86/gray)](2022)
 [![Day](https://badgen.net/badge/09/%E2%98%86%E2%98%86/gray)](2022)
 [![Day](https://badgen.net/badge/10/%E2%98%86%E2%98%86/gray)](2022)

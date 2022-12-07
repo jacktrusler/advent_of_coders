@@ -65,7 +65,6 @@ class Filesystem {
         continue;
       }
     }
-
     return this.fedoraRoot;
   }
 }
@@ -92,7 +91,7 @@ function day7(filePath: string) {
   //part 1
   const part1 = totals
     .filter((dirSize) => dirSize <= 100000)
-    .reduce((acc, thing) => thing + acc, 0)
+    .reduce((acc, dirSize) => dirSize + acc, 0)
   answer.part1 = part1;
 
   //part 2
