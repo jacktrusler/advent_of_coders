@@ -3,12 +3,12 @@ from string import ascii_lowercase, ascii_uppercase
 
 
 def check_compartment(items: str) -> int:
-    common_item = set(items[len(items)//2:]) & set(items[:len(items)//2])
-    return list(common_item)[0]
+    (common_item,) = set(items[len(items)//2:]) & set(items[:len(items)//2])
+    return common_item
 
 def check_group(sacks: list[str]) -> int:
-    common_item = set.intersection(*map(set, sacks))
-    return list(common_item)[0]
+    (common_item,) = set.intersection(*map(set, sacks))
+    return common_item
 
 
 @aoc.register(__file__)
