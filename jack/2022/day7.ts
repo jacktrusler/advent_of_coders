@@ -27,7 +27,7 @@ class Filesystem {
 
   createFilesystem(output: string[]): { [key: string]: any } {
     let current = this.fedoraRoot
-    let root;
+    let root = this.fedoraRoot;
     for (let i = 0; i < output.length; i++) {
       let [x, y, z] = output[i].split(' ')
       if (z !== undefined) {
@@ -108,5 +108,4 @@ function day7(filePath: string) {
   return answer;
 }
 
-
-day7("./day7.txt")
+export { day7 }
