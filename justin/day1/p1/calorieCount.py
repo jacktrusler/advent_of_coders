@@ -1,6 +1,5 @@
 def main():
-  f = open('./input.txt')
-  msg = f.read()
+  msg = open('./input.txt').read()
   elves = msg.split('\n\n')
   maxCals = 0
   for elf in elves:
