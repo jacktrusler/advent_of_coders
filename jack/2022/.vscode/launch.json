@@ -8,13 +8,9 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}/day2.ts",
-      "outFiles": [
-        "${workspaceFolder}/**/*.js"
-      ]
+      "program": "${workspaceFolder}/day7.ts",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": ["${workspaceFolder}/out/**/*.js"]
     }
   ]
 }
