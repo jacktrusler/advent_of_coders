@@ -60,18 +60,15 @@ async function p2022day8_part1(input: string, ...params: any[]) {
 		s.push(line);
 	}
 
-	const seen = new Set();
 	for (let row = 0; row < grid.length; row++){
 		for (let col = 0; col < grid[0].length; col++){
 			const h = Number(grid[row][col]);
 			if (
-				!seen.has(`${row}:${col}`) &&
 				n[col][row] < h ||
 				s[col][row] < h ||
 				w[row][col] < h	||
 				e[row][col] < h			
 			){
-				seen.add(`${row}:${col}`);
 				visible++;
 			}
 		}
@@ -106,7 +103,6 @@ async function p2022day8_part2(input: string, ...params: any[]) {
 				offset++;
 			}
 			vis *= col+offset <= grid[0].length - 1 ? offset : offset - 1;;
-
 		}
 
 		// look up
@@ -125,7 +121,6 @@ async function p2022day8_part2(input: string, ...params: any[]) {
 				offset++;
 			}
 			vis *= row+offset <= grid.length - 1 ? offset : offset - 1;
-
 		}
 
 		return vis;
