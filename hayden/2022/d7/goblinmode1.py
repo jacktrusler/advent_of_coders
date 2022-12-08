@@ -13,18 +13,19 @@ def main():
         inode_chain = [0]
         for line in commands:
             #Is this a "Shell Line"
-            if line[0:4] == "$ cd":
-                directory = line[5:].strip()
-                if directory == "/":
+            if line[0] == "$":
+                if line[2] == "l":
+                    continue
+                elif line[5] == "/":
                     inode_chain = [0]
-                elif directory == "..":
+                elif line[5] == ".":
                     inode_chain.pop()
                 else:
                     inode_chain.append(next_inode)
                     ductr.insert(next_inode, 0)
                     next_inode+=1
             else:
-                if line[0] == "d" or line[0] == "$":
+                if line[0] == "d":
                     continue
                 fsize = int(line.split()[0])
                 for inode in inode_chain:
