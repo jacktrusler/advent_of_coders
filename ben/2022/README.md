@@ -16,7 +16,7 @@
 [![Day](https://badgen.net/badge/05/%E2%98%85%E2%98%85/green)](#d05)
 [![Day](https://badgen.net/badge/06/%E2%98%85%E2%98%85/green)](#d06)
 [![Day](https://badgen.net/badge/07/%E2%98%85%E2%98%85/green)](#d07)
-[![Day](https://badgen.net/badge/08/%E2%98%86%E2%98%86/gray)](#d08)
+[![Day](https://badgen.net/badge/08/%E2%98%85%E2%98%85/green)](#d08)
 [![Day](https://badgen.net/badge/09/%E2%98%86%E2%98%86/gray)](#d09)
 [![Day](https://badgen.net/badge/10/%E2%98%86%E2%98%86/gray)](#d10)
 [![Day](https://badgen.net/badge/11/%E2%98%86%E2%98%86/gray)](#d11)
@@ -337,6 +337,16 @@ Runtime: 2.001 ms
 [Task description](https://adventofcode.com/2022/day/7) - [Complete solution](day07/no_space_left_on_device.py) - [Back to top](#top)  
 
 Runtime: 1.938 ms  
+
+### Notes
+
+...  
+
+## <a name="d08"></a> Day 08: Treetop Tree House
+
+[Task description](https://adventofcode.com/2022/day/8) - [Complete solution](day08/treetop_tree_house.py) - [Back to top](#top)  
+
+Runtime: ...  
 
 ### Notes
 
