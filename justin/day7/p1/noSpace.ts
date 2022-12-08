@@ -19,6 +19,7 @@ system["/" as keyof object] = new folder("/", system["/" as keyof object]);
 let path: string[] = [];
 let i = 0;
 let com;
+
 while (file[i]) {
   if (file[i].includes("$ cd")) {
     com = file[i].slice(5);
