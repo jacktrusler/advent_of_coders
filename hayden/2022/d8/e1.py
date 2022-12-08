@@ -1,19 +1,20 @@
 """Treetop Tree House"""
 
 from time import perf_counter
+import numpy as np
 
 def main():
     with open(file="inputs.txt", mode="r", encoding="utf-8") as f_twisted_treeline:
         twisted_treeline = f_twisted_treeline.readlines()
         f_twisted_treeline.close()
         dim_y = len(twisted_treeline)
-        dim_x = len(twisted_treeline[0].strip())
-        cartesian_treeline = [[0 for x in range(dim_x)] for y in range(dim_y)]
+        dim_x = len(twisted_treeline[0]-1)
+        cartesian_treeline = np.empty((dim_y, dim_x) , type=np.uint8)
         cur_x = 0
         cur_y = 0
         for treeline in twisted_treeline:
-            for tree in treeline.strip():
-                cartesian_treeline[cur_y][cur_x] = int(tree)
+            for i in range(len(tree)-1):
+                cartesian_treeline[cur_y][cur_x] = int(treeline[i])
                 cur_x += 1
             cur_x = 0
             cur_y += 1
