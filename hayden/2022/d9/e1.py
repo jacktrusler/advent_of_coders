@@ -1,13 +1,9 @@
-"""Treetop Tree House"""
+"""Wiggler"""
 
 import math
 from time import perf_counter
 import numpy as np
 
-UPWARDS = (0,1)
-DOWNWARDS = (0,-1)
-LEFTWARDS = (-1,0)
-RIGHTWARDS = (0,1)
 
 def main():
     with open(file="inputs.txt", mode="r", encoding='utf-8') as f_rope:
@@ -16,22 +12,21 @@ def main():
         uniq_coordinates = set([(0,0)])
         head_pos = (0,0)
         tail_pos = (0,0)
-        print(f"Head: {head_pos}")
-        print(f"Tail: {tail_pos}")
         for head_update in movements:
             dist = int(head_update[2:].strip())
             directionality = head_update[0]
+            step_x = 0
+            step_y = 0
+            if directionality == "L":
+                step_x = -1
+            elif directionality == "R":
+                step_x = 1
+            elif directionality == "U":
+                step_y = 1
+            elif directionality == "D":
+                step_y = -1
             for step in range(dist):
-                if directionality == "L":
-                    (new_head, new_tail) = rope_handler(-1,0,head_pos,tail_pos)
-                elif directionality == "R":
-                    (new_head, new_tail) = rope_handler(1,0,head_pos,tail_pos)
-                elif directionality == "U":
-                    (new_head, new_tail) = rope_handler(0,1,head_pos,tail_pos)
-                elif directionality == "D":
-                    (new_head, new_tail) = rope_handler(0,-1,head_pos,tail_pos)
-                head_pos = new_head
-                tail_pos = new_tail
+                (head_pos, tail_pos) = rope_handler(step_x, step_y, head_pos,tail_pos)
                 uniq_coordinates.add(tail_pos)
         print(len(uniq_coordinates))
         
