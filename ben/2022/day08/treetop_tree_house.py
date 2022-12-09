@@ -6,9 +6,10 @@ from numpy.typing import NDArray
 
 def visible_from_edge(trees: NDArray, rot: int) -> NDArray:
     ar = np.rot90(trees, rot)
-    rolling_max = np.maximum.accumulate(ar, axis=1)
-    padded = np.pad(rolling_max, ((0,0), (1,0)), constant_values=-1)[:,:-1]
-    return np.rot90(ar > padded, 4-rot)
+    visible = np.full(ar.shape, False)
+    visible[0] = True
+    visible[1:] = ar[1:] > np.maximum.accumulate(ar, axis=0)[:-1]
+    return np.rot90(visible, 4-rot)
 
 def visible_from_tree(trees: NDArray, rot: int) -> NDArray:
     ar = np.rot90(trees, rot)
