@@ -60,7 +60,6 @@ function day9(filePath: string) {
   ]
 
   let snake = snakeMaker()
-  // let tmpSnake = snakeMaker()
   for (const move of allMoves) {
     const [dir, xy] = move.split(' ')
     const distance = parseInt(xy)
@@ -111,12 +110,12 @@ function day9(filePath: string) {
           snake[i + 1][1]--
         }
       }
-      // tmpSnake = snake.map((arr) => arr.slice())
+      //Part 1
       // board[snake[1][0]][snake[1][1]] = board[snake[1][0]][snake[1][1]] + 1;
+      //Part 2
       board[snake[9][0]][snake[9][1]] = board[snake[9][0]][snake[9][1]] + 1;
     }
   }
-  console.log(board)
   console.log(board
     .map((row) => row.filter((num) => num > 0))
     .reduce((acc, row) => acc + row.length, 0)
