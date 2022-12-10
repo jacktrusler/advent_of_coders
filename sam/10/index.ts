@@ -33,7 +33,6 @@ async function p2022day10_part1(input: string, ...params: any[]) {
 }
 
 async function p2022day10_part2(input: string, ...params: any[]) {
-	let signal = 0;
 	let cycle = 1;
 	let x = 1;
 	const width = 40;
@@ -47,7 +46,6 @@ async function p2022day10_part2(input: string, ...params: any[]) {
 	}
 
 	function tick(){
-		signal = cycle * x;
 		plot();
 		cycle++;
 	}
