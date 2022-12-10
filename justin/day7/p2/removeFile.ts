@@ -14,8 +14,22 @@ class folder {
   freeSpace(reqSpace: number, totalSpace: number) {
     const currSize = this.calcSize(false);
     const spaceNeeded = reqSpace - (totalSpace - currSize);
-    console.log(reqSpace, totalSpace, currSize, spaceNeeded);
-    return spaceNeeded;
+    let folder: folder = this;
+    let minSize = folder.calcSize();
+    let q = this.contents;
+    while (q.length) {
+      let tempq: any[] = [];
+      q.forEach((dir) => {
+        let size = dir.calcSize();
+        if (size >= spaceNeeded && size < minSize) {
+          folder = dir;
+          minSize = size;
+        }
+        dir.contents.length && tempq.push(...dir.contents);
+      });
+      q = tempq;
+    }
+    return folder;
   }
 
   calcSize(includeRoot: boolean = true) {
@@ -37,10 +51,13 @@ class folder {
 const file = fs.readFileSync("../p1/input.txt", "utf-8").split("\n");
 const cd = file.filter((a) => a.includes("$ cd"));
 const diskSpaceAvail = 70000000;
-const requiredDiskSpace = 300000000;
+const requiredDiskSpace = 30000000;
 
 let system = new Array();
-system["/" as keyof object] = new folder("/", system["/" as keyof object]);
+let root = (system["/" as keyof object] = new folder(
+  "/",
+  system["/" as keyof object]
+));
 let path: string[] = [];
 let i = 0;
 let com;
@@ -87,26 +104,5 @@ while (file[i]) {
 }
 ////////////////////////////////////////
 
-/////////////////////////////////////
-//sums all sub totals to the parent dir
-let q = [];
-for (const element in system) {
-  if (!system[element].contents.length) q.push(system[element]);
-}
-while (q.length) {
-  let tempq = [];
-  for (const item of q) {
-    if (item.parent) {
-      tempq.push(item.parent);
-      item.parent.size += item.size;
-    }
-  }
-  q = tempq;
-}
-///////////////////////////////////
-
-console.log(system["/" as keyof object].Size);
-console.log(system["/" as keyof object].calcSize(false));
-console.log(
-  system["/" as keyof object].freeSpace(requiredDiskSpace, diskSpaceAvail)
-);
+let dir = root.freeSpace(requiredDiskSpace, diskSpaceAvail);
+console.log(`${dir.name} can be deleted to free up ${dir.calcSize()}`);
