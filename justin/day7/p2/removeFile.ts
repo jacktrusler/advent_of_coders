@@ -33,6 +33,7 @@ class folder {
   }
 }
 
+/////////////////////////////////////////////////
 const file = fs.readFileSync("../p1/input.txt", "utf-8").split("\n");
 const cd = file.filter((a) => a.includes("$ cd"));
 const diskSpaceAvail = 70000000;
@@ -44,6 +45,8 @@ let path: string[] = [];
 let i = 0;
 let com;
 
+///////////////////////////////////////////////////
+// Loop to build folder structure, stores all folders in system object for ease of access.
 while (file[i]) {
   if (file[i].includes("$ cd")) {
     com = file[i].slice(5);
@@ -82,7 +85,10 @@ while (file[i]) {
   }
   i++;
 }
+////////////////////////////////////////
 
+/////////////////////////////////////
+//sums all sub totals to the parent dir
 let q = [];
 for (const element in system) {
   if (!system[element].contents.length) q.push(system[element]);
@@ -97,15 +103,10 @@ while (q.length) {
   }
   q = tempq;
 }
-let total = 0;
-for (const element in system) {
-  if (system[element].size <= 100000) total += system[element].size;
-}
+///////////////////////////////////
+
 console.log(system["/" as keyof object].Size);
 console.log(system["/" as keyof object].calcSize(false));
 console.log(
   system["/" as keyof object].freeSpace(requiredDiskSpace, diskSpaceAvail)
-);
-console.log(
-  `The total size of all directories below 100000 bytes is: ${total}!`
 );
