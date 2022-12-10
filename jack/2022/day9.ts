@@ -60,7 +60,7 @@ function day9(filePath: string) {
   ]
 
   let snake = snakeMaker()
-  let tmpSnake = snakeMaker()
+  // let tmpSnake = snakeMaker()
   for (const move of allMoves) {
     const [dir, xy] = move.split(' ')
     const distance = parseInt(xy)
@@ -70,22 +70,57 @@ function day9(filePath: string) {
       if (dir === 'U') { snake[0][0]-- }
       if (dir === 'D') { snake[0][0]++ }
       for (let i = 0; i < snake.length - 1; i++) {
-        if (Math.abs(snake[i][0] - snake[i + 1][0]) === 2 ||
-          Math.abs(snake[i][1] - snake[i + 1][1]) === 2) {
-          let [newX, newY] = tmpSnake[i]
-          snake[i + 1][0] = newX
-          snake[i + 1][1] = newY
+        //N Direction 
+        if ((snake[i][0] - snake[i + 1][0]) === -2) {
+          if (snake[i][1] - snake[i + 1][1] > 0) {
+            snake[i + 1][1]++
+          }
+          if (snake[i][1] - snake[i + 1][1] < 0) {
+            snake[i + 1][1]--
+          }
+          snake[i + 1][0]--
+        }
+        //S Direction
+        if ((snake[i][0] - snake[i + 1][0]) === 2) {
+          if (snake[i][1] - snake[i + 1][1] > 0) {
+            snake[i + 1][1]++
+          }
+          if (snake[i][1] - snake[i + 1][1] < 0) {
+            snake[i + 1][1]--
+          }
+          snake[i + 1][0]++
+        }
+        //E direction
+        if ((snake[i][1] - snake[i + 1][1]) === 2) {
+          if (snake[i][0] - snake[i + 1][0] > 0) {
+            snake[i + 1][0]++
+          }
+          if (snake[i][0] - snake[i + 1][0] < 0) {
+            snake[i + 1][0]--
+          }
+          snake[i + 1][1]++
+        }
+        // W direction
+        if ((snake[i][1] - snake[i + 1][1]) === -2) {
+          if (snake[i][0] - snake[i + 1][0] > 0) {
+            snake[i + 1][0]++
+          }
+          if (snake[i][0] - snake[i + 1][0] < 0) {
+            snake[i + 1][0]--
+          }
+          snake[i + 1][1]--
         }
       }
-      tmpSnake = snake.map((arr) => arr.slice())
-      //board[snake[1][0]][snake[1][1]] = board[snake[1][0]][snake[1][1]] + 1;
+      // tmpSnake = snake.map((arr) => arr.slice())
+      // board[snake[1][0]][snake[1][1]] = board[snake[1][0]][snake[1][1]] + 1;
       board[snake[9][0]][snake[9][1]] = board[snake[9][0]][snake[9][1]] + 1;
     }
   }
+  console.log(board)
   console.log(board
     .map((row) => row.filter((num) => num > 0))
     .reduce((acc, row) => acc + row.length, 0)
   )
 }
 
-day9("./day9small.txt")
+day9("./day9.txt")
