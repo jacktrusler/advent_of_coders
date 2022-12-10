@@ -1,8 +1,9 @@
 local h = require("lib.helpers")
-local file = 'day4.txt'
+local file = './day4.txt'
 local lines = h.lines_from(file)
 local answers = {}
 
+local before = os.clock()
 local part1 = 0;
 local part2 = 0;
 for _, range in pairs(lines) do
@@ -27,8 +28,11 @@ for _, range in pairs(lines) do
     end
   end
 end
-
+local after = os.clock()
 answers.part1 = part1
 answers.part2 = part2
+
+print(string.format("Loop took %0.6f seconds to run", after - before))
+
 
 P(answers)
