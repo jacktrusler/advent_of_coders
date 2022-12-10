@@ -4,7 +4,8 @@ const answer = {
   part2: 0,
 }
 
-function setCharAt(str: string, index: number, chr: string): string {
+function setCharAt(str, index, chr): string {
+  console.log(str, "|", index, "|", chr)
   if (index > str.length - 1) return str;
   return str.substring(0, index) + chr + str.substring(index + 1);
 }
@@ -51,42 +52,38 @@ function day10(filePath: string) {
     crtScreen.push(row.join(''))
   }
 
-  let spritePos = 1;
-  let spriteRange = [spritePos - 1, spritePos, spritePos + 1]
-  let clockCyclep2 = 0;
-  let loadedp2 = false;
-  for (const operation of allOps) {
-    const [op, number] = operation.split(' ')
-    for (let i = 0; i < SCREEN_HEIGHT; i++) {
-      clockCyclep2 = 0;
-      while (clockCyclep2 < SCREEN_WIDTH) {
-        if (op === 'noop') {
-          if (spriteRange.includes(clockCyclep2)) {
-            crtScreen[i] = setCharAt(crtScreen[i], clockCyclep2, '#')
-          }
-          clockCyclep2++
-        }
-        if (op === 'addx' && clockCyclep2 < SCREEN_WIDTH) {
-          if (!loadedp2) {
-            if (spriteRange.includes(clockCyclep2)) {
-              crtScreen[i] = setCharAt(crtScreen[i], clockCyclep2, '#')
-            }
-            clockCyclep2++
-            loadedp2 = true;
-          }
-          if (loadedp2 && clockCyclep2 < SCREEN_WIDTH) {
-            if (spriteRange.includes(clockCyclep2)) {
-              crtScreen[i] = setCharAt(crtScreen[i], clockCyclep2, '#')
-            }
-            clockCyclep2++
-            spritePos += Number(number)
-            loadedp2 = false;
-          }
-        }
+  let x = 1;
+  let spriteRange = [x - 1, x, x + 1]
+  let clockCyclep2 = 1;
+  let r = 0;
+  for (let i = 0; i < allOps.length; i++) {
+    const [op, number] = allOps[i].split(' ')
+    if (op === 'noop') {
+      if (spriteRange.includes(clockCyclep2 - 1)) {
+        crtScreen[r] = setCharAt(crtScreen[r], clockCyclep2 - 1, '#')
       }
+      clockCyclep2++
+      if (clockCyclep2 === SCREEN_WIDTH + 1) { r++; clockCyclep2 = 1; }
+    }
+
+    if (op === 'addx') {
+      if (spriteRange.includes(clockCyclep2 - 1)) {
+        crtScreen[r] = setCharAt(crtScreen[r], clockCyclep2 - 1, '#')
+      }
+      clockCyclep2++
+      if (clockCyclep2 === SCREEN_WIDTH + 1) { r++; clockCyclep2 = 1; }
+
+      if (spriteRange.includes(clockCyclep2 - 1)) {
+        crtScreen[r] = setCharAt(crtScreen[r], clockCyclep2 - 1, '#')
+      }
+      clockCyclep2++
+      x = x + Number(number)
+      spriteRange = [x - 1, x, x + 1]
+      if (clockCyclep2 === SCREEN_WIDTH + 1) { r++; clockCyclep2 = 1; }
     }
   }
   console.log(crtScreen)
 }
+
 
 day10('./day10.txt')
