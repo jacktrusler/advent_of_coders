@@ -1,8 +1,8 @@
 from time import perf_counter
 import numpy as np
 
-MAX_ROUNDS = 20
-INNER_CALM = 3
+MAX_ROUNDS = 10000
+INNER_CALM = 1
 MAX_HEADROOM = 1
 
 class Monkey:
