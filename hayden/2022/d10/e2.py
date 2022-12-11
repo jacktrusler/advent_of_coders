@@ -1,8 +1,9 @@
 from time import perf_counter
+LIT_PIXEL = "#"
+UNLIT_PIXEL = "."
 def main():
    with open(file="inputs.txt", mode="r", encoding="utf-8") as f_signals:
     cycles = 1
-    sig_sum = 0
     x_reg = 1
     h_pos = 0
 
@@ -12,9 +13,9 @@ def main():
         nonlocal h_pos
         for _ in range(ticks):
             if abs(x_reg-h_pos) <= 1:
-                hsync('#')
+                hsync(LIT_PIXEL)
             else: 
-                hsync('.')
+                hsync(UNLIT_PIXEL)
             h_pos+=1
             if cycles % 40 == 0:
                 vsync()
@@ -38,7 +39,6 @@ def main():
             x_acc = int(instruction[5:].strip())
             x_reg += x_acc
     f_signals.close()
-    print(sig_sum)
 
 
         
