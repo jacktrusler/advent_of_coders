@@ -57,14 +57,10 @@ def direction(d: str) -> complex:
 def answers():
     movements = [tuple(line.split()) for line in aoc.read_lines()]
 
-    rope = Rope(knots=2)
-    for m in movements:
-        rope.move(*m)
-    yield len(rope[-1].visited)
-
     rope = Rope(knots=10)
     for m in movements:
         rope.move(*m)
+    yield len(rope[1].visited)
     yield len(rope[-1].visited)
 
 if __name__ == '__main__':

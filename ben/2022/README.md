@@ -18,9 +18,9 @@
 [![Day](https://badgen.net/badge/07/%E2%98%85%E2%98%85/green)](#d07)
 [![Day](https://badgen.net/badge/08/%E2%98%85%E2%98%85/green)](#d08)
 [![Day](https://badgen.net/badge/09/%E2%98%85%E2%98%85/green)](#d09)
-[![Day](https://badgen.net/badge/10/%E2%98%86%E2%98%86/gray)](#d10)
-[![Day](https://badgen.net/badge/11/%E2%98%86%E2%98%86/gray)](#d11)
-[![Day](https://badgen.net/badge/12/%E2%98%86%E2%98%86/gray)](#d12)
+[![Day](https://badgen.net/badge/10/%E2%98%85%E2%98%85/green)](#d10)
+[![Day](https://badgen.net/badge/11/%E2%98%85%E2%98%85/green)](#d11)
+[![Day](https://badgen.net/badge/12/%E2%98%85%E2%98%85/green)](#d12)
 [![Day](https://badgen.net/badge/13/%E2%98%86%E2%98%86/gray)](#d13)
 [![Day](https://badgen.net/badge/14/%E2%98%86%E2%98%86/gray)](#d14)
 [![Day](https://badgen.net/badge/15/%E2%98%86%E2%98%86/gray)](#d15)
@@ -273,16 +273,17 @@ Here we see how the input is structured. We want to look at it from the bottom-u
 
 The bottom line (`stacks`) contains our stack_ids and a bunch of spaces we don't care about. Meanwhile, every other line (`crates`) contains the letters of our crates and a bunch of other characters we don't care about. Notice that the letter of a crate is always in the same index as the stack id itself. If we enumerate over `stacks` (taking care to skip spaces), we are left with every index that contains the letters in that stack. Then we can loop backwards over `crates` and grab that index in each row (once again skipping blank lines).
 
-With that out of the way, all that's left is to move the crates around. We can use regex to parse our movement lines, like so:
+With that out of the way, all that's left is to move the crates around. We can use `str.split()` to pull out relevant data from each movement line, like so:
 
-    m = re.match(r'move (\d+) from (\d+) to (\d+)', movement).groups()
-    amount, start, end = int(m[0]), int(m[1]), int(m[2])
+    m = movement.split()
+    amount, start, end = int(m[1]), int(m[3]), int(m[5])
 
 Once we have that, it's as simple as pulling `amount` number of crates from `start` stack and placing them into `end` stack. Be sure you remember to remove the crates from the `start` stack along the way.
 
     def move(stacks: Stacks, movement: str) -> Stacks:
         m = re.match(r'move (\d+) from (\d+) to (\d+)', movement).groups()
         amount, start, end = int(m[0]), int(m[1]), int(m[2])
+
         to_move = stacks[start][-amount:]        # Grab the crates that need moved
         stacks[start] = stacks[start][:-amount]  # Remove those crates from the start stack
         stacks[end].extend(reversed(to_move))    # Place them into the end stack
@@ -298,29 +299,24 @@ Finally, let's call this function once for each movement. The `reduce` function 
 Part two doesn't change things a whole lot for us. Instead of reversing the crates that are moved, we want to keep them in the same order. To do that, we can just edit our move function a little bit:
 
     def move(stacks: Stacks, movement: str, reverse: bool = True) -> Stacks:
-        m = re.match(r'move (\d+) from (\d+) to (\d+)', movement).groups()
-        amount, start, end = int(m[0]), int(m[1]), int(m[2])
+       m = movement.split()
+        amount, start, end = int(m[1]), int(m[3]), int(m[5])
+
+        retval = stacks.copy()
         to_move = stacks[start][-amount:]
-        stacks[start] = stacks[start][:-amount]
-        stacks[end].extend(reversed(to_move) if reverse else to_move)
-        return stacks
+        retval[start] = stacks[start][:-amount]
+        retval[end] = stacks[end] + tuple(reversed(to_move) if reverse else to_move)
+        return retval
 
-A new optional argument `reverse` was added. If `reverse` is `True`, we will reverse the moved crates (like in part 1). However, now we can pass `False` in, and it will give us our answer for part two.
+A new optional argument `reverse` was added. If `reverse` is `True`, we will reverse the moved crates (like in part 1). However, now we can pass `False` in, and it will give us our answer for part two. In addition, the input dictionary was copied so that we no longer directly **mutate** the input. This will allow us to run both parts in one script nice and neatly.
 
-    stacks = reduce(lambda x,y: move(x, y, reverse=False), movements.splitlines(), stacks)
-    part_two = ''.join([q[-1] for q in stacks.values()])
+    movements = movements.splitlines()
 
-If you're trying to do both parts in one script, it should be noted that our move function **mutates** our `Stacks` state. Because of this, you can't keep using the same state object for both parts, because the initial state will have changed after part one. We can use the `deepcopy` function from the `copy` module to copy the state of our `Stacks` object before we modify it.
+    stacks1 = reduce(lambda x,y: move(x, y), movements, stacks)
+    yield ''.join([q[-1] for q in stacks1.values()])
 
-    from copy import deepcopy
-
-    stacks1 = deepcopy(stacks)
-    stacks1 = reduce(lambda x,y: move(x, y), movements, stacks1)
-    part_one = ''.join([q[-1] for q in stacks1.values()])
-
-    stacks2 = deepcopy(stacks)
-    stacks2 = reduce(lambda x,y: move(x, y, reverse=False), movements, stacks2)
-    part_two = ''.join([q[-1] for q in stacks2.values()])
+    stacks2 = reduce(lambda x,y: move(x, y, reverse=False), movements, stacks)
+    yield ''.join([q[-1] for q in stacks2.values()])
 
 ## <a name="d06"></a> Day 06: Tuning Trouble
 
@@ -328,9 +324,28 @@ If you're trying to do both parts in one script, it should be noted that our mov
 
 Runtime: 2.001 ms  
 
-### Notes
+### Part One
 
-...  
+Today's problem is kind of disappointingly easy, as it's just asking us to do some basic string manipulation. Given a long string of characters, we need to find the first window of 4 unique characters. The simplest way to determine that would be to loop through the string, putting each group of 4 characters into a set, and then comparing the length of that set to the length of the window. I guess let's make a function that does that.
+
+    def find_marker(message: str, window: int) -> int:
+        for i in range(window, len(message)):
+            if len(set(message[i-window : i])) == window:
+                return i
+
+    message = aoc.read_data()
+    yield find_marker(message, window=4)
+
+And there we have it. If we want to get a little spicier, we can add some list comprehension to the function.
+
+    def find_marker(message: str, window: int) -> int:
+        return next(i for i in range(window, len(message)) if len(set(message[i-window:i])) == window)
+
+### Part Two
+
+We uhhh....just have to change the window size to 14...
+
+    yield find_marker(message, window=14)
 
 ## <a name="d07"></a> Day 07: No Space Left On Device
 
@@ -338,9 +353,104 @@ Runtime: 2.001 ms
 
 Runtime: 1.938 ms  
 
-### Notes
+### Part One
 
-...  
+Finally, something a bit more interesting! This time we're tasked with making a folder structure using the terminal output from a PC. There are definitely many ways to approach this, but I ended up taking a class-based approach, because classes are fun! The terminal will establish the existence of various files and directories, so let's represent those as `dataclasses`, starting with a simple `File`.
+
+    @dataclass
+    class File:
+        name: str
+        size: int
+
+The `Directory` object is going to be a little more complicated. It has to track not only its name, but the things within it. On top of that, a `Directory` must be able to navigate to its parent directory in the case of a `$cd ..` command. Lastly, in the case of a `$cd /` command, we have to navigate all the way back to the top.
+
+    @dataclass
+    class Directory:
+        name: str = field(default='')
+        parent: Directory = field(default=None, repr=False)
+        contents: dict[str, File|Directory] = field(init=False, repr=False, default_factory=dict)
+
+        def __getitem__(self, key: str) -> File | Directory:
+            if key == '..': return self.parent
+            if key == '/':  return self.top
+
+            if key not in self.contents:
+                self.contents = Directory(name=key, parent=self)
+            return self.contents[key]
+
+        @property
+        def top(self) -> Directory:
+            return list(self.parents())[-1]
+
+        def parents(self) -> Generator[Directory]:
+            level = self
+            yield level
+            while (level := level.parent) is not None:
+                yield level
+
+We can accomplish all of our navigation logic using the `__getitem__` override shown above. It handles our `$cd ..` and `$cd /` commands nice and cleanly, and if we try to navigate into a child directory that does not yet exist, it will be created and added to the contents of our current directory. The `parents()` function will iterate over each parent until it reaches `None` (meaning we've reached the top), and the `top` property is used to get that top level of the folder structure, which helps with `$cd /`.
+
+Next, we have to add a way to add things to the directory. Since our `$ls` output is a list of data in the format of either `dir <directory_name>` or `<file_size> <file_name>`, let's accept that list into our `add_content` function.
+
+    class Directory:
+        ...
+        def add_content(self, content: list[str]) -> Directory:
+            for line in content:
+                a, b = line.split()
+                if a == 'dir' and b not in self.contents:
+                    self.contents[b] = Directory(name=b, parent=self)
+                else:
+                    self.contents[b] = File(name=b, size=int(a))
+            return self
+
+We have now established enough to create the entire `Directory` tree, so let's parse the input and put it to action. The input is a series of commands that can be split on the string: `$ `. This automatically groups each command with its relevant data. Let's make a function that can then take these commands and make our `Directory` tree.
+
+    def build_tree(commands: list[str]) -> Directory:
+        cwd = Directory()
+        for cmd in commands:
+            if cmd.startswith('cd'):
+                cwd = cwd[cmd.split()[-1]]
+            elif cmd.startswith('ls'):
+                cwd = cwd.add_content(cmd.splitlines()[1:])
+        return cwd.top
+
+    commands = aoc.read_data().split('$ ')
+    top_level = build_tree(commands)
+
+Perfect! All that's left to do is calculate the size of each `Directory`. A few things worth noting here:
+* A directory's name is not necessarily unique. We need to find a way to get the full path of a directory.
+* A directory's size includes the sizes of all child directories.
+
+With these in mind, let's make a few more functions for our `Directory` class.
+
+    class Directory:
+        ...
+        @property
+        def path(self) -> str:
+            return '/' + '/'.join(reversed([x.name for x in self.parents()]))
+
+        @cached_property
+        def size(self) -> int:
+            return sum(x.size for x in self.contents.values())
+
+        def size_report(self) -> Counter[str]:
+            retval = Counter({self.path: self.size})
+            for child in self.contents.values():
+                if isinstance(child, Directory):
+                    retval |= child.size_report()
+            return retval
+
+    sizes = top_level.size_report()
+    yield sum(x for x in sizes.values() if x <= 100_000)
+
+The `path` property will get us the full name from top to bottom. The `size` property returns the sum of the size of all children. This works because `size` is a property on both `File` and `Directory` objects. Finally, the `size_report` function will recursively give a dictionary pairing each unique directory with its size. Last but not least, we just need to add up all the sizes that are less than 100,000.
+
+### Part Two
+
+Part two doesn't require us to make any drastic changes to our class structures (phew!). Instead, we just need to figure out the most efficient `Directory` to delete. Luckily, it's incredibly easy to get all of the information needed.
+
+    needed_space = 30_000_000 - (70_000_000 - sizes['/'])
+    yield min(x for x in sizes.values() if x >= needed_space)
 
 ## <a name="d08"></a> Day 08: Treetop Tree House
 
@@ -348,13 +458,118 @@ Runtime: 1.938 ms
 
 Runtime: ...  
 
-### Notes
+### Part One
 
-...  
+I can't believe it's day 8 and we're only just now breaking out numpy! Numpy is a fantastic and well-supported library for doing data analysis in python. If you aren't familiar with numpy, I unfortunately won't be going through **all** of the details here, but [here](https://numpy.org/doc/stable/user/quickstart.html) is a very helpful tutorial to get you started a bit.
+
+In today's problem, we're given a grid of tree heights, and we're asked to see which trees are visible from any edge (above, right, below, left). We can very easily convert our input into a 2d numpy array of ints.
+
+    trees = np.array(aoc.read_grid(), dtype=int)
+
+What we're really looking for is the rolling maximum from any edge. For instance,
+
+    Given:                                    We want:
+    30373                                     33377
+    25512                                     25555
+    65332    Looking from the left edge ->    66666
+    33549                                     33559
+    35390                                     35599
+
+Luckily, numpy has a function that can help us out here: `np.maximum.accumulate`. This will calculate the rolling maximum over a given array on a given axis (0 for vertical, 1 for horizontal). That alone won't give us an answer though. We need to know when any tree is higher than the tree before it. This means we want an array of booleans (`true` if the tree is visible, `false` if it is not). When looking from a given edge, the first row/column will always be visible. So given our example...
+
+    Given:                                    We want:
+    30373                                     TFFTF
+    25512                                     TTFFF
+    65332    Looking from the left edge ->    TFFFF
+    33549                                     TFTFT
+    35390                                     TTFTF
+
+For one edge (let's say from the top), this can be accomplished like so:
+
+    visible = np.full(trees.shape, False)
+    visible[0] = True
+    visible[1:] = trees[1:] > np.maximum.accumulate(trees, axis=0)[:-1]
+
+Different edges would require different slicing, which becomes kind of ugly. Luckily, numpy is there for us again with `np.rot90`, which allows us to rotate an array 90 degrees `n` times. If we always look from the top edge, but rotate our array before looking, we can actually check all four edges using the same logic.
+
+    def visible_from_edge(trees: NDArray, rot: int) -> NDArray:
+        ar = np.rot90(trees, rot)
+        visible = np.full(ar.shape, False)
+        visible[0] = True
+        visible[1:] = ar[1:] > np.maximum.accumulate(ar, axis=0)[:-1]
+        return np.rot90(visible, 4-rot)
+
+    visible = [visible_from_edge(trees, i) for i in range(4)]
+    yield np.count_nonzero(np.logical_or.reduce(visible))
+
+After calling `visible_from_edge` once for each edge, we will be left with 4 boolean arrays. Combining all of those using a bitwise `|` will tell us all trees that are visible.
+
+### Part Two
+
+For part two, we now have to find the tree within the grid that can see the most trees around it. This definitely is more complicated, but we can use a similar approach. Let's start by looking down. For any given tree, the count of visible trees below is going to be the number of trees from the rolling maximum that are less than the value of the tree in question. For instance, let's look at the second row of our example...
+
+    Given:                        Rolling Max:     Visible:
+    30373                         -----            -----
+    25512 <- Look down from here  -----            -----
+    65332                         65332            TTTTT
+    33549                         65549            FFTFF
+    35390                         65599            FFFFF
+
+Once again, the first row below that is all visible no matter what, but past that the only visible trees are the ones were `tree > rolling_max(column)`. We can apply this and then once again use the rotation strategy from part one to keep our focus only looking down.
+
+    def visible_from_tree(trees: NDArray, rot: int) -> NDArray:
+        ar = np.rot90(trees, rot)
+        def _on_row(i: int):
+            # Get the row (and beyond) in question from the array
+            chop = ar[i:]
+
+            # Get the rolling maximum below this row
+            rolling_max = np.maximum.accumulate(chop[1:], axis=0)
+
+            # Count all trees below where the rolling max is less than the current tree
+            count = np.sum(chop[0] > rolling_max, axis=0)
+
+            # Correct for the bottom row (no visible trees)    
+            return np.where(count < len(chop)-1, count+1, count)   
+        
+        vision = np.array([_on_row(i) for i in range(len(ar))])
+        return np.rot90(vision, 4-rot)
+
+The `_on_row` sub-function will get the number of visible trees when looking down from any given row.
 
 ## <a name="d09"></a> Day 09: Rope Bridge
 
 [Task description](https://adventofcode.com/2022/day/9) - [Complete solution](day09/rope_bridge.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d10"></a> Day 10: Cathode-Ray Tube
+
+[Task description](https://adventofcode.com/2022/day/10) - [Complete solution](day10/cathode-ray_tube.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d11"></a> Day 11: Monkey In The Middle
+
+[Task description](https://adventofcode.com/2022/day/11) - [Complete solution](day11/monkey_in_the_middle.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d12"></a> Day 12: Hill Climbing Algorithm
+
+[Task description](https://adventofcode.com/2022/day/12) - [Complete solution](day12/hill_climbing_algorithm.py) - [Back to top](#top)  
 
 Runtime: ...  
 
