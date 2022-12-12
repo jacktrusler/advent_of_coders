@@ -1,11 +1,7 @@
 import { readFileSync } from "fs";
-const answer = {
-  part1: 0,
-  part2: 0,
-}
+const answers = { part1: 0, part2: [], }
 
 function setCharAt(str, index, chr): string {
-  console.log(str, "|", index, "|", chr)
   if (index > str.length - 1) return str;
   return str.substring(0, index) + chr + str.substring(index + 1);
 }
@@ -13,32 +9,33 @@ function setCharAt(str, index, chr): string {
 function day10(filePath: string) {
   const allOps = readFileSync(filePath).toString().replace(/\n$/, "").split('\n')
 
-  ////Part 1
-  //let x = 1;
-  //let clockCycle = 0;
-  //let loaded = false;
-  //let clockStoppers = [20, 60, 100, 140, 180, 220]
-  //let answer = 0;
-  //for (const operation of allOps) {
-  //  const [op, number] = operation.split(' ')
-  //  if (op === 'noop') {
-  //    clockCycle++
-  //    if (clockStoppers.includes(clockCycle)) { answer = answer + (clockCycle * x) }
-  //  }
-  //  if (op === 'addx') {
-  //    if (!loaded) {
-  //      clockCycle++
-  //      if (clockStoppers.includes(clockCycle)) { answer = answer + (clockCycle * x) }
-  //      loaded = true;
-  //    }
-  //    if (loaded) {
-  //      clockCycle++
-  //      if (clockStoppers.includes(clockCycle)) { answer = answer + (clockCycle * x) }
-  //      x += Number(number)
-  //      loaded = false;
-  //    }
-  //  }
-  //}
+  //Part 1
+  let y = 1;
+  let clockCycle = 0;
+  let loaded = false;
+  let clockStoppers = [20, 60, 100, 140, 180, 220]
+  let answer = 0;
+  for (const operation of allOps) {
+    const [op, number] = operation.split(' ')
+    if (op === 'noop') {
+      clockCycle++
+      if (clockStoppers.includes(clockCycle)) { answer = answer + (clockCycle * y) }
+    }
+    if (op === 'addx') {
+      if (!loaded) {
+        clockCycle++
+        if (clockStoppers.includes(clockCycle)) { answer = answer + (clockCycle * y) }
+        loaded = true;
+      }
+      if (loaded) {
+        clockCycle++
+        if (clockStoppers.includes(clockCycle)) { answer = answer + (clockCycle * y) }
+        y += Number(number)
+        loaded = false;
+      }
+    }
+  }
+  answers.part1 = answer
 
   //Part 2
   const SCREEN_HEIGHT = 6;
@@ -82,8 +79,9 @@ function day10(filePath: string) {
       if (clockCyclep2 === SCREEN_WIDTH + 1) { r++; clockCyclep2 = 1; }
     }
   }
-  console.log(crtScreen)
+  answers.part2 = crtScreen
+  console.log(answers)
+  return answers
 }
 
-
-day10('./day10.txt')
+export { day10 }

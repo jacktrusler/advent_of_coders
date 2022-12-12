@@ -49,9 +49,7 @@ function buildBoard(directions: string[]) {
   return { board, sX, sY };
 }
 
-function day9(filePath: string) {
-  const allMoves = readFileSync(filePath).toString().replace(/\n$/, "").split('\n')
-  const { board, sX, sY } = buildBoard(allMoves)
+function snakeGame(allMoves, board, sX, sY, tailIndex) {
   // Head and Tail(s) indicies
   let hIy = sY, hIx = sX
   const snakeMaker = () => [
@@ -110,16 +108,28 @@ function day9(filePath: string) {
           snake[i + 1][1]--
         }
       }
-      //Part 1
-      // board[snake[1][0]][snake[1][1]] = board[snake[1][0]][snake[1][1]] + 1;
-      //Part 2
-      board[snake[9][0]][snake[9][1]] = board[snake[9][0]][snake[9][1]] + 1;
+      board[snake[tailIndex][0]][snake[tailIndex][1]] =
+        board[snake[tailIndex][0]][snake[tailIndex][1]] + 1;
     }
   }
-  console.log(board
+  return (board
     .map((row) => row.filter((num) => num > 0))
     .reduce((acc, row) => acc + row.length, 0)
   )
 }
 
-day9("./day9.txt")
+function day9(filePath: string) {
+  const allMoves = readFileSync(filePath).toString().replace(/\n$/, "").split('\n')
+  {
+    const { board, sX, sY } = buildBoard(allMoves)
+    answer.part1 = snakeGame(allMoves, board, sX, sY, 1)
+  }
+  {
+    const { board, sX, sY } = buildBoard(allMoves)
+    answer.part2 = snakeGame(allMoves, board, sX, sY, 9)
+  }
+  console.log(answer)
+  return answer;
+}
+
+export { day9 }

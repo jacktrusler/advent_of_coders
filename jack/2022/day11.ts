@@ -59,12 +59,8 @@ function monkeyBusiness(rounds: number, part: 1 | 2, m): number {
           worryLevel = worryLevel + parseInt(monkey.stress[2])
         }
 
-        if (part === 1) {
-          worryLevel = Math.floor((worryLevel) / 3);
-        }
-        if (part === 2) {
-          worryLevel = worryLevel % modularity
-        }
+        if (part === 1) { worryLevel = Math.floor((worryLevel) / 3); }
+        if (part === 2) { worryLevel = worryLevel % modularity; }
 
         worryLevel % monkey.test === 0
           ? monkeys[monkey.successMonkey].items.push(worryLevel)
