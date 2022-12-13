@@ -9,6 +9,7 @@ import { day8 } from "./day08"
 import { day9 } from "./day09"
 import { day10 } from "./day10"
 import { day11 } from "./day11"
+import { day12 } from "./day12"
 
 const t0 = performance.now();
 day1("./day01.txt")
@@ -22,5 +23,6 @@ day8("./day08.txt")
 day9("./day09.txt")
 day10("./day10.txt")
 day11("./day11.txt")
+day12("./day12.txt")
 const t1 = performance.now();
 console.log(`all days took ${t1 - t0} milliseconds.`)
