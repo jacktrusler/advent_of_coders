@@ -1,9 +1,6 @@
 def solution():
     input = "Day 3/input.txt"
 
-    elf_1 = []
-    elf_2 = []
-    elf_3 = []
     elf_groups = []
 
     with open(input) as f:
