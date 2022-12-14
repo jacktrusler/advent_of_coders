@@ -2,14 +2,26 @@ import { readFileSync } from "fs";
 
 const answer = { part1: 0, part2: 0, }
 
-function flattenArr(arr: any): number[] {
-  if (Array.isArray(arr)) {
-    let newArr = arr.flat()
-    if (typeof newArr[0] !== 'number' && typeof newArr[0] === undefined) {
-      flattenArr(newArr)
-    }
+// function flattenArr(arr: any): number[] {
+//   if (Array.isArray(arr)) {
+//     let newArr = arr.flat()
+//     if (typeof newArr[0] !== 'number' && typeof newArr[0] === undefined) {
+//       flattenArr(newArr)
+//     }
+//   }
+//   return arr;
+// }
+
+function arrayMaker(left, right): { left: any[], right: any[] } {
+  if (Array.isArray(left) && Array.isArray(right)) {
+    return { left, right }
   }
-  return arr;
+  if (typeof left === 'number' && Array.isArray(right)) {
+    arrayMaker([left], right)
+  }
+  if (typeof right === 'number' && Array.isArray(left)) {
+    arrayMaker(left, [right])
+  }
 }
 
 function day13(filePath: string) {
@@ -17,30 +29,22 @@ function day13(filePath: string) {
   const inputPairs: string[] = input.map((input) => input.split('\n')).flat()
   const pairs: any[] = inputPairs.map((str) => JSON.parse(str))
 
-  let totalIndexes = 0;
   function tester(lhs: any[], rhs: any[]) {
+    //lhs must be shorter
     if (rhs.length < lhs.length) return false;
 
-    let lhItem;
-    let rhItem;
     for (let j = 0; j < lhs.length; j++) {
-      // if lhs undefined skip
-      if (lhs[j] === undefined) continue;
-      if (Array.isArray(lhs[j]) && rhs[j] === undefined) {
-        return false
-      } else if (Array.isArray(lhs[j]) && rhs[j]) {
-        lhItem = flattenArr(lhs[j])
-      } else {
-        lhItem = [lhs[j]];
-      }
-      if (Array.isArray(rhs[j])) {
-        rhItem = flattenArr(rhs[j])
-      } else {
-        rhItem = [rhs[j]];
-      }
-      for (let k = 0; k < lhItem.length; k++) {
-        if (lhItem[k] === undefined || rhItem[k] === undefined) break;
-        if (lhItem[k] > rhItem[k]) return false;
+      if (Array.isArray(lhs)) {
+        if (typeof lhs[j] === 'number' && typeof rhs[j] === 'number') {
+          if (lhs[j] > rhs[j]) return false;
+          continue;
+        }
+        const { left, right } = arrayMaker(lhs[j], rhs[j])
+        for (let k = 0; k < Math.max(left.length, right.length); k++) {
+          if (typeof left[k] === 'number' && typeof right[k] === 'number') {
+            if (lhs[j] > rhs[j]) return false;
+          }
+        }
       }
     }
     return true;
