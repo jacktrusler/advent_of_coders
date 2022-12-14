@@ -1,3 +1,4 @@
+import random
 from time import perf_counter
 import numpy as np
 import queue
@@ -43,11 +44,18 @@ class grid:
         (x, y) = node_coord
         return self.grid[y][x]
 
+    def manhattan(self, node1, node2):
+        (x1, y1) = node1.grid_pos()
+        (x2, y2) = node2.grid_pos()
+        return abs(x2-x1) + abs(y2-y1)
+
 def main():
     with open(file="inputs.txt", mode="r", encoding="utf-8") as f_elevation:
         elevations = f_elevation.readlines()
         (the_grid, start_node, end_node) = build_elevation_nodes(elevations)
         paths = breath_first_search(the_grid, start_node, end_node)
+        paths = djikstra(the_grid, start_node, end_node)
+        paths = jostar(the_grid, start_node, end_node)
 
 def breath_first_search(the_grid, start_node, end_node):
     the_list = set()
@@ -55,8 +63,12 @@ def breath_first_search(the_grid, start_node, end_node):
     comes_from = dict()
     to_examine.put(start_node)
     the_list.add(start_node.grid_pos())
+    steps = 1
     while not to_examine.empty():
         examine_node = to_examine.get()
+        steps += 1
+        if examine_node.grid_pos() == end_node.grid_pos():
+            break
         #print(f"Visiting node {examine_node.grid_pos()}")
         adjacents = the_grid.get_adjacent(examine_node)
         for adjacency in adjacents:
@@ -69,10 +81,58 @@ def breath_first_search(the_grid, start_node, end_node):
     while cursor.grid_pos() != start_node.grid_pos(): 
         path_back.append(cursor.grid_pos())
         cursor = comes_from[cursor.grid_pos()]
-    print(len(path_back))
+    print(len(path_back), "in ", steps, " steps")
 
-    
+def djikstra(the_grid, start_node, end_node):
+    the_list = set()
+    to_examine = queue.PriorityQueue();
+    comes_from = dict()
+    steps = 1
+    to_examine.put((0, random.random(), start_node))
+    the_list.add(start_node.grid_pos())
+    while not to_examine.empty():
+        (cost, _,examine_node) = to_examine.get()
+        steps += 1
+        adjacents = the_grid.get_adjacent(examine_node)
+        for adjacent in adjacents:
+            if adjacent.grid_pos() not in the_list:
+                the_list.add(adjacent.grid_pos())
+                adj_cost = cost +1 
+                to_examine.put((adj_cost, random.random(), adjacent))
+                comes_from[adjacent.grid_pos()] = examine_node
+    cursor = end_node 
+    path_back = []
+    while cursor.grid_pos() != start_node.grid_pos(): 
+        path_back.append(cursor.grid_pos())
+        cursor = comes_from[cursor.grid_pos()]
+    print(len(path_back), "in ", steps, " steps")
 
+def jostar(the_grid, start_node, end_node):
+    the_list = set()
+    to_examine = queue.PriorityQueue();
+    comes_from = dict()
+    steps = 1
+    manhattan = the_grid.manhattan(start_node, end_node)
+    to_examine.put((manhattan, random.random(), start_node))
+    the_list.add(start_node.grid_pos())
+    while not to_examine.empty():
+        (cost , _, examine_node) = to_examine.get()
+        steps += 1
+        if examine_node.grid_pos() == end_node.grid_pos():
+            break
+        adjacents = the_grid.get_adjacent(examine_node)
+        for adjacent in adjacents:
+            if adjacent.grid_pos() not in the_list:
+                the_list.add(adjacent.grid_pos())
+                manhattan = the_grid.manhattan(adjacent, end_node)
+                to_examine.put((manhattan + cost, random.random(), adjacent))
+                comes_from[adjacent.grid_pos()] = examine_node
+        cursor = end_node 
+        path_back = []
+    while cursor.grid_pos() != start_node.grid_pos(): 
+        path_back.append(cursor.grid_pos())
+        cursor = comes_from[cursor.grid_pos()]
+    print(len(path_back), "in ", steps, " steps")
 
 
 
