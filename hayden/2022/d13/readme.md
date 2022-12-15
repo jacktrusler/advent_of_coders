@@ -1,0 +1,1 @@
+[Gigantamaximally Bad](https://bogleech.com/pokemon/sprites/garbodor-gigantamax.gif)
