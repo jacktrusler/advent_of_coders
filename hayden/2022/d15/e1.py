@@ -14,6 +14,16 @@ class Sensor:
         self.distance = manhattan(sensor, beacon)
     def in_coverage(self, point):
         return manhattan(self.pos, point) <= self.distance
+    def intersection_on(self, y):
+        intersection = set()
+        if y <= self.y + self.distance and y >= self.y - self.distance:
+            d_2_g = self.distance - manhattan(self.pos, (self.x, y))
+            intersection.add((self.x, y))
+            while d_2_g > 0:
+                intersection.add((self.x+d_2_g, y))
+                intersection.add((self.x-d_2_g, y))
+                d_2_g-=1
+        return intersection
 
 def main():
     with open("inputs.txt", mode="r", encoding='UTF8') as f_locations:
@@ -30,34 +40,13 @@ def main():
             fixed_ents.add(senpoint)
             fixed_ents.add(beaconpt)
         row = 2000000
-        l_max = search(row, sensors, fixed_ents, left=True)
-        r_max = search(row,  sensors, fixed_ents)
-        print(r_max - l_max)
-
-
-def search(row, sensors, fixed_ents, left=False):
-    l_max = 0
-    incr = 1
-    skips = 0
-    if left:
-        incr = -1
-    in_sight = True
-    while in_sight:
-        seen_once = False
+        intersections = set()
         for sensor in sensors:
-            if (row, l_max) in fixed_ents:
-                print("skip it")
-                skips += 1
-                seen_once = True
-                break
-            if sensor.in_coverage((row, l_max)):
-                seen_once = True
-                break
-        if not seen_once:
-            in_sight = False
-            break
-        l_max += incr
-    return l_max - skips
+            intersections = intersections.union(sensor.intersection_on(row))
+        # Get left half to remove fixed ents
+
+        print(len(intersections.difference(fixed_ents)))
+
 
 if __name__ == "__main__":
     t_start = perf_counter()
