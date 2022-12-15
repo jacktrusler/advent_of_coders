@@ -2,60 +2,66 @@ import { readFileSync } from "fs";
 
 const answer = { part1: 0, part2: 0, }
 
-// function flattenArr(arr: any): number[] {
-//   if (Array.isArray(arr)) {
-//     let newArr = arr.flat()
-//     if (typeof newArr[0] !== 'number' && typeof newArr[0] === undefined) {
-//       flattenArr(newArr)
-//     }
-//   }
-//   return arr;
-// }
-
-function arrayMaker(left, right): { left: any[], right: any[] } {
-  if (Array.isArray(left) && Array.isArray(right)) {
-    return { left, right }
-  }
-  if (typeof left === 'number' && Array.isArray(right)) {
-    arrayMaker([left], right)
-  }
-  if (typeof right === 'number' && Array.isArray(left)) {
-    arrayMaker(left, [right])
-  }
-}
+type Packet = number | Packet[]
+type PacketOrder = 'ordered' | 'unordered' | 'equal'
 
 function day13(filePath: string) {
   const input = readFileSync(filePath).toString().replace(/\n$/, "").split('\n\n')
   const inputPairs: string[] = input.map((input) => input.split('\n')).flat()
-  const pairs: any[] = inputPairs.map((str) => JSON.parse(str))
+  const packets: Packet[] = inputPairs.map((str) => JSON.parse(str))
 
-  function tester(lhs: any[], rhs: any[]) {
-    //lhs must be shorter
-    if (rhs.length < lhs.length) return false;
-
-    for (let j = 0; j < lhs.length; j++) {
-      if (Array.isArray(lhs)) {
-        if (typeof lhs[j] === 'number' && typeof rhs[j] === 'number') {
-          if (lhs[j] > rhs[j]) return false;
-          continue;
-        }
-        const { left, right } = arrayMaker(lhs[j], rhs[j])
-        for (let k = 0; k < Math.max(left.length, right.length); k++) {
-          if (typeof left[k] === 'number' && typeof right[k] === 'number') {
-            if (lhs[j] > rhs[j]) return false;
-          }
+  function tester(lhs: Packet, rhs: Packet): PacketOrder {
+    if (typeof lhs === 'number' && typeof rhs === 'number') {
+      if (rhs < lhs) return 'unordered'
+      if (lhs < rhs) return 'ordered'
+    }
+    if (Array.isArray(lhs) && Array.isArray(rhs)) {
+      for (let i = 0; i < Math.max(lhs.length, rhs.length); i++) {
+        if (lhs.length === i) return 'ordered'
+        if (rhs.length === i) return 'unordered'
+        const answer = tester(lhs[i], rhs[i])
+        if (answer !== 'equal') {
+          return answer
         }
       }
     }
-    return true;
+    if (Array.isArray(lhs) && !Array.isArray(rhs)) {
+      return tester(lhs, [rhs])
+    }
+    if (!Array.isArray(lhs) && Array.isArray(rhs)) {
+      return tester([lhs], rhs)
+    }
+    return 'equal'
   }
 
-
-  for (let i = 0; i < pairs.length; i = i + 2) {
-    let lhs = pairs[i];
-    let rhs = pairs[i + 1];
-    console.log(tester(lhs, rhs));
+  // Part 1
+  let finalIndex = 0;
+  for (let i = 0; i < packets.length; i = i + 2) {
+    let lhs = packets[i];
+    let rhs = packets[i + 1];
+    if (tester(lhs, rhs) !== 'unordered') {
+      finalIndex = finalIndex + (i / 2 + 1)
+    }
   }
+  answer.part1 = finalIndex;
+
+  // Part 2
+  const insertedPackets = [[[2]], [[6]]]
+  packets.push(insertedPackets[0])
+  packets.push(insertedPackets[1])
+  packets.sort((lhs, rhs) => {
+    const order = tester(lhs, rhs)
+    if (order === 'unordered') {
+      return 1;
+    }
+    return -1;
+  })
+
+  const findInserted = (packets.indexOf(insertedPackets[0]) + 1) * (packets.indexOf(insertedPackets[1]) + 1)
+  answer.part2 = findInserted
+
+  console.log(answer);
+  return answer;
 }
 
-day13('./day13small.txt')
+export { day13 }

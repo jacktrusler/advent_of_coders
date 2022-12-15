@@ -10,10 +10,9 @@ import { day9 } from "./day09"
 import { day10 } from "./day10"
 import { day11 } from "./day11"
 import { day12 } from "./day12"
-import { recurse } from "./recursin"
+import { day13 } from "./day13"
 
 const t0 = performance.now();
-recurse(5)
 day1("./day01.txt")
 day2("./day02.txt")
 day3("./day03.txt")
@@ -26,5 +25,6 @@ day9("./day09.txt")
 day10("./day10.txt")
 day11("./day11.txt")
 day12("./day12.txt")
+day13("./day13.txt")
 const t1 = performance.now();
 console.log(`all days took ${t1 - t0} milliseconds.`)
