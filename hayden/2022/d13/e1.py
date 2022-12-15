@@ -1,6 +1,6 @@
 from time import perf_counter
 import queue
-import re
+import json
 
 def main():
     with open(file="inputs.txt", mode="r", encoding="utf-8") as f_data:
@@ -12,60 +12,42 @@ def main():
             [top, bottom] = pair.split("\n")
             lhs = parserino(top)
             rhs = parserino(bottom)
-            print(f"Pair {indice}")
-            if drain_loop(lhs, rhs):
-                print("In Order")
+            result = drain_loop(lhs, rhs);
+            if result:
                 sum_of_indices += indice
-            else:
-                print("Not in order")
+                
         print(sum_of_indices)
 
 
 def drain_loop(lhs, rhs):
-    l_test = None
-    r_test = None
-    while (not lhs.empty() or l_test is not None) and (not rhs.empty() or r_test is not None):
-        if not l_test:
-            l_test = lhs.get()
-        if not r_test:
-            r_test = rhs.get()
-        print(f"Comparing {l_test} to {r_test}")
-        jump_to_head = False
-        if l_test == "noop":
-            l_test = None
-            jump_to_head = True
-        if r_test == "noop":
-            r_test = None
-            jump_to_head = True
-        if jump_to_head:
-            print("Jumping to head because of no-op")
-            continue
-        determined = None
-        if (l_test < r_test):
-            print("Left less than Right, in order")
-            determined = True
-        if (l_test > r_test):
-            print("Left larger tahn Right, incorrect")
-            determined = False
-        l_test = None
-        r_test = None
-        if determined is not None:
-            return determined
-    if rhs.empty():
+    while len(lhs) != 0 and len(rhs) != 0:
+        result = None
+        l_test = lhs.pop(0)
+        r_test = rhs.pop(0)
+        if isinstance(l_test, list) and not isinstance(r_test,list):
+            r_test = [r_test]
+            result = drain_loop(l_test, r_test)
+        elif isinstance(r_test, list) and not isinstance(l_test,list):
+            l_test = [l_test]
+            result = drain_loop(l_test, r_test)
+        elif isinstance(l_test,list) and isinstance(r_test, list):
+            result = drain_loop(l_test, r_test)
+        elif l_test > r_test:
+            result = False
+        elif l_test < r_test:
+            result = True
+        if result is not None:
+            return result
+    if len(rhs) < len(lhs):
         return False
-    return True
+    if len(lhs) < len(rhs):
+        return True
+    return None
 
 
 
 def parserino(line):
-    the_q = queue.Queue()
-    matches = re.findall("(\d|\[)",line)
-    for match in matches:
-        if match == "[":
-            the_q.put("noop")
-        else:
-            the_q.put(int(match))
-    return the_q
+    return json.loads(line)
     
         
 
