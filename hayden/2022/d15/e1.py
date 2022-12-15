@@ -21,7 +21,7 @@ def main():
         f_locations.close()
         sensors = []
         for locstr in locstrs:
-            [s_x,s_y,b_x,b_y] = re.findall("(\d)+", locstr)
+            [s_x,s_y,b_x,b_y] = re.findall("(-?\d)+", locstr)
             senpoint = (int(s_x), int(s_y))
             beaconpt = (int(b_x), int(b_y))
             sensor = Sensor(sensor=senpoint, beacon=beaconpt)
@@ -39,10 +39,16 @@ def search(row, sensors, left=False):
         incr = -1
     in_sight = True
     while in_sight:
+        seen_once = False
         for sensor in sensors:
-            if not sensor.in_coverage((row, l_max)):
-                in_sight = False
-            l_max += incr
+            print(f"Checking coverage {row, l_max}")
+            if sensor.in_coverage((row, l_max)):
+                print(f"Covered by {sensor.pos}")
+                seen_once = True
+                break
+        if not seen_once:
+            in_sight = False
+        l_max += incr
     return l_max
 
 if __name__ == "__main__":
