@@ -601,9 +601,180 @@ Runtime: ...
 
 [Task description](https://adventofcode.com/2022/day/15) - [Complete solution](day15/beacon_exclusion_zone.py) - [Back to top](#top)  
 
-Runtime: ...  
+Runtime: 0.715 ms  
 
-### Notes
+### Part One
 
-...  
+Today's problem is deceptively simple. Given a series of sensors and their closest beacons in an xy-plane, we are asked to find how many points along a given line are being read by the sensors. Based on the example input, one might think this is simply a case of finding all of the points that the sensor reads with a given y-value, and then combining them all into a set. However, after looking at the real input, you'll find that our x and y values are far too large to get away with that strategy in a timely manner.
 
+Let's start by looking at one example sensor and beacon combo. We'll say our sensor `S` is at `(5, 4)` and our beacon `B` is at `(4, 6)`
+
+<img src="day15/img/sensor_beacon.png" width="50%"/>
+
+The range `r` of the sensor can be determined by the manhattan distance from the sensor to its closest beacon. This is just a simple distance formula:
+
+$$r = abs(B_x - S_x) + (B_y - S_y)$$
+
+In this case, our distance is `3`. Using the sensor's range, we can draw a diamond around the it representing the range of points that it is scanning.
+
+<img src="day15/img/diamond.png" width="50%"/>
+
+Given some line `y`, we must then calculate where this diamond crosses `y`. The first step is to calculate the distance of the sensor from that line, `d`. This can be pretty easily found using our distance formula
+
+$$d = abs(y - S_y)$$
+
+For example, let's use `y=3`. In this case, our `d` value would be `abs(3 - 4) = 1`
+
+<img src="day15/img/range.png" width="50%"/>
+
+The s values of the two points where we cross this line can be calculated using all of the values mentioned above:
+
+$$x_1 = S_x - (r-d)$$
+$$x_2 = S_x + (r-d)$$
+
+<img src="day15/img/intersect.png" width="50%"/>
+
+Those two `x` values and all values within them are being scanned by this diamond. The same calculations can then be done on each of the other diamonds. Our answer will be the combinations of each of these ranges. Let's start applying this to some coding. First, we need a distance formula.
+
+    Point = tuple[int, int]
+
+    def dist(p1: Point, p2: Point) -> int:
+        return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
+
+Next, we need a way to represent all of these sensors. Let's just make a simple class that can carry all this information
+
+    @dataclass
+    class Sensor:
+        loc: Point
+        closest_beacon: Point = field(repr=False)
+        range: int = field(init=False, default=0)
+
+        def __post_init__(self):
+            self.range = dist(self.loc, self.closest_beacon)
+    
+    sensors = [Sensor.from_string(line) for line in aoc.read_lines()]
+
+We'll also want a function that can determine the range of points each sensor crosses a given line at. Some of our sensors will not cross the given y value. In these cases, we'll just return `None`. When getting our ranges, we'll have to be careful to filter over these `None` values.
+
+    class Sensor:
+        ...
+
+        def cross_row(self, y: int) -> tuple[int, int]:
+            dist_from_row = dist(self.loc, (self.loc[0], y))
+            if (_range := self.range - dist_from_row) < 0:
+                return None
+            return self.loc[0] - _range, self.loc[0] + _range
+
+    ranges = set(filter(lambda x: x is not None, [s.cross_row(row) for s in sensors]))
+
+Having all these ranges doesn't quite help us yet, though. Some of these ranges may be overlapping! For instance, if we have two ranges `(6, 10)` and `(8, 14)`, we would instead prefer to represent that as `(6, 14)`. Luckily, we can take a peek at [day 4](#d04) to figure out how to determine if the ranges are overlapping or not. In the function below, we'll recursively reduce our set of ranges to the bare minimum. The total number of points in these ranges can then be determined.
+
+    def reduce_ranges(ranges: set[tuple]) -> set[tuple]:
+        for r1, r2 in itertools.combinations(ranges, 2):
+            # No overlap
+            if r1[1] < r2[0] or r2[1] < r1[0]:
+                continue
+            # Range 1 fully contains Range 2
+            if r1[0] <= r2[0] and r1[1] >= r2[1]:
+                ranges.remove(r2)
+            # Range 2 fully contains Range 1
+            elif r2[0] <= r1[0] and r2[1] >= r1[1]:
+                ranges.remove(r1)
+            # Partial containment with Range 1 starting first
+            elif r1[0] <= r2[0]:
+                ranges = (ranges - {r1, r2}) | {(r1[0], r2[1])}
+            # Partial containment with Range 2 starting first
+            elif r2[0] <= r1[0]:
+                ranges = (ranges - {r1, r2}) | {(r2[0], r1[1])}
+            return reduce_ranges(ranges)
+        return ranges
+
+    ranges = reduce_ranges(ranges)
+    range_len = sum([r[1] - r[0] + 1 for r in ranges])
+
+However, this isn't quite it. Our sensors and beacons also occupy space, and they do not count toward this total. No biggie, though, we just have to subtract the number of sensors and beacons that *also* fall within our ranges.
+
+    class Sensor:
+        ...
+
+        def points(self) -> set[Point]:
+            return {self.loc, self.closest_beacon}
+
+    def within_ranges(ranges: set[tuple], x: int) -> bool:
+        for low, high in ranges:
+            if low <= x <= high:
+                return True
+        return False
+
+    occupied = set.union(*[s.points() for s in sensors])
+    occupied = [x for x in occupied if x[1] == row and within_ranges(ranges, x[0])]
+    part_one = range_len - len(occupied)
+
+### Part Two
+
+Phew! That was a lot! And part two...doesn't get much easier. There is one point in our xy-grid that is not being read by the scanners, and we have to find it. Well, believe it or not there's a reason I went on that geometry spiel for part one. Remember, that each sensor/beacon combo is essentially a diamond on our xy-grid.
+
+<img src="day15/img/diamond.png" width="300"/>
+
+We know a couple pieces of important information about our stress beacon
+- It is limited to a square with `xmin, ymin = 0` and `xmax, ymax = 4,000,000`
+- There is only **one** point not covered by a sensor in this grid
+
+Going back to the diamond representation, using this information, we can surmise that this point **must** be one space away from one (or more) diamonds. Visually, by this I mean that the point of interest could only be somewhere along the yellow line.
+
+<img src="day15/img/valid.png" width="50%"/>
+
+Of course, with multiple diamonds, you can't guarantee that any single one will contain the point. But we can say for sure that this will be true for one or more diamonds. Of course, this yellow line is just another diamond with range `r + 1`. Interestingly, we can actually represent the diamond as the cross-section of 4 lines. Because our diamonds are always going to have the same shape, these lines will always have slopes of `+1` or `-1`. Let's draw those lines, with blue representing a slope of `+1` and green representing a slope of `-1`.
+
+<img src="day15/img/lines.png" width="50%"/>
+
+No matter what, our point must lie along one of these four lines. Combining all of the diamonds together, we can also guarantee that our point will occur at the intersection at two of these lines (one with a slope of `+1` and one with a slope of `-1`). Below is a more complex example using our same grid as before. All of the positive slopes are represented in blue, and the negative slopes in green. The cross-section of these lines are our points of interest.
+
+<img src="day15/img/complex.png" width="50%"/>
+
+So how do we get these points? First we have to get the lines. Using the basic formula for a line, $y = mx + b$, we can find identify our four lines by their y-intercepts: $b_{TL}$ for the upper left line, $b_{TR}$ for the upper right line, $b_{BL}$ for the bottom left line, and $b_{BR}$ for the bottom right line. 
+
+<img src="day15/img/crosses.png" width="50%"/>
+
+We can solve for our y-intercepts using the points that these lines cross, like so:
+
+$$y = +1*x + b_{TL} => S_y + r + 1 = S_x + B_{TL} => B_{TL} = -S_x + S_y + r + 1$$
+$$y = -1*x + b_{TR} => S_y + r + 1 = -S_x + B_{TR} => B_{TR} = S_x + S_y + r + 1$$
+$$y = -1*x + b_{BL} => S_y - r - 1 = -S_x + B_{BL} => B_{BL} = S_x + S_y - r - 1$$
+$$y = +1*x + b_{BR} => S_y - r - 1 = S_x + B_{BR} => B_{BR} = -S_x + S_y - r - 1$$
+
+Now let's do it programmatically.
+
+    tl = { -s.loc[0] + s.loc[1] + s.range + 1 for s in sensors }
+    tr = { s.loc[0] + s.loc[1] + s.range + 1 for s in sensors }
+    bl = { s.loc[0] + s.loc[1] - s.range - 1 for s in sensors }
+    br = { -s.loc[0] + s.loc[1] - s.range - 1 for s in sensors }
+
+We then want to group our positive and negative slopes and find each intersection. Simply solve for x and y.
+
+    for pb, nb in itertools.product( tl & br, tr & bl ):
+        x = ( nb - pb ) // 2
+        y = x + pb
+
+However, there can be points that exist at these intersections that don't meet our requirements. We must check to see if:
+- The point is within our boundary and
+- The point is **not** within a sensor's range
+
+To check for the second condition, let's add a `__contains__` function to our sensor.
+
+    def __contains__(self, p: Point) -> bool:
+        return dist(self.loc, p) <= self.range
+    
+Almost there! Let's just wrap up our loop.
+
+    xy_min = 0
+    xy_max = 4_000_000
+    for pb, nb in itertools.product( tl & br, tr & bl ):
+        x = ( nb - pb ) // 2
+        y = x + pb
+
+        if not (xy_min <= x <= xy_max and xy_min <= y <= xy_max):
+            continue
+        if any([(x, y) in s for s in sensors]):
+            continue
+        part_two = x * 4_000_000 + y
