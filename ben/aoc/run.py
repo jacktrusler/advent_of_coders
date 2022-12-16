@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 import time
 
-from aoc.io import set_main_file
+from aoc.input import set_main_file
 from aoc.register import registered_functions
 
 

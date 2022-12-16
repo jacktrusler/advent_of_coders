@@ -15,7 +15,7 @@ class Monkey:
     test: int = field(repr=False)
     items: deque[int] = field(default_factory=deque)
     num_inspects: int = field(init=False, default=0, repr=False)
-    _worry: Callable[[int], int] = field(init=False, default_factory=lambda: None, repr=False)
+    _inspect: Callable[[int], int] = field(init=False, default_factory=lambda: None, repr=False)
     _throw_target: Callable[[bool], int] = field(init=False, default_factory=lambda: None, repr=False)
     _MODULO: ClassVar[int] = 1
 
@@ -26,32 +26,27 @@ class Monkey:
         while self.items:
             self.num_inspects += 1
             item = self.items.popleft()
-            item = (self._worry(item) // relief) % Monkey._MODULO
+            item = (self._inspect(item) // relief) % Monkey._MODULO
             target = self._throw_target(item % self.test == 0)
-            yield item, target
-
-    @staticmethod
-    def parse_op_string(op_str: str) -> Callable[[int], int]:
-        m = re.match(r'(.*) (\*|\+) (.*)', op_str).groups()
-        op = mul if m[1] == '*' else add
-        return lambda x: op(x if m[0] == 'old' else int(m[0]), x if m[2] == 'old' else int(m[2]))
+            yield item, target        
 
     @staticmethod
     def from_string(monkey_data: str) -> Monkey:
         regex =  r'Monkey (\d+):\n'
         regex += r'  Starting items: (.*)\n'
-        regex += r'  Operation: new = (.*)\n'
+        regex += r'  Operation: new = (.*) (\*|\+) (.*)\n'
         regex += r'  Test: divisible by (\d+)\n'
         regex += r'    If true: throw to monkey (\d+)\n'
         regex += r'    If false: throw to monkey (\d+)'
         m = re.match(regex, monkey_data).groups()
         
-        monkey_id, op_str, test_val = int(m[0]), m[2], int(m[3])
-        true_throw, false_throw = int(m[4]), int(m[5])
+        monkey_id, test_val = int(m[0]), int(m[5])
+        left, op, right = m[2], mul if m[3] == '*' else add, m[4]
+        true_throw, false_throw = int(m[6]), int(m[7])
         items = deque([int(x.strip()) for x in m[1].split(',')])
 
         retval = Monkey(id=monkey_id, test=test_val, items=items)
-        retval._worry = Monkey.parse_op_string(op_str)
+        retval._inspect = lambda x: op(x if left == 'old' else int(left), x if right == 'old' else int(right))
         retval._throw_target = lambda x: true_throw if x else false_throw
         return retval
 

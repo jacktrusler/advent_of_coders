@@ -21,9 +21,9 @@
 [![Day](https://badgen.net/badge/10/%E2%98%85%E2%98%85/green)](#d10)
 [![Day](https://badgen.net/badge/11/%E2%98%85%E2%98%85/green)](#d11)
 [![Day](https://badgen.net/badge/12/%E2%98%85%E2%98%85/green)](#d12)
-[![Day](https://badgen.net/badge/13/%E2%98%86%E2%98%86/gray)](#d13)
-[![Day](https://badgen.net/badge/14/%E2%98%86%E2%98%86/gray)](#d14)
-[![Day](https://badgen.net/badge/15/%E2%98%86%E2%98%86/gray)](#d15)
+[![Day](https://badgen.net/badge/13/%E2%98%85%E2%98%85/green)](#d13)
+[![Day](https://badgen.net/badge/14/%E2%98%85%E2%98%85/green)](#d14)
+[![Day](https://badgen.net/badge/15/%E2%98%85%E2%98%85/green)](#d15)
 [![Day](https://badgen.net/badge/16/%E2%98%86%E2%98%86/gray)](#d16)
 [![Day](https://badgen.net/badge/17/%E2%98%86%E2%98%86/gray)](#d17)
 [![Day](https://badgen.net/badge/18/%E2%98%86%E2%98%86/gray)](#d18)
@@ -468,7 +468,7 @@ In today's problem, we're given a grid of tree heights, and we're asked to see w
 
 What we're really looking for is the rolling maximum from any edge. For instance,
 
-    Given:                                    We want:
+    Given:                                    Rolling Max:
     30373                                     33377
     25512                                     25555
     65332    Looking from the left edge ->    66666
@@ -535,7 +535,7 @@ Once again, the first row below that is all visible no matter what, but past tha
         vision = np.array([_on_row(i) for i in range(len(ar))])
         return np.rot90(vision, 4-rot)
 
-The `_on_row` sub-function will get the number of visible trees when looking down from any given row.
+The `_on_row` sub-function will get the number of visible trees when looking down from any given row. This method does unfortunately force us to loop over each row twice and each column twice, which isn't as clean as our part one solution, but it's still the best that I could come up with, personally.
 
 ## <a name="d09"></a> Day 09: Rope Bridge
 
@@ -570,6 +570,36 @@ Runtime: ...
 ## <a name="d12"></a> Day 12: Hill Climbing Algorithm
 
 [Task description](https://adventofcode.com/2022/day/12) - [Complete solution](day12/hill_climbing_algorithm.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d13"></a> Day 13: Distress Signal
+
+[Task description](https://adventofcode.com/2022/day/13) - [Complete solution](day13/distress_signal.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d14"></a> Day 14: Regolith Reservoir
+
+[Task description](https://adventofcode.com/2022/day/14) - [Complete solution](day14/regolith_reservoir.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d15"></a> Day 15: Beacon Exclusion Zone
+
+[Task description](https://adventofcode.com/2022/day/15) - [Complete solution](day15/beacon_exclusion_zone.py) - [Back to top](#top)  
 
 Runtime: ...  
 
