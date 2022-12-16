@@ -605,7 +605,7 @@ Runtime: 0.715 ms
 
 ### Part One
 
-Today's problem is deceptively simple. Given a series of sensors and their closest beacons in an xy-plane, we are asked to find how many points along a given line are being read by the sensors. Based on the example input, one might think this is simply a case of finding all of the points that the sensor reads with a given y-value, and then combining them all into a set. However, after looking at the real input, you'll find that our x and y values are far too large to get away with that strategy in a timely manner.
+Today's problem is deceptive. Given a series of sensors and their closest beacons in an xy-plane, we are asked to find how many points along a given line are being read by the sensors. Based on the example input, one might think this is simply a case of finding all of the points that the sensor reads with a given y-value, and then combining them all into a set. However, after looking at the real input, you'll find that our x and y values are far too large to get away with that strategy in a timely manner.
 
 Let's start by looking at one example sensor and beacon combo. We'll say our sensor `S` is at `(5, 4)` and our beacon `B` is at `(4, 6)`
 
