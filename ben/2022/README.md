@@ -627,7 +627,7 @@ For example, let's use `y=3`. In this case, our `d` value would be `abs(3 - 4) =
 
 <img src="day15/img/range.png" width="50%"/>
 
-The s values of the two points where we cross this line can be calculated using all of the values mentioned above:
+The x values of the two points where we cross this line can be calculated using all of the values mentioned above:
 
 $$x_1 = S_x - (r-d)$$
 $$x_2 = S_x + (r-d)$$
