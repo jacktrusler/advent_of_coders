@@ -734,10 +734,14 @@ So how do we get these points? First we have to get the lines. Using the basic f
 
 We can solve for our y-intercepts using the points that these lines cross, like so:
 
-$$y = +1*x + b_{TL} => S_y + r + 1 = S_x + B_{TL} => B_{TL} = -S_x + S_y + r + 1$$
-$$y = -1*x + b_{TR} => S_y + r + 1 = -S_x + B_{TR} => B_{TR} = S_x + S_y + r + 1$$
-$$y = -1*x + b_{BL} => S_y - r - 1 = -S_x + B_{BL} => B_{BL} = S_x + S_y - r - 1$$
-$$y = +1*x + b_{BR} => S_y - r - 1 = S_x + B_{BR} => B_{BR} = -S_x + S_y - r - 1$$
+$$
+\begin{align}
+  y = +1*x + b_{TL} \implies& S_y + r + 1 = S_x + B_{TL} &&\implies B_{TL} = -S_x + S_y + r + 1 \\
+  y = -1*x + b_{TR} \implies& S_y + r + 1 = -S_x + B_{TR} &&\implies B_{TR} = S_x + S_y + r + 1 \\
+  y = -1*x + b_{BL} \implies& S_y - r - 1 = -S_x + B_{BL} &&\implies B_{BL} = S_x + S_y - r - 1 \\
+  y = +1*x + b_{BR} \implies& S_y - r - 1 = S_x + B_{BR} &&\implies B_{BR} = -S_x + S_y - r - 1
+\end{align}
+$$
 
 Now let's do it programmatically.
 
