@@ -24,13 +24,13 @@
 [![Day](https://badgen.net/badge/13/%E2%98%85%E2%98%85/green)](#d13)
 [![Day](https://badgen.net/badge/14/%E2%98%85%E2%98%85/green)](#d14)
 [![Day](https://badgen.net/badge/15/%E2%98%85%E2%98%85/green)](#d15)
-[![Day](https://badgen.net/badge/16/%E2%98%86%E2%98%86/gray)](#d16)
-[![Day](https://badgen.net/badge/17/%E2%98%86%E2%98%86/gray)](#d17)
-[![Day](https://badgen.net/badge/18/%E2%98%86%E2%98%86/gray)](#d18)
-[![Day](https://badgen.net/badge/19/%E2%98%86%E2%98%86/gray)](#d19)
-[![Day](https://badgen.net/badge/20/%E2%98%86%E2%98%86/gray)](#d20)
-[![Day](https://badgen.net/badge/21/%E2%98%86%E2%98%86/gray)](#d21)
-[![Day](https://badgen.net/badge/22/%E2%98%86%E2%98%86/gray)](#d22)
+[![Day](https://badgen.net/badge/16/%E2%98%85%E2%98%85/green)](#d16)
+[![Day](https://badgen.net/badge/17/%E2%98%85%E2%98%85/green)](#d17)
+[![Day](https://badgen.net/badge/18/%E2%98%85%E2%98%85/green)](#d18)
+[![Day](https://badgen.net/badge/19/%E2%98%85%E2%98%85/green)](#d19)
+[![Day](https://badgen.net/badge/20/%E2%98%85%E2%98%85/green)](#d20)
+[![Day](https://badgen.net/badge/21/%E2%98%85%E2%98%85/green)](#d21)
+[![Day](https://badgen.net/badge/22/%E2%98%85%E2%98%85/green)](#d22)
 [![Day](https://badgen.net/badge/23/%E2%98%86%E2%98%86/gray)](#d23)
 [![Day](https://badgen.net/badge/24/%E2%98%86%E2%98%86/gray)](#d24)
 [![Day](https://badgen.net/badge/25/%E2%98%86%E2%98%86/gray)](#d25)
@@ -738,10 +738,10 @@ So how do we get these points? First we have to get the lines. Using the basic f
 
 We can solve for our y-intercepts using the points that these lines cross, like so:
 
-$$y = +1*x + b_{TL} => S_y + r + 1 = S_x + B_{TL} => B_{TL} = -S_x + S_y + r + 1$$
-$$y = -1*x + b_{TR} => S_y + r + 1 = -S_x + B_{TR} => B_{TR} = S_x + S_y + r + 1$$
-$$y = -1*x + b_{BL} => S_y - r - 1 = -S_x + B_{BL} => B_{BL} = S_x + S_y - r - 1$$
-$$y = +1*x + b_{BR} => S_y - r - 1 = S_x + B_{BR} => B_{BR} = -S_x + S_y - r - 1$$
+$$y = 1x + b_{TL} => S_y + r + 1 = S_x + b_{TL} => b_{TL} = -S_x + S_y + r + 1$$
+$$y = -1x + b_{TR} => S_y + r + 1 = -S_x + b_{TR} => b_{TR} = S_x + S_y + r + 1$$
+$$y = -1x + b_{BL} => S_y - r - 1 = -S_x + b_{BL} => b_{BL} = S_x + S_y - r - 1$$
+$$y = 1x + b_{BR} => S_y - r - 1 = S_x + b_{BR} => b_{BR} = -S_x + S_y - r - 1$$
 
 Now let's do it programmatically.
 
@@ -751,6 +751,12 @@ Now let's do it programmatically.
     br = { -s.loc[0] + s.loc[1] - s.range - 1 for s in sensors }
 
 We then want to group our positive and negative slopes and find each intersection. Simply solve for x and y.
+
+$$y_i = x_i + b_p$$
+$$y_i = -x_i + b_n$$
+$$x_i + b_p = -x_i + b_n$$
+$$x_i = \frac{b_n - b_p}{2}$$
+$$y_i = \frac{b_n - b_p}{2} + b_p$$
 
     for pb, nb in itertools.product( tl & br, tr & bl ):
         x = ( nb - pb ) // 2
@@ -778,3 +784,73 @@ Almost there! Let's just wrap up our loop.
         if any([(x, y) in s for s in sensors]):
             continue
         part_two = x * 4_000_000 + y
+
+## <a name="d16"></a> Day 16: Proboscidea Volcanium
+
+[Task description](https://adventofcode.com/2022/day/16) - [Complete solution](day16/proboscidea_volcanium.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+## <a name="d17"></a> Day 17: Pyroclastic Flow
+
+[Task description](https://adventofcode.com/2022/day/17) - [Complete solution](day17/pyroclastic_flow.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d18"></a> Day 18: Boiling Boulders
+
+[Task description](https://adventofcode.com/2022/day/18) - [Complete solution](day18/boiling_boulders.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d19"></a> Day 19: Not Enough Minerals
+
+[Task description](https://adventofcode.com/2022/day/19) - [Complete solution](day19/not_enough_minerals.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d20"></a> Day 20: Grove Positioning System
+
+[Task description](https://adventofcode.com/2022/day/20) - [Complete solution](day20/grove_positioning_system.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d21"></a> Day 21: Monkey Math
+
+[Task description](https://adventofcode.com/2022/day/21) - [Complete solution](day21/monkey_math.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d22"></a> Day 22: Monkey Map
+
+[Task description](https://adventofcode.com/2022/day/22) - [Complete solution](day22/monkey_map.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+

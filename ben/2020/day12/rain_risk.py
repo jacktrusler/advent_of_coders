@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 import aoc
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Iterable
 
@@ -52,7 +52,7 @@ class Location:
 
 @dataclass(kw_only=True)
 class Ferry(ABC):
-    loc: Location = Location()
+    loc: Location = field(default_factory=Location)
 
     def move(self, commands: str | Iterable[str]) -> Ferry:
         commands = [commands] if isinstance(commands, str) else commands

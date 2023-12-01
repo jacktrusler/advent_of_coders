@@ -8,11 +8,11 @@ def create(year: int, day: int, name: str):
     year_md = year_dir.joinpath('README.md')
     if not year_dir.exists():
         year_dir.mkdir()
-        template_init = Path.cwd().joinpath('aoc/template_init.py')
+        template_init = Path.cwd().joinpath('aoc/templates/init.py')
         dest_init = year_dir.joinpath('__init__.py')
         shutil.copy(str(template_init), str(dest_init))
 
-        template_md = Path.cwd().joinpath('aoc/template_readme_year.md')
+        template_md = Path.cwd().joinpath('aoc/templates/readme_year.md')
         shutil.copy(str(template_md), str(year_md))
         with open(str(year_md), mode='r+') as f:
             contents = f.read().replace('<<year>>', str(year))
@@ -39,12 +39,12 @@ def create(year: int, day: int, name: str):
     with open(small_file, mode='w') as f: pass
     with open(data_file, mode='w') as f: pass
 
-    template_py = Path.cwd().joinpath('aoc/template_py.py')
+    template_py = Path.cwd().joinpath('aoc/templates/py.py')
     py_file = f'{name}.py'
     dest_py = day_dir.joinpath(py_file)
     shutil.copy(str(template_py), str(dest_py))
 
-    template_md = Path.cwd().joinpath('aoc/template_readme_day.md')
+    template_md = Path.cwd().joinpath('aoc/templates/readme_day.md')
     with open(str(template_md), mode='r') as f:
         day_contents = f.read().replace('<<year>>', str(year)).replace('<<day>>', str(day)).replace('<<day_str>>', day_str)
         day_contents = day_contents.replace('<<name>>', py_file).replace('<<title>>', name.replace('_', ' ').title())

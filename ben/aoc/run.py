@@ -50,6 +50,6 @@ if __name__ == '__main__':
     else:
         cwd = Path.cwd()
         dirs = [d.relative_to(cwd) for d in cwd.iterdir() if d.is_dir()]
-        dirs = [d for d in dirs if not str(d).startswith('.') and str(d) != 'aoc' and str(d) != '2021']
+        dirs = [d for d in dirs if not str(d).startswith('.') and str(d) != 'aoc']
         [__import__(str(d)) for d in dirs]
     run(**args)

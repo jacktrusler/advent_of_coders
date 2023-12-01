@@ -2,7 +2,6 @@ from __future__ import annotations
 import aoc
 from dataclasses import dataclass, field
 import itertools
-import math
 import re
 
 
@@ -50,10 +49,8 @@ def reduce_ranges(ranges: set[tuple]) -> set[tuple]:
             ranges.remove(r2)
         elif r2[0] <= r1[0] and r2[1] >= r1[1]:
             ranges.remove(r1)
-        elif r1[0] <= r2[0]:
-            ranges = (ranges - {r1, r2}) | {(r1[0], r2[1])}
-        elif r2[0] <= r1[0]:
-            ranges = (ranges - {r1, r2}) | {(r2[0], r1[1])}
+        else:
+            ranges = (ranges - {r1, r2}) | {(min(r1[0], r2[0]), max(r1[1], r2[1]))}
         return reduce_ranges(ranges)
     return ranges
 
@@ -69,7 +66,7 @@ def answers():
     data = 'data'
     sensors = [Sensor.from_string(line) for line in aoc.read_lines(data)]
 
-    row = 10 if data is 'small' else 2_000_000
+    row = 10 if data == 'small' else 2_000_000
     ranges = set(filter(lambda x: x is not None, [s.cross_row(row) for s in sensors]))
     ranges = reduce_ranges(ranges)
     occupied = set.union(*[s.points() for s in sensors])
