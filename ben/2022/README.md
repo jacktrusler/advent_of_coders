@@ -605,7 +605,7 @@ Runtime: 0.715 ms
 
 ### Part One
 
-Today's problem is deceptively simple. Given a series of sensors and their closest beacons in an xy-plane, we are asked to find how many points along a given line are being read by the sensors. Based on the example input, one might think this is simply a case of finding all of the points that the sensor reads with a given y-value, and then combining them all into a set. However, after looking at the real input, you'll find that our x and y values are far too large to get away with that strategy in a timely manner.
+Today's problem is deceptive. Given a series of sensors and their closest beacons in an xy-plane, we are asked to find how many points along a given line are being read by the sensors. Based on the example input, one might think this is simply a case of finding all of the points that the sensor reads with a given y-value, and then combining them all into a set. However, after looking at the real input, you'll find that our x and y values are far too large to get away with that strategy in a timely manner.
 
 Let's start by looking at one example sensor and beacon combo. We'll say our sensor `S` is at `(5, 4)` and our beacon `B` is at `(4, 6)`
 
@@ -627,10 +627,9 @@ For example, let's use `y=3`. In this case, our `d` value would be `abs(3 - 4) =
 
 <img src="day15/img/range.png" width="50%"/>
 
-The s values of the two points where we cross this line can be calculated using all of the values mentioned above:
+The x values of the two points where we cross this line can be calculated using all of the values mentioned above:
 
-$$x_1 = S_x - (r-d)$$
-$$x_2 = S_x + (r-d)$$
+$$x = S_x \pm (r-d)$$
 
 <img src="day15/img/intersect.png" width="50%"/>
 
@@ -680,12 +679,9 @@ Having all these ranges doesn't quite help us yet, though. Some of these ranges 
             # Range 2 fully contains Range 1
             elif r2[0] <= r1[0] and r2[1] >= r1[1]:
                 ranges.remove(r1)
-            # Partial containment with Range 1 starting first
-            elif r1[0] <= r2[0]:
-                ranges = (ranges - {r1, r2}) | {(r1[0], r2[1])}
-            # Partial containment with Range 2 starting first
-            elif r2[0] <= r1[0]:
-                ranges = (ranges - {r1, r2}) | {(r2[0], r1[1])}
+            # Partial containment
+            else:
+                ranges = (ranges - {r1, r2}) | {(min(r1[0], r2[0]), max(r1[1], r2[1]))}
             return reduce_ranges(ranges)
         return ranges
 
@@ -738,10 +734,14 @@ So how do we get these points? First we have to get the lines. Using the basic f
 
 We can solve for our y-intercepts using the points that these lines cross, like so:
 
-$$y = 1x + b_{TL} => S_y + r + 1 = S_x + b_{TL} => b_{TL} = -S_x + S_y + r + 1$$
-$$y = -1x + b_{TR} => S_y + r + 1 = -S_x + b_{TR} => b_{TR} = S_x + S_y + r + 1$$
-$$y = -1x + b_{BL} => S_y - r - 1 = -S_x + b_{BL} => b_{BL} = S_x + S_y - r - 1$$
-$$y = 1x + b_{BR} => S_y - r - 1 = S_x + b_{BR} => b_{BR} = -S_x + S_y - r - 1$$
+$$
+\begin{align}
+  y = +1*x + b_{TL} \implies& S_y + r + 1 = S_x + B_{TL} &&\implies B_{TL} = -S_x + S_y + r + 1 \\
+  y = -1*x + b_{TR} \implies& S_y + r + 1 = -S_x + B_{TR} &&\implies B_{TR} = S_x + S_y + r + 1 \\
+  y = -1*x + b_{BL} \implies& S_y - r - 1 = -S_x + B_{BL} &&\implies B_{BL} = S_x + S_y - r - 1 \\
+  y = +1*x + b_{BR} \implies& S_y - r - 1 = S_x + B_{BR} &&\implies B_{BR} = -S_x + S_y - r - 1
+\end{align}
+$$
 
 Now let's do it programmatically.
 
