@@ -1,5 +1,5 @@
 def readfile():
-    input = "Day 1/input.txt"
+    input = "input.txt"
     with open(input) as f:
         lines = f.readlines()
     acc = 0
