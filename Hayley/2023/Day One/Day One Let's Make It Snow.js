@@ -2,7 +2,7 @@
 const fs =require('fs')
 
 
-const lines = fs.readFileSync('./input', {encoding: 'utf8'}).split('\n')
+const lines = fs.readFileSync('./input.txt', {encoding: 'utf8'}).split('\n')
 let lineSum= 0
 
 
