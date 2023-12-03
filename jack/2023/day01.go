@@ -38,7 +38,7 @@ func determineSum(s []string) int {
 }
 
 func Day1() {
-	fileAsString := FileAsString("day1.txt")
+	fileAsString := FileAsString("./data/day01.txt")
 	fileAsString = strings.TrimSuffix(fileAsString, "\n")
 	stringArrP1 := strings.Split(fileAsString, "\n")
 

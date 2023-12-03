@@ -35,11 +35,11 @@ func checkMax(s []string, rxp *regexp.Regexp, maxVal int) int {
 			}
 		}
 	}
-	return max 
+	return max
 }
 
 func Day2() {
-	fileAsString := FileAsString("day2.txt")
+	fileAsString := FileAsString("./data/day02.txt")
 	fileAsString = strings.TrimSuffix(fileAsString, "\n")
 	allGames := strings.Split(fileAsString, "\n")
 
@@ -71,12 +71,12 @@ func Day2() {
 			numId, _ := strconv.Atoi(id)
 			idTotal += numId
 		}
-		
+
 		// Part 2
 		redMax := checkMax(reds, rgxDigits, Max_Red)
 		greenMax := checkMax(greens, rgxDigits, Max_Green)
 		blueMax := checkMax(blues, rgxDigits, Max_Blue)
-		
+
 		sumPower += redMax * greenMax * blueMax
 
 	}
