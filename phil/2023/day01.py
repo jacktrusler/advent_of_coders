@@ -2,7 +2,6 @@ from pathlib import Path
 import re
 import utils
 
-@utils.solver(Path(__file__).parent / "input" / "01.txt")
 def solve(raw_input: str):
     a = 0
     b = 0
@@ -19,4 +18,6 @@ def solve(raw_input: str):
     return a, b
 
 if __name__ == '__main__':
-    utils.report(*solve())
+    input_path = Path(__file__).parent / "input" / "01.txt"
+    utils.report(*utils.run_solution(solve, input_path))
+    

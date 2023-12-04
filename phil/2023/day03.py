@@ -4,7 +4,6 @@ import re
 import itertools
 import collections
 
-@utils.solver(Path(__file__).parent / "input" / "03.txt")
 def solve(raw_input: str):
     line_length = raw_input.index('\n') + 1
     grid = raw_input.splitlines()
@@ -31,4 +30,5 @@ def solve(raw_input: str):
     return a, b
 
 if __name__ == '__main__':
-    utils.report(*solve())
+    input_path = Path(__file__).parent / "input" / "03.txt"
+    utils.report(*utils.run_solution(solve, input_path))
