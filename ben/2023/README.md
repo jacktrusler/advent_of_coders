@@ -11,8 +11,8 @@
 
 [![Day](https://badgen.net/badge/01/%E2%98%85%E2%98%85/green)](#d01)
 [![Day](https://badgen.net/badge/02/%E2%98%85%E2%98%85/green)](#d02)
-[![Day](https://badgen.net/badge/03/%E2%98%86%E2%98%86/gray)](#d03)
-[![Day](https://badgen.net/badge/04/%E2%98%86%E2%98%86/gray)](#d04)
+[![Day](https://badgen.net/badge/03/%E2%98%85%E2%98%85/green)](#d03)
+[![Day](https://badgen.net/badge/04/%E2%98%85%E2%98%85/green)](#d04)
 [![Day](https://badgen.net/badge/05/%E2%98%86%E2%98%86/gray)](#d05)
 [![Day](https://badgen.net/badge/06/%E2%98%86%E2%98%86/gray)](#d06)
 [![Day](https://badgen.net/badge/07/%E2%98%86%E2%98%86/gray)](#d07)
@@ -200,6 +200,192 @@ for i, game_log in enumerate(aoc.read_lines(), start=1):
     if all(v <= TEST_CUBES[k] for k, v in max_cubes.items()):
         valid_game_total += i
     power += reduce(lambda x,y: x*y, max_cubes.values())
+```
+
+...  
+
+## <a name="d03"></a> Day 03: Gear Ratios
+
+[Task description](https://adventofcode.com/2023/day/3) - [Complete solution](day03/gear_ratios.py) - [Back to top](#top)  
+
+Runtime: 4.809 ms (in office)  
+
+### Part One
+
+Today's test has us searching over a grid of characters in an attempt to find `part numbers`. These can be identified as any number that is adjacent to a non-period, non-digit symbol. Adjacencies can include diagonal. In the example below, the part numbers have been highlighted.
+
+<img src="day03/img/part-numbers.png" width="15%"/>
+
+Right away, we can run into a few traps here. It might make sense to approach this as a grid. This would even allow us to get into some sneaky numpy shenanigans that could ease the adjacency detection. However, if we were to take this approach, we would have a hard time getting the entirety of a part number. For example, the part number `617` is adjacent to a `*` symbol. We could pretty easily identify that the `7` is adjacent to the `*`, but to then get the entire number of `617` would be a lot of extra work.
+
+However, if we approach this only as a block of text, it's going to be very hard to discern what it means to be adjacent. We still need some sense of location, which means that the concept of a grid is still useful. Maybe we can use both ideas! Let's start with the whole numbers and try to identify which ones are part numbers. We can do this using (once again) regular expressions.
+
+```python
+schematic = aoc.read_data()
+for _match in re.finditer(r'(\d+)', schematic):
+    val = _match.group()
+```
+
+Using re.finditer, we can iterate over each whole digit within the entire block of text. The `_match` object stores both the start of the match and its value. Using the start of the match, we can determine the `(x, y)` location of the number in the corresponding grid.
+
+```python
+schematic = aoc.read_data()
+schematic_grid = schematic.splitlines()
+line_length = len(schematic_grid[0]) + 1
+
+for _match in re.finditer(r'(\d+)', schematic):
+    y, x = divmod(_match.start(), line_length)
+    val = _match.group()
+```
+
+Next, we need to check every point adjacent to the number. Because the number could be of any digit length, we have to use the length of the match to determine how wide of an area to search. In the example below, for part number `633`, we have to check all of the highlighted points. This part number starts at `(6, 2)`, and so we'll need to check every point within `y-range (1, 3)` and `x-range (5, 9)`.
+
+<img src="day03/img/adjacent.png" width="15%"/>
+
+With that in mind, we can use a combination of `itertools.product` and `range` along with the information we've already gathered to easily iterate over all of these points.
+
+```python
+schematic = aoc.read_data()
+schematic_grid = schematic.splitlines()
+line_length = len(schematic_grid[0]) + 1
+
+for _match in re.finditer(r'(\d+)', schematic):
+    y, x = divmod(_match.start(), line_length)
+    val = _match.group()
+    for adj_y, adj_x in itertools.product(range(y-1, y+2), range(x-1, x+len(val)+1)):
+        try:
+            adj_val = schematic_grid[adj_y][adj_x]
+        except IndexError:
+            continue
+```
+
+Finally, we just need to check if any of those adjacent points contain a symbol of interest. Because we don't explicitly know which symbols we're looking for, it will be easier to check which symbols *don't* interest us.
+
+```python
+schematic = aoc.read_data()
+schematic_grid = schematic.splitlines()
+line_length = len(schematic_grid[0]) + 1
+
+non_symbols = {str(n) for n in range(10)} | {"."}
+
+part_total = 0
+for _match in re.finditer(r'(\d+)', schematic):
+    y, x = divmod(_match.start(), line_length)
+    val = _match.group()
+    for adj_y, adj_x in itertools.product(range(y-1, y+2), range(x-1, x+len(val)+1)):
+        try:
+            adj_val = schematic_grid[adj_y][adj_x]
+        except IndexError:
+            continue
+
+        if adj_val not in non_symbols:
+            part_total += int(val)
+```
+
+### Part Two
+
+Part two has us instead checking for `gears`. A gear is defined as any `*` symbol that is adjacent to **exactly** two part numbers. Immediately, you may try to find these by searching the string for that symbol and searching its adjacent points for digits. However, you quickly run into an issue doing this.
+
+In the example below, there are three `*` symbols that could be potential gears. Looking at the middle one, it's pretty easy to identify that it is **not** a gear, due to the fact that there is only one digit adjacent to it. However, the other two (both of which **are** in fact gears), have three digits adjacent to them. It's very difficult in the program to discern which of these digits come from the same part numbers.
+
+<img src="day03/img/gears.png" width="15%"/>
+
+Instead of approaching it that way, let's modify our existing code to store a map of `*` symbols to lists of adjacent part numbers. Whenever we find a `*` in the adjacent points of a part number, we will store the part number in this dictionary, like so:
+
+```python
+schematic = aoc.read_data()
+schematic_grid = schematic.splitlines()
+line_length = len(schematic_grid[0]) + 1
+
+non_symbols = {str(n) for n in range(10)} | {"."}
+gear_values = defaultdict(list)
+
+for _match in re.finditer(r'(\d+)', schematic):
+    y, x = divmod(_match.start(), line_length)
+    val = _match.group()
+    for adj_y, adj_x in itertools.product(range(y-1, y+2), range(x-1, x+len(val)+1)):
+        try:
+            adj_val = schematic_grid[adj_y][adj_x]
+        except IndexError:
+            continue
+
+        if adj_val not in non_symbols:
+            # When a gear is found, add to the gear_values dictonary
+            if adj_val == '*':
+                gear_values[(adj_y, adj_x)].append(int(val))
+```
+
+Once the loop has completed, we can check which gears are valid by checking the length of the list held by the dictionary.
+
+```python
+gear_ratios = sum(v[0] * v[1] for v in gear_values.values() if len(v) == 2)
+```
+
+...  
+
+## <a name="d04"></a> Day 04: Scratchcards
+
+[Task description](https://adventofcode.com/2023/day/4) - [Complete solution](day04/scratchcards.py) - [Back to top](#top)  
+
+Runtime: 2.306 ms (in office)  
+
+### Part One
+
+Day 4 is a little sigh of relief after a slightly more difficult day 3. Given a set of lottery cards, we have to determine which ones are winners. Each card has two sets of numbers: the first are the winning numbers, and the second are numbers we have, as shown below.
+
+    Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
+
+Thanks to the wonders of `sets`, this is a fairly easy thing to accomplish in python. If we can get the two groups of numbers into their own sets, the `union` of these sets would include only the numbers that appear in **both** sets. The union of two sets can be found using the `&` operator.
+
+<img src="day04/img/union.png" width="70%"/>
+
+With this in mind, let's make a function that can parse the input and create a union of the two sets of numbers.
+
+```python
+def matches(card_str: str) -> set[int]:
+    winning, mine = card_str.split(': ')[1].split(' | ')
+    winning = {int(x) for x in winning.strip().split()}
+    mine = {int(x) for x in mine.strip().split()}
+    return winning & mine
+```
+
+With this, we can now iterate through each card and calculate its score. The score doubles for each match, starting with 1 point for 1 match. Thus, it has the following trend:
+
+| Matches | Score |
+| ------- | ----- |
+|       0 |     0 |
+|       1 |     1 |
+|       2 |     2 |
+|       3 |     4 |
+|       4 |     8 |
+
+With this in mind, we can create a score function of $score = 2 ^ {matches - 1}$, taking note that the score is `0` when the number of matches is zero. We can use an if check to ensure that there actually are matches before adding to the score in any way.
+
+```python
+cards = aoc.read_lines()
+
+score = 0
+for i, card in enumerate(cards, start=1):
+    if num_matches := len(matches(card)):
+        score += 2 ** (num_matches - 1)
+```
+
+### Part Two
+
+With part two, the rules change slightly. When we win a card, we instead gain copies of the next `x` cards, where `x` is the number of matches. So, if `Card 3` has 3 matches, we would gain a copy of `Cards 4, 5, and 6`. Where things get a little tricky is that if we have multiple copies of a card, each of the copies will produce their own copies. So if we had 4 copies of `Card 4`, and it has 2 matches, we would get 4 copies each of `Cards 5 and 6`.
+
+This shouldn't complicate things too much. Because `Card x` will only add cards for values higher than `x`, we can still iterate through our cards in numeric order. We'll need a dictionary of how many copies of each card we have, starting with 1 of each. Then, on our winning cards (where there are any matches at all), we'll simply add values to this dictionary equal to the number of copies of the current card. The last thing we need to make sure we check for is that we don't add any copies of cards past the max number of cards.
+
+```python
+cards = aoc.read_lines()
+
+copies = {x: 1 for x in range(1, len(cards) + 1)}
+for i, card in enumerate(cards, start=1):
+    if num_matches := len(matches(card)):
+        top_card = min(len(cards), i + num_matches)
+        for new_copy in range(i + 1, top_card + 1):
+            copies[new_copy] += copies[i]
+total_copies = sum(copies.values())
 ```
 
 ...  
