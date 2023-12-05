@@ -6,13 +6,13 @@ import (
 )
 
 type Game struct {
-	draws  [32]int
+	draws  [50]int
 	wins   map[int]bool
 	number int
 	copies int
 }
 
-func makeGame(draws [32]int, wins map[int]bool, number int) *Game {
+func makeGame(draws [50]int, wins map[int]bool, number int) *Game {
 	return &Game{draws: draws, wins: wins, number: number, copies: 1}
 }
 
@@ -41,7 +41,7 @@ func main() {
 func buildCards(input []byte) map[int]*Game {
 	cards := make(map[int]*Game)
 	winningNumbers := make(map[int]bool)
-	var drawnNumbers [32]int = [32]int{}
+	var drawnNumbers [50]int = [50]int{}
 	workingNumber := 0
 	drawInd := 0
 	cardNumber := 0
@@ -52,7 +52,7 @@ func buildCards(input []byte) map[int]*Game {
 			drawnNumbers[drawInd] = workingNumber
 			cards[cardNumber] = makeGame(drawnNumbers, winningNumbers, cardNumber)
 			winningNumbers = make(map[int]bool)
-			drawnNumbers = [32]int{}
+			drawnNumbers = [50]int{}
 			workingNumber = 0
 			drawInd = 0
 			cardNumber = 0
