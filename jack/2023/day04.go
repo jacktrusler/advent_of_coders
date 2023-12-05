@@ -52,9 +52,7 @@ func Day4() {
 			totalP1 += math.Pow(2, float64(matches-1))
 			// Part 2
 			for ; 0 < matches; matches-- {
-				for replays := playedArr[i]; replays > 0; replays-- {
-					playedArr[i+matches] = playedArr[i+matches] + 1
-				}
+				playedArr[i+matches] = playedArr[i+matches] + playedArr[i]
 			}
 		}
 	}
