@@ -27,12 +27,10 @@ func main() {
 		card := cards[i]
 		dupeRun := getSpread(card)
 		//Play Copies
-		for c := 0; c < card.copies; c++ {
-			cardCount++
-			for s := 1; s <= dupeRun; s++ {
-				spreadDraw := cards[i+s]
-				spreadDraw.copies++
-			}
+		cardCount += card.copies
+		for s := 1; s <= dupeRun; s++ {
+			spreadDraw := cards[i+s]
+			spreadDraw.copies = spreadDraw.copies + card.copies
 		}
 	}
 	println(cardCount)
