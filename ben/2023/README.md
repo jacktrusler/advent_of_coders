@@ -13,7 +13,7 @@
 [![Day](https://badgen.net/badge/02/%E2%98%85%E2%98%85/green)](#d02)
 [![Day](https://badgen.net/badge/03/%E2%98%85%E2%98%85/green)](#d03)
 [![Day](https://badgen.net/badge/04/%E2%98%85%E2%98%85/green)](#d04)
-[![Day](https://badgen.net/badge/05/%E2%98%86%E2%98%86/gray)](#d05)
+[![Day](https://badgen.net/badge/05/%E2%98%85%E2%98%85/green)](#d05)
 [![Day](https://badgen.net/badge/06/%E2%98%86%E2%98%86/gray)](#d06)
 [![Day](https://badgen.net/badge/07/%E2%98%86%E2%98%86/gray)](#d07)
 [![Day](https://badgen.net/badge/08/%E2%98%86%E2%98%86/gray)](#d08)
@@ -339,14 +339,13 @@ Thanks to the wonders of `sets`, this is a fairly easy thing to accomplish in py
 
 <img src="day04/img/union.png" width="70%"/>
 
-With this in mind, let's make a function that can parse the input and create a union of the two sets of numbers.
+With this in mind, let's write some code that can parse the input and create a union of the two sets of numbers.
 
 ```python
-def matches(card_str: str) -> set[int]:
-    winning, mine = card_str.split(': ')[1].split(' | ')
-    winning = {int(x) for x in winning.strip().split()}
-    mine = {int(x) for x in mine.strip().split()}
-    return winning & mine
+cards = aoc.read_lines()
+for i, card in enumerate(cards, start=1):
+    winning, mine = card.split(': ')[1].split(' | ')
+    matches = set(winning.split()) & set(mine.split())
 ```
 
 With this, we can now iterate through each card and calculate its score. The score doubles for each match, starting with 1 point for 1 match. Thus, it has the following trend:
@@ -366,7 +365,10 @@ cards = aoc.read_lines()
 
 score = 0
 for i, card in enumerate(cards, start=1):
-    if num_matches := len(matches(card)):
+    winning, mine = card.split(': ')[1].split(' | ')
+    matches = set(winning.split()) & set(mine.split())
+
+    if num_matches := len(matches):
         score += 2 ** (num_matches - 1)
 ```
 
@@ -381,11 +383,181 @@ cards = aoc.read_lines()
 
 copies = {x: 1 for x in range(1, len(cards) + 1)}
 for i, card in enumerate(cards, start=1):
-    if num_matches := len(matches(card)):
+    winning, mine = card.split(': ')[1].split(' | ')
+    matches = set(winning.split()) & set(mine.split())
+
+    if num_matches := len(matches):
         top_card = min(len(cards), i + num_matches)
         for new_copy in range(i + 1, top_card + 1):
             copies[new_copy] += copies[i]
 total_copies = sum(copies.values())
+```
+
+...  
+
+## <a name="d05"></a> Day 05: If You Give A Seed A Fertilizer
+
+[Task description](https://adventofcode.com/2023/day/5) - [Complete solution](day05/if_you_give_a_seed_a_fertilizer.py) - [Back to top](#top)  
+
+Runtime: 0.789 ms (in office) 
+
+### Part One
+
+Today's task has us plotting a seed to a location given a series of maps with rules. As shown below, each map contains a list of numbers, all in sets of 3. If the incoming value meets any of these three rules, it will be changed to a different value. The first of these three numbers indicates the `destination start`, the second is the `source start`, and the third is the `range` of values that can be converted.
+
+    soil-to-fertilizer map:
+    0 15 37
+    37 52 2
+    39 0 15
+
+This means that given the second rule, `37 52 2`, starting at `52`, the next `2` values will be converted linearly from `37`. Thus, `52` would become `37` and `53` would become `38`. Note that instead of viewing the third value as a range, we could instead view it as an ending value by adding it to the `source start`. Let's represent this using a class.
+
+```python
+@dataclass
+class MapRule:
+    dest_start: int
+    src_start: int
+    src_end: int
+
+    def __contains__(self, val: int) -> bool:
+        return self.src_start <= val < self.src_end
+            
+    def apply(self, val: int) -> int:
+        return (val - self.src_start) + self.dest_start
+```
+
+Now, we can very easily determine if a certain integer would apply to a given rule (using `val in rule`), and we can apply the rule to a given integer to change appropriately change it. The next thing we're going to want is a class that can represent our map: `AlmanacMap`. This class needs to be able to convert a list of seeds into a new list.
+
+```python
+class AlmanacMap:
+    def __init__(self, rules: list[MapRule]):
+        self.rules = rules
+    
+    def convert(self, val: int) -> int:
+        for rule in self.rules:
+            if val in rule:
+                return rule.apply(val)
+        return val
+
+    def convert_all(self, values: Iterable[int]) -> list[int]:
+        return [self.convert(x) for x in values]
+```
+
+The last thing this new class will need is a way to parse the string input for a given map.
+
+```python
+class AlmanacMap:
+    @staticmethod
+    def from_string(map_str: str) -> AlmanacMap:
+        rules = []
+        for rule in map_str.splitlines()[1:]:
+            params = tuple(map(int, rule.split()))
+            rules.append(MapRule(
+                dest_start = params[0],
+                src_start = params[1],
+                src_end = params[1] + params[2]
+            ))
+        return AlmanacMap(rules)
+
+data = aoc.read_chunks()
+seeds = list(map(int, data[0].split(':')[1].split()))
+maps = [AlmanacMap.from_string(x) for x in data[1:]]
+```
+
+Tada! Now we can simply run each map's `convert_all` function on our list of seeds.
+
+```python
+part_one = seeds
+for _map in maps:
+    part_one = _map.convert_all(part_one)
+part_one = min(part_one)
+```
+
+We can actually simplify that block down even further using `functools.reduce()`.
+
+```python
+part_one = reduce(lambda x, y: y.convert_all(x), maps, seeds)
+part_one = min(part_one)
+```
+
+### Part Two
+
+Things get a little more complicated with part two. Our seed input is no longer just a list of integers, it is actually a list of ranges. Instead of each number representing one seed, every two numbers represents a range of seed: the first being the start of the range and the second being the length of the range, like so:
+
+    [79 14] [55 13]
+
+Running our above solution for every individual seed in these ranges would take **far** too long and is unrealistic. However, because of the way these maps work, we could easily represent our seeds using ranges instead of just single values. Let's define a quick `Range` dataclass and read in our seed input using that:
+
+```python
+@dataclass
+class Range:
+    start: int
+    end: int
+
+part_two = [Range(start=start, end=start+_len) for start, _len in pairwise(seeds)]
+```
+
+There are some instances where this remains fairly easy. Take the case where our entire range falls outside of a given `MapRule`--the range stays unchanged. Another case would be if the entirety of the range falls within a given `MapRule`. In this case, both the start and end of the range would be converted according to the rule--no big deal.
+
+However, there are two more interesting cases that occur when the range is partially within a `MapRule`--one where it starts within the bounds of the rule and extends beyond it, and one where it starts before the bounds of the rule and ends within it. You can even extend these edge cases to form another where a range starts before the bounds of a rule and ends after it.
+
+The chart below displays all of these cases. `s` represents the start of our range, `e` is the end of our range, and the area within `[]` is the bounds of a `MapRule`.
+
+    Normal Case 1: |--------[-s---e---]------|  -- Contains whole range
+    Normal Case 2: |-s----e-[---------]------|  -- Does not contain range
+    Normal Case 3: |--------[---------]-s--e-|  -- Does not contain range
+    
+    Edge Case 1:   |---s----[-----e---]------|  -- Contains part of range
+    Edge Case 2:   |--------[--s------]---e--|  -- Contains part of range
+    Edge Case 3:   |---s----[---------]---e--|  -- Contains part of range
+
+Let's edit our `MapRule` object to accept both `int` and `Range` into its functions. We can use `match` on the value to react differently based on its type. As the chart above shows, we know a `MapRule` contains a range if the start of the range is before the end of the rule's bounds and the end of the range if after the start of the rule's bounds. Lastly, when applying a rule to a range, we want to make sure we only apply it to the correct portion, ignoring the rest.
+
+```python
+@dataclass
+class MapRule:
+    def __contains__(self, val: int | Range) -> bool:
+        match val:
+            case int(): return self.src_start <= val < self.src_end
+            case Range(): return val.end > self.src_start and val.start < self.src_end
+            
+    def apply(self, val: int | Range) -> int:
+        match val:
+            case int(): return (val - self.src_start) + self.dest_start
+            case Range(): return Range(
+                start = self.apply(max(val.start, self.src_start)),
+                end = self.apply(min(val.end, self.src_end)),
+            )
+```
+
+When one of these edge cases occurs, we need to split the range into 2 or more new ranges to properly account for the changes. Because of this, we will end up with more `Range` objects in our list than what we start with. We can avoid some of the headaches here by changing our `AlmanacMap` class to use generators.
+
+```python
+class AlmanacMap:
+    def convert(self, val: int | Range) -> Generator[int | Range]:
+        for rule in self.rules:
+            if val in rule:
+                yield rule.apply(val)
+                if type(val) is Range:
+                    if val.end-1 not in rule:
+                        yield from self.convert(Range(rule.src_end, val.end))
+                    if val.start not in rule:
+                        yield from self.convert(Range(val.start, rule.src_start))
+                return
+        yield val
+    
+    def convert_all(self, values: Iterable[int | Range]) -> Generator[int | Range]:
+        for v in values:
+            yield from self.convert(v)
+```
+
+The new `convert` function now uses a generator to essentially output any number of values depending on what is needed. When we have a range, we will check for our edge cases, and recursively `convert` the resulting ranges to check for any new ranges that may occur.
+
+Finally, we just have to get the minimum value. Because our ranges only move in one direction (up), this remains quite easy! Simply find the earliest starting value among our ranges.
+
+```python
+part_two = reduce(lambda x, y: y.convert_all(x), maps, part_two)
+yield min([x.start for x in part_two])
 ```
 
 ...  

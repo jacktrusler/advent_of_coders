@@ -1,4 +1,5 @@
 import aoc
+from aoc.utils import pairwise
 from collections import defaultdict
 from functools import reduce
 
@@ -8,10 +9,6 @@ TEST_CUBES = {
     'green': 13,
     'blue': 14
 }
-
-def pairwise(iterable):
-    a = iter(iterable)
-    return zip(a, a)
 
 @aoc.register(__file__)
 def answers():
