@@ -45,14 +45,14 @@ func reverseSeed(seed int, conversionArr []int) int {
 	return seed
 }
 
-func theOneSeed(currentSeed int, seeds []int) (int, bool) {
+func theOneSeed(currentSeed int, seeds []int) bool {
 	// Check to see if this seed exists in input, if it does return it
 	for i := 0; i < len(seeds); i += 2 {
 		if (currentSeed >= seeds[i]) && (currentSeed <= seeds[i]+seeds[i+1]) {
-			return currentSeed, true
+			return true
 		}
 	}
-	return 0, false
+	return false
 }
 
 func Day5() {
@@ -103,9 +103,13 @@ func Day5() {
 		soilToFert := reverseSeed(fertToWater, almanac["soil-to-fertilizer"])
 		seedToSoil := reverseSeed(soilToFert, almanac["seed-to-soil"])
 
-		_, seedFound = theOneSeed(seedToSoil, almanac["seeds"])
+		seedFound = theOneSeed(seedToSoil, almanac["seeds"])
+		if seedFound {
+			break;
+		}
 		location++
 	}
+	fmt.Println("----- Day 5 -----")
 	fmt.Println(FindMin(allSeedLocations))
-	fmt.Println(location - 1)
+	fmt.Println(location)
 }
