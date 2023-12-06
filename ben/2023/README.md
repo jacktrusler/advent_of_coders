@@ -14,7 +14,7 @@
 [![Day](https://badgen.net/badge/03/%E2%98%85%E2%98%85/green)](#d03)
 [![Day](https://badgen.net/badge/04/%E2%98%85%E2%98%85/green)](#d04)
 [![Day](https://badgen.net/badge/05/%E2%98%85%E2%98%85/green)](#d05)
-[![Day](https://badgen.net/badge/06/%E2%98%86%E2%98%86/gray)](#d06)
+[![Day](https://badgen.net/badge/06/%E2%98%85%E2%98%85/green)](#d06)
 [![Day](https://badgen.net/badge/07/%E2%98%86%E2%98%86/gray)](#d07)
 [![Day](https://badgen.net/badge/08/%E2%98%86%E2%98%86/gray)](#d08)
 [![Day](https://badgen.net/badge/09/%E2%98%86%E2%98%86/gray)](#d09)
@@ -36,8 +36,6 @@
 [![Day](https://badgen.net/badge/25/%E2%98%86%E2%98%86/gray)](#d25)
 
 _Click a badge to go to the specific day._
-
-ic day._
 
 ## <a name="d01"></a> Day 01: Trebuchet
 
@@ -202,8 +200,6 @@ for i, game_log in enumerate(aoc.read_lines(), start=1):
     power += reduce(lambda x,y: x*y, max_cubes.values())
 ```
 
-...  
-
 ## <a name="d03"></a> Day 03: Gear Ratios
 
 [Task description](https://adventofcode.com/2023/day/3) - [Complete solution](day03/gear_ratios.py) - [Back to top](#top)  
@@ -321,8 +317,6 @@ Once the loop has completed, we can check which gears are valid by checking the 
 gear_ratios = sum(v[0] * v[1] for v in gear_values.values() if len(v) == 2)
 ```
 
-...  
-
 ## <a name="d04"></a> Day 04: Scratchcards
 
 [Task description](https://adventofcode.com/2023/day/4) - [Complete solution](day04/scratchcards.py) - [Back to top](#top)  
@@ -393,13 +387,11 @@ for i, card in enumerate(cards, start=1):
 total_copies = sum(copies.values())
 ```
 
-...  
-
 ## <a name="d05"></a> Day 05: If You Give A Seed A Fertilizer
 
 [Task description](https://adventofcode.com/2023/day/5) - [Complete solution](day05/if_you_give_a_seed_a_fertilizer.py) - [Back to top](#top)  
 
-Runtime: 0.789 ms (in office) 
+Runtime: 6.657 ms (in office) 
 
 ### Part One
 
@@ -420,7 +412,7 @@ class MapRule:
     src_end: int
 
     def __contains__(self, val: int) -> bool:
-        return self.src_start <= val < self.src_end
+        return self.src_start <= val <= self.src_end
             
     def apply(self, val: int) -> int:
         return (val - self.src_start) + self.dest_start
@@ -455,7 +447,7 @@ class AlmanacMap:
             rules.append(MapRule(
                 dest_start = params[0],
                 src_start = params[1],
-                src_end = params[1] + params[2]
+                src_end = params[1] + params[2] - 1
             ))
         return AlmanacMap(rules)
 
@@ -494,7 +486,7 @@ class Range:
     start: int
     end: int
 
-part_two = [Range(start=start, end=start+_len) for start, _len in pairwise(seeds)]
+part_two = [Range(start=start, end=start+_len-1) for start, _len in pairwise(seeds)]
 ```
 
 There are some instances where this remains fairly easy. Take the case where our entire range falls outside of a given `MapRule`--the range stays unchanged. Another case would be if the entirety of the range falls within a given `MapRule`. In this case, both the start and end of the range would be converted according to the rule--no big deal.
@@ -518,7 +510,7 @@ Let's edit our `MapRule` object to accept both `int` and `Range` into its functi
 class MapRule:
     def __contains__(self, val: int | Range) -> bool:
         match val:
-            case int(): return self.src_start <= val < self.src_end
+            case int(): return self.src_start <= val <= self.src_end
             case Range(): return val.end > self.src_start and val.start < self.src_end
             
     def apply(self, val: int | Range) -> int:
@@ -539,7 +531,7 @@ class AlmanacMap:
             if val in rule:
                 yield rule.apply(val)
                 if type(val) is Range:
-                    if val.end-1 not in rule:
+                    if val.end not in rule:
                         yield from self.convert(Range(rule.src_end, val.end))
                     if val.start not in rule:
                         yield from self.convert(Range(val.start, rule.src_start))
@@ -560,5 +552,77 @@ part_two = reduce(lambda x, y: y.convert_all(x), maps, part_two)
 yield min([x.start for x in part_two])
 ```
 
-...  
+## <a name="d06"></a> Day 06: Wait For It
 
+[Task description](https://adventofcode.com/2023/day/6) - [Complete solution](day06/wait_for_it.py) - [Back to top](#top)  
+
+Runtime: 0.649 ms (in office)
+
+### Part One
+
+Today's puzzle has us racing boats--how exciting! Unfortunately, they're just toy boats that can only move in millimeters. The boat has a button that must be held to charge it. The boat's speed will increase by `1 millimeter per second` for every second that the button is held, but while the boat is charging it will not move. We have to beat the records for every race. Each race has two pieces of information: the `record time` and the `record distance`. With the first example (`record time` = 7, `record distance` = 9), we can map out how several variables will react:
+
+| time charging | time moving | speed | distance traveled | beat record |
+| ------------- | ----------- | ----- | ----------------- | ----------- |
+|             0 |           7 |     0 |                 0 |          No |
+|             1 |           6 |     1 |                 6 |          No |
+|             2 |           5 |     2 |                10 |         Yes |
+|             3 |           4 |     3 |                12 |         Yes |
+|             4 |           3 |     4 |                12 |         Yes |
+|             5 |           2 |     5 |                10 |         Yes |
+|             6 |           1 |     6 |                 6 |          No |
+|             7 |           0 |     7 |                 0 |          No |
+
+We can deduce a few mathematical truths from this:
+
+$$t_{charging} = t$$
+$$t_{moving} = t_{record} - t_{charging} = t_{record} - t$$
+$$speed = t_{charging} = t$$
+$$distance = t_{moving} * speed = (t_{record} - t) * t$$
+$$distance > distance_{record} => (t_{record} - t) * t > distance_{record}$$
+$$-t^2 + t_{record}t - distance_{record} > 0$$
+
+That last line looks like a pretty standard quadratic formula, with $a = -1$, $b = t_{record}$, and $c = -distance_{record}$. Since we're gonna need the quadratic formula, let's make a function that can replicate it:
+
+$$t = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+```python
+def quadratic(a: int, b: int, c: int) -> tuple[float, float]:
+    _sqrt = math.sqrt(b**2 - 4*a*c)
+    _denom = 2*a
+    return sorted(((-b + _sqrt) / _denom, (-b - _sqrt) / _denom))
+```
+
+Let's look at the values this gives us for each of our example inputs vs the values described in the puzzle's prompt:
+
+| time | distance | ex $t_{min}$ | ex $t_{max}$ | actual $t_{min}$ | actual $t_{max}$ |
+| ---- | -------- | ------------ | ------------ | ---------------- | ---------------- |
+|    7 |        9 |            2 |            5 |             1.70 |             5.30 |
+|   15 |       40 |            4 |           11 |             3.47 |            11.53 |
+|   30 |      200 |           11 |           19 |            10.00 |            20.00 |
+
+Rounding our floats is not going to be enough. We don't technically want to solve for when our quadratic equation is equal to 0, we want to solve for when it is greater than 0! Because of this (as you can see in the third row), if our quadratic works out perfectly, we will run into issues. What we actually want to find is both the first `int` after $t_{min}$ and the first `int` before $t_{max}$. We can solve this by using a little bit of `math.ceil()` and `math.floor()`.
+
+```python
+def win_possibilities(max_time: int, distance: int) -> int:
+    min_t, max_t = quadratic(-1, max_time, -distance)
+    return math.ceil(max_t-1) - math.floor(min_t+1) + 1
+```
+
+Finally, let's parse our input and run this function
+
+```python
+data = [x.split(':')[1] for x in aoc.read_lines()]
+
+times, distances = [list(map(int, x.split())) for x in data]
+part_one = [win_possibilities(t, d) for t, d in zip(times, distances)]
+part_one = reduce(lambda x, y: x * y, part_one)
+```
+
+### Part Two
+
+Part two...really doesn't change anything besides how we interpret our input. Thanks to how we handled part one, it should scale just fine with the larger numbers.
+
+```python
+time, distance = [int(x.replace(' ', '')) for x in data]
+part_two = win_possibilities(time, distance)
+```
