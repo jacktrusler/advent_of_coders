@@ -32,7 +32,6 @@ func surroundedGear(arr [][]rune, col int, row int) (int, int) {
 
 func Day3() {
 	fileAsString := FileAsString("./data/day03.txt")
-	fileAsString = strings.TrimSuffix(fileAsString, "\n")
 	lines := strings.Split(fileAsString, "\n")
 
 	var linesToRunes [][]rune
@@ -87,7 +86,6 @@ func Day3() {
 			}
 		}
 	}
-	fmt.Println("Part 1: ", totalP1)
 
 	// ------ Part 2 ------
 
@@ -103,7 +101,7 @@ func Day3() {
 				currNum += string(currRune)
 				gearPosY, gearPosX := surroundedGear(linesToRunes, y, x)
 				if gearPosX != -1 && gearPosY != -1 {
-					cacheKey = string(gearPosY) + "," + string(gearPosX)
+					cacheKey = fmt.Sprint(gearPosY) + "," + fmt.Sprint(gearPosX)
 				}
 			}
 			if currRune < '0' || currRune > '9' {
@@ -126,5 +124,7 @@ func Day3() {
 		}
 	}
 
+	fmt.Println("----- Day 3 -----")
+	fmt.Println("Part 1: ", totalP1)
 	fmt.Println("Part 2: ", totalP2)
 }

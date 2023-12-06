@@ -9,7 +9,6 @@ import (
 
 func Day4() {
 	fileAsString := FileAsString("./data/day04.txt")
-	fileAsString = strings.TrimSuffix(fileAsString, "\n")
 
 	re, _ := regexp.Compile(`^Card\s*\d+:\s*`)
 	numbersOnly := re.ReplaceAllString(fileAsString, "")
@@ -60,6 +59,7 @@ func Day4() {
 	for _, cardCount := range playedArr {
 		totalP2 += cardCount
 	}
-	fmt.Println(totalP1)
-	fmt.Println(totalP2)
+	fmt.Println("----- Day 4 -----")
+	fmt.Println("Part 1: ", totalP1)
+	fmt.Println("Part 2: ", totalP2)
 }

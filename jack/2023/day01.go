@@ -22,7 +22,6 @@ func determineSum(s []string) int {
 		}
 		calibrationValues = append(calibrationValues, val1+val2)
 	}
-	fmt.Println(s)
 
 	totalSum := 0
 	for _, value := range calibrationValues {
@@ -33,13 +32,11 @@ func determineSum(s []string) int {
 
 		totalSum += num
 	}
-	fmt.Println(calibrationValues)
 	return totalSum
 }
 
 func Day1() {
 	fileAsString := FileAsString("./data/day01.txt")
-	fileAsString = strings.TrimSuffix(fileAsString, "\n")
 	stringArrP1 := strings.Split(fileAsString, "\n")
 
 	// Part 1
@@ -63,6 +60,7 @@ func Day1() {
 	stringArrP2 := strings.Split(replacedNumbers, "\n")
 	totalSumP2 := determineSum(stringArrP2)
 
-	fmt.Println(totalSumP1)
-	fmt.Println(totalSumP2)
+	fmt.Println("----- Day 1 -----")
+	fmt.Println("Part 1: ", totalSumP1)
+	fmt.Println("Part 2: ", totalSumP2)
 }

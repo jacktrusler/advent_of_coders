@@ -40,7 +40,6 @@ func checkMax(s []string, rxp *regexp.Regexp, maxVal int) int {
 
 func Day2() {
 	fileAsString := FileAsString("./data/day02.txt")
-	fileAsString = strings.TrimSuffix(fileAsString, "\n")
 	allGames := strings.Split(fileAsString, "\n")
 
 	idTotal := 0
@@ -80,6 +79,8 @@ func Day2() {
 		sumPower += redMax * greenMax * blueMax
 
 	}
+
+	fmt.Println("----- Day 2 -----")
 	fmt.Println("Part 1: ", idTotal)
 	fmt.Println("Part 2: ", sumPower)
 }
