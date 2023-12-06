@@ -575,12 +575,16 @@ Today's puzzle has us racing boats--how exciting! Unfortunately, they're just to
 
 We can deduce a few mathematical truths from this:
 
-$$t_{charging} = t$$
-$$t_{moving} = t_{record} - t_{charging} = t_{record} - t$$
-$$speed = t_{charging} = t$$
-$$distance = t_{moving} * speed = (t_{record} - t) * t$$
-$$distance > distance_{record} => (t_{record} - t) * t > distance_{record}$$
-$$-t^2 + t_{record}t - distance_{record} > 0$$
+$$
+\begin{align}
+t_{charging} = t \\
+t_{moving} = t_{record} - t_{charging} = t_{record} - t \\
+speed = t_{charging} = t \\
+distance = t_{moving} * speed = (t_{record} - t) * t \\
+distance > distance_{record} => (t_{record} - t) * t > distance_{record} \\
+-t^2 + t_{record}t - distance_{record} > 0
+\end{align}
+$$
 
 That last line looks like a pretty standard quadratic formula, with $a = -1$, $b = t_{record}$, and $c = -distance_{record}$. Since we're gonna need the quadratic formula, let's make a function that can replicate it:
 
