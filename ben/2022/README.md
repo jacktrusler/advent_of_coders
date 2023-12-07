@@ -31,9 +31,9 @@
 [![Day](https://badgen.net/badge/20/%E2%98%85%E2%98%85/green)](#d20)
 [![Day](https://badgen.net/badge/21/%E2%98%85%E2%98%85/green)](#d21)
 [![Day](https://badgen.net/badge/22/%E2%98%85%E2%98%85/green)](#d22)
-[![Day](https://badgen.net/badge/23/%E2%98%86%E2%98%86/gray)](#d23)
-[![Day](https://badgen.net/badge/24/%E2%98%86%E2%98%86/gray)](#d24)
-[![Day](https://badgen.net/badge/25/%E2%98%86%E2%98%86/gray)](#d25)
+[![Day](https://badgen.net/badge/23/%E2%98%85%E2%98%85/green)](#d23)
+[![Day](https://badgen.net/badge/24/%E2%98%85%E2%98%85/green)](#d24)
+[![Day](https://badgen.net/badge/25/%E2%98%85%E2%98%85/green)](#d25)
 
 <!--/SOLUTIONS-->
 
@@ -859,6 +859,36 @@ Runtime: ...
 ## <a name="d22"></a> Day 22: Monkey Map
 
 [Task description](https://adventofcode.com/2022/day/22) - [Complete solution](day22/monkey_map.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d23"></a> Day 23: Unstable Diffusion
+
+[Task description](https://adventofcode.com/2022/day/23) - [Complete solution](day23/unstable_diffusion.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d24"></a> Day 24: Blizzard Basin
+
+[Task description](https://adventofcode.com/2022/day/24) - [Complete solution](day24/blizzard_basin.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d25"></a> Day 25: Full Of Hot Air
+
+[Task description](https://adventofcode.com/2022/day/25) - [Complete solution](day25/full_of_hot_air.py) - [Back to top](#top)  
 
 Runtime: ...  
 

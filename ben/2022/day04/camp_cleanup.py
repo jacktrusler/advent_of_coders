@@ -8,7 +8,6 @@ def parse_line(line: str) -> tuple[Interval, Interval]:
     ib = Interval(*map(int, b.split('-')))
     return ia, ib
 
-
 @aoc.register(__file__)
 def answers():
     assignments = [parse_line(x) for x in aoc.read_lines()]

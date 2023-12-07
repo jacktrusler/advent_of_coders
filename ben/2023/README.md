@@ -15,7 +15,7 @@
 [![Day](https://badgen.net/badge/04/%E2%98%85%E2%98%85/green)](#d04)
 [![Day](https://badgen.net/badge/05/%E2%98%85%E2%98%85/green)](#d05)
 [![Day](https://badgen.net/badge/06/%E2%98%85%E2%98%85/green)](#d06)
-[![Day](https://badgen.net/badge/07/%E2%98%86%E2%98%86/gray)](#d07)
+[![Day](https://badgen.net/badge/07/%E2%98%85%E2%98%85/green)](#d07)
 [![Day](https://badgen.net/badge/08/%E2%98%86%E2%98%86/gray)](#d08)
 [![Day](https://badgen.net/badge/09/%E2%98%86%E2%98%86/gray)](#d09)
 [![Day](https://badgen.net/badge/10/%E2%98%86%E2%98%86/gray)](#d10)
@@ -630,3 +630,13 @@ Part two...really doesn't change anything besides how we interpret our input. Th
 time, distance = [int(x.replace(' ', '')) for x in data]
 part_two = win_possibilities(time, distance)
 ```
+## <a name="d07"></a> Day 07: Camel Cards
+
+[Task description](https://adventofcode.com/2023/day/7) - [Complete solution](day07/camel_cards.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+

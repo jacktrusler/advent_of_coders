@@ -1,7 +1,7 @@
 import aoc
 from aoc.utils import pairwise
 from collections import defaultdict
-from functools import reduce
+import math
 
 
 TEST_CUBES = {
@@ -23,7 +23,7 @@ def answers():
 
         if all(v <= TEST_CUBES[k] for k, v in max_cubes.items()):
             valid_game_total += i
-        power += reduce(lambda x,y: x*y, max_cubes.values())
+        power += math.prod(max_cubes.values())
     yield valid_game_total
     yield power
 

@@ -5,8 +5,6 @@ import itertools
 import re
 
 
-GEAR = '*'
-
 @aoc.register(__file__)
 def answers():
     schematic = aoc.read_data()
@@ -29,11 +27,10 @@ def answers():
             if adj_val not in non_symbols:
                 val = int(val)
                 part_total += val
-                if adj_val == GEAR:
+                if adj_val == '*':
                     gear_values[(adj_y, adj_x)].append(val)
     yield part_total
     yield sum(v[0] * v[1] for v in gear_values.values() if len(v) == 2)
-
 
 if __name__ == '__main__':
     aoc.run()

@@ -1,5 +1,4 @@
 import aoc
-from functools import reduce
 import math
 
 
@@ -18,12 +17,10 @@ def answers():
     data = [x.split(':')[1] for x in aoc.read_lines()]
 
     times, distances = [list(map(int, x.split())) for x in data]
-    part_one = [win_possibilities(t, d) for t, d in zip(times, distances)]
-    yield reduce(lambda x, y: x * y, part_one)
+    yield math.prod(map(win_possibilities, times, distances))
 
     time, distance = [int(x.replace(' ', '')) for x in data]
     yield win_possibilities(time, distance)
-
 
 if __name__ == '__main__':
     aoc.run()
