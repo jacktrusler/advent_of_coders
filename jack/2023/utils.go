@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 )
 
 func FileAsString(file string) string {
@@ -12,5 +13,22 @@ func FileAsString(file string) string {
 	}
 
 	fileAsString := string(content)
+	fileAsString = strings.TrimSuffix(fileAsString, "\n")
 	return fileAsString
+}
+
+func FindMin(slice []int) int {
+	if len(slice) == 0 {
+		return 0
+	}
+
+	min := slice[0]
+
+	for _, value := range slice {
+		if value < min {
+			min = value
+		}
+	}
+
+	return min
 }
