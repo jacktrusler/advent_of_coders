@@ -31,9 +31,9 @@
 [![Day](https://badgen.net/badge/20/%E2%98%85%E2%98%85/green)](#d20)
 [![Day](https://badgen.net/badge/21/%E2%98%85%E2%98%85/green)](#d21)
 [![Day](https://badgen.net/badge/22/%E2%98%85%E2%98%85/green)](#d22)
-[![Day](https://badgen.net/badge/23/%E2%98%86%E2%98%86/gray)](#d23)
-[![Day](https://badgen.net/badge/24/%E2%98%86%E2%98%86/gray)](#d24)
-[![Day](https://badgen.net/badge/25/%E2%98%86%E2%98%86/gray)](#d25)
+[![Day](https://badgen.net/badge/23/%E2%98%85%E2%98%85/green)](#d23)
+[![Day](https://badgen.net/badge/24/%E2%98%85%E2%98%85/green)](#d24)
+[![Day](https://badgen.net/badge/25/%E2%98%85%E2%98%85/green)](#d25)
 
 <!--/SOLUTIONS-->
 
@@ -605,7 +605,7 @@ Runtime: 0.715 ms
 
 ### Part One
 
-Today's problem is deceptive. Given a series of sensors and their closest beacons in an xy-plane, we are asked to find how many points along a given line are being read by the sensors. Based on the example input, one might think this is simply a case of finding all of the points that the sensor reads with a given y-value, and then combining them all into a set. However, after looking at the real input, you'll find that our x and y values are far too large to get away with that strategy in a timely manner.
+Today's problem is deceptively simple. Given a series of sensors and their closest beacons in an xy-plane, we are asked to find how many points along a given line are being read by the sensors. Based on the example input, one might think this is simply a case of finding all of the points that the sensor reads with a given y-value, and then combining them all into a set. However, after looking at the real input, you'll find that our x and y values are far too large to get away with that strategy in a timely manner.
 
 Let's start by looking at one example sensor and beacon combo. We'll say our sensor `S` is at `(5, 4)` and our beacon `B` is at `(4, 6)`
 
@@ -627,9 +627,14 @@ For example, let's use `y=3`. In this case, our `d` value would be `abs(3 - 4) =
 
 <img src="day15/img/range.png" width="50%"/>
 
-The x values of the two points where we cross this line can be calculated using all of the values mentioned above:
+The s values of the two points where we cross this line can be calculated using all of the values mentioned above:
 
-$$x = S_x \pm (r-d)$$
+$$
+\begin{align}
+x_1 = S_x - (r-d) \\
+x_2 = S_x + (r-d)
+\end{align}
+$$
 
 <img src="day15/img/intersect.png" width="50%"/>
 
@@ -679,9 +684,12 @@ Having all these ranges doesn't quite help us yet, though. Some of these ranges 
             # Range 2 fully contains Range 1
             elif r2[0] <= r1[0] and r2[1] >= r1[1]:
                 ranges.remove(r1)
-            # Partial containment
-            else:
-                ranges = (ranges - {r1, r2}) | {(min(r1[0], r2[0]), max(r1[1], r2[1]))}
+            # Partial containment with Range 1 starting first
+            elif r1[0] <= r2[0]:
+                ranges = (ranges - {r1, r2}) | {(r1[0], r2[1])}
+            # Partial containment with Range 2 starting first
+            elif r2[0] <= r1[0]:
+                ranges = (ranges - {r1, r2}) | {(r2[0], r1[1])}
             return reduce_ranges(ranges)
         return ranges
 
@@ -752,11 +760,15 @@ Now let's do it programmatically.
 
 We then want to group our positive and negative slopes and find each intersection. Simply solve for x and y.
 
-$$y_i = x_i + b_p$$
-$$y_i = -x_i + b_n$$
-$$x_i + b_p = -x_i + b_n$$
-$$x_i = \frac{b_n - b_p}{2}$$
-$$y_i = \frac{b_n - b_p}{2} + b_p$$
+$$
+\begin{align}
+y_i = x_i + b_p \\
+y_i = -x_i + b_n \\
+x_i + b_p = -x_i + b_n \\
+x_i = \frac{b_n - b_p}{2} \\
+y_i = \frac{b_n - b_p}{2} + b_p
+\end{align}
+$$
 
     for pb, nb in itertools.product( tl & br, tr & bl ):
         x = ( nb - pb ) // 2
@@ -847,6 +859,36 @@ Runtime: ...
 ## <a name="d22"></a> Day 22: Monkey Map
 
 [Task description](https://adventofcode.com/2022/day/22) - [Complete solution](day22/monkey_map.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d23"></a> Day 23: Unstable Diffusion
+
+[Task description](https://adventofcode.com/2022/day/23) - [Complete solution](day23/unstable_diffusion.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d24"></a> Day 24: Blizzard Basin
+
+[Task description](https://adventofcode.com/2022/day/24) - [Complete solution](day24/blizzard_basin.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d25"></a> Day 25: Full Of Hot Air
+
+[Task description](https://adventofcode.com/2022/day/25) - [Complete solution](day25/full_of_hot_air.py) - [Back to top](#top)  
 
 Runtime: ...  
 
