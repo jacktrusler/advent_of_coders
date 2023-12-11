@@ -14,12 +14,30 @@ class Point:
     def __iter__(self):
         yield self.x
         yield self.y
+
+    def __getitem__(self, idx: int) -> int:
+        match idx:
+            case 0: return self.x
+            case 1: return self.y
+            case _: raise IndexError
+
+    def __hash__(self):
+        return hash((self.x, self.y))
     
     def __add__(self, other: Point) -> Point:
-        return Point(self.x + other.x, self.y + other.y)
+        return Point(self.x + other[0], self.y + other[1])
     
     def __sub__(self, other: Point) -> Point:
         return Point(self.x - other.x, self.y - other.y)
+    
+    def __mul__(self, val: int) -> Point:
+        return Point(self.x * val, self.y * val)
+    
+    def __mod__(self, other: Point) -> Point:
+        return Point(self.x % other.x, self.y % other.y)
+    
+    def __eq__(self, other: Point) -> bool:
+        return self.x == other[0] and self.y == other[1]
     
     def distance(self, other: Point) -> float:
         return math.hypot(*(self - other))
@@ -36,12 +54,5 @@ class Point:
             case 2: return Point(-self.x, -self.y)
             case 3: return Point(-self.y, self.x)
 
-    
-
-if __name__ == '__main__':
-    p1 = Point(3,7)
-    p2 = Point(1,2)
-    print(p1+p2)
-
-    print(p1.rotate())
-    print(p1.distance(p2))
+    # def adjacent(self, dirs: Type[Direction] = Direction) -> Generator[tuple[Direction, Point]]:
+    #     yield from ((d, self + d.movement) for d in dirs)

@@ -23,11 +23,23 @@ class Interval:
         """
         return Interval(start=self.start + val, end=self.end + val)
     
+    def __radd__(self, val: int) -> Interval:
+        """
+        Add the given value to both the start and end of the interval
+        """
+        return self + val
+    
     def __sub__(self, val: int) -> Interval:
         """
         Subtract the given value from both the start and end of the interval
         """
         return Interval(start=self.start - val, end=self.end - val)
+    
+    def __rsub__(self, val: int) -> Interval:
+        """
+        Subtract the start and end of the interval from the given value
+        """
+        return Interval(start=val - self.start, end=val - self.end)
     
     def __contains__(self, val: int | Interval) -> bool:
         """

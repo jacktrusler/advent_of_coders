@@ -1,3 +1,4 @@
+from __future__ import annotations
 import aoc
 import math
 from typing import Generator

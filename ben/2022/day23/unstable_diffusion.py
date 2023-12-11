@@ -1,5 +1,4 @@
 import aoc
-from aoc.utils import count_adjacent
 from collections import Counter
 from enum import Enum
 from itertools import cycle, islice
@@ -23,7 +22,7 @@ WINDOWS = {
 }
 def check_adjacent(grid: NDArray, dir: Direction = None):
     kwargs = {} if dir is None else {'window': WINDOWS[dir]}
-    check = count_adjacent(grid, **kwargs)
+    check = aoc.np.count_adjacent(grid, **kwargs)
     return set(zip(*np.where((grid > 0) & (check == 0))))
 
 def scrunch(ar: NDArray) -> NDArray:
