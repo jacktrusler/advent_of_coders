@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True)
 class Interval:
     """
     Represents an interval of integers.
@@ -16,6 +16,9 @@ class Interval:
     """
     start: int
     end: int
+
+    def __hash__(self):
+        return hash((self.start, self.end))
 
     def __add__(self, val: int) -> Interval:
         """
@@ -85,7 +88,7 @@ class Interval:
         """
         Iterate over all values in the interval
         """
-        return iter(range(self.start, self.end))
+        return iter(range(self.start, self.end + 1))
     
     def intersection(self, other: Interval) -> Interval:
         """

@@ -27,11 +27,11 @@
 [![Day](https://badgen.net/badge/16/%E2%98%85%E2%98%85/green)](#d16)
 [![Day](https://badgen.net/badge/17/%E2%98%85%E2%98%85/green)](#d17)
 [![Day](https://badgen.net/badge/18/%E2%98%85%E2%98%85/green)](#d18)
-[![Day](https://badgen.net/badge/19/%E2%98%86%E2%98%86/gray)](#d19)
-[![Day](https://badgen.net/badge/20/%E2%98%86%E2%98%86/gray)](#d20)
-[![Day](https://badgen.net/badge/21/%E2%98%86%E2%98%86/gray)](#d21)
-[![Day](https://badgen.net/badge/22/%E2%98%86%E2%98%86/gray)](#d22)
-[![Day](https://badgen.net/badge/23/%E2%98%86%E2%98%86/gray)](#d23)
+[![Day](https://badgen.net/badge/18/%E2%98%85%E2%98%85/green)](#d19)
+[![Day](https://badgen.net/badge/18/%E2%98%85%E2%98%85/green)](#d20)
+[![Day](https://badgen.net/badge/21/%E2%98%85%E2%98%85/green)](#d21)
+[![Day](https://badgen.net/badge/22/%E2%98%85%E2%98%85/green)](#d22)
+[![Day](https://badgen.net/badge/23/%E2%98%85%E2%98%85/green)](#d23)
 [![Day](https://badgen.net/badge/24/%E2%98%86%E2%98%86/gray)](#d24)
 [![Day](https://badgen.net/badge/25/%E2%98%86%E2%98%86/gray)](#d25)
 
@@ -218,4 +218,33 @@ Runtime: 4266.209 ms
 
 ### Notes
 
-...
+...## <a name="d21"></a> Day 21: Dirac Dice
+
+[Task description](https://adventofcode.com/2021/day/21) - [Complete solution](day21/dirac_dice.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d22"></a> Day 22: Reactor Reboot
+
+[Task description](https://adventofcode.com/2021/day/22) - [Complete solution](day22/reactor_reboot.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d23"></a> Day 23: Amphipod
+
+[Task description](https://adventofcode.com/2021/day/23) - [Complete solution](day23/amphipod.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
