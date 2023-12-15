@@ -1,56 +1,36 @@
 from pathlib import Path
 import utils
+import functools
 
-def tilt_left(items: str) -> str:
-    new_items = ''
-    rocks = ''
-    blanks = ''
-    for char in items:
-        match char:
-            case 'O':
-                rocks += 'O'
-            case '.':
-                blanks += '.'
-            case '#':
-                new_items += rocks + blanks + '#'
-                rocks = ''
-                blanks = ''
-    new_items += rocks + blanks
-    return new_items
+@functools.cache
+def tilt_chunk(chunk: str) -> str:
+    num_rocks = chunk.count('O')
+    return 'O' * num_rocks + '.' * (len(chunk) - num_rocks)
 
-def transpose(x: tuple) -> tuple:
-    return tuple(map(''.join, zip(*x)))
+@functools.cache
+def tilt_line(line: str) -> str:
+    return ''.join(tilt_chunk(chunk) + '#' for chunk in line.split("#"))[:-1]
 
-def north(grid: tuple) -> tuple:
-    return transpose(west(transpose(grid)))
+def tilt_grid(grid: tuple):
+    return tuple(tilt_line(row) for row in grid)
 
-def south(grid: tuple) -> tuple:
-    return transpose(east(transpose(grid)))
-
-def east(grid: tuple) -> tuple:
-    return tuple(tilt_left(row[::-1])[::-1] for row in grid)
-
-def west(grid: tuple) -> tuple:
-    return tuple(tilt_left(row) for row in grid)
+def rotate(grid: tuple) -> tuple:
+    return tuple(map(lambda x: ''.join(x)[::-1], zip(*grid)))
 
 def score(grid: tuple) -> int:
-    return sum([(len(grid) - i) * row.count('O') for i, row in enumerate(grid)])
-
-def i_matching(n: int, a: int, b: int) -> int:
-    """Return an index in range [a, b] of a value in a cyclical iterable at n if the items at a and b are equal"""
-    return ((n - b) % (a - b)) + b
+    return sum([(len(grid) - i) * row.count('O') for i, row in enumerate(rotate(grid))])
 
 def cycle_grids(grid: tuple):
-    i = 0
-    yield i, grid
+    yield grid
     while True:
-        i += 1
-        grid = east(south(west(north(grid))))
-        yield i, grid
+        for _ in range(4):
+            grid = rotate(tilt_grid(grid))
+        yield grid
 
 def solve(raw_input: str) -> tuple[int, int]:
     grids = dict()
-    for i, grid in cycle_grids(tuple(raw_input.splitlines())):
+    grid = rotate(rotate(rotate(tuple(raw_input.splitlines()))))  # left is north
+    for i, grid in enumerate(cycle_grids(grid)):
         try:
             i_match = grids[grid]
         except KeyError:
@@ -58,8 +38,8 @@ def solve(raw_input: str) -> tuple[int, int]:
         else:
             break
     grid_lookup = {v: k for k, v in grids.items()}
-    a = score(north(grid_lookup[0]))
-    b = score(grid_lookup[i_matching(1000000000, i, i_match)])
+    a = score(tilt_grid(grid_lookup[0]))
+    b = score(grid_lookup[((1000000000 - i_match) % (i - i_match)) + i_match])
     return a, b
 
 if __name__ == '__main__':
