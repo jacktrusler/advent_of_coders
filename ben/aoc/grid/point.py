@@ -1,28 +1,28 @@
 from __future__ import annotations
+from collections import namedtuple
 from dataclasses import dataclass
 import math
 
 
-@dataclass()
+@dataclass(frozen=True, slots=True)
 class Point:
     x: int
     y: int
+
+    def __hash__(self):
+        return hash((self.x, self.y))
 
     def __repr__(self) -> str:
         return f'Point({self.x}, {self.y})'
     
     def __iter__(self):
-        yield self.x
-        yield self.y
+        yield from (self.x, self.y)
 
     def __getitem__(self, idx: int) -> int:
         match idx:
             case 0: return self.x
             case 1: return self.y
             case _: raise IndexError
-
-    def __hash__(self):
-        return hash((self.x, self.y))
     
     def __add__(self, other: Point) -> Point:
         return Point(self.x + other[0], self.y + other[1])
@@ -37,7 +37,10 @@ class Point:
         return Point(self.x % other.x, self.y % other.y)
     
     def __eq__(self, other: Point) -> bool:
-        return self.x == other[0] and self.y == other[1]
+        try:
+            return self.x == other[0] and self.y == other[1]
+        except TypeError:
+            return False
     
     def distance(self, other: Point) -> float:
         return math.hypot(*(self - other))
@@ -54,5 +57,35 @@ class Point:
             case 2: return Point(-self.x, -self.y)
             case 3: return Point(-self.y, self.x)
 
-    # def adjacent(self, dirs: Type[Direction] = Direction) -> Generator[tuple[Direction, Point]]:
-    #     yield from ((d, self + d.movement) for d in dirs)
+if __name__ == '__main__':
+    import random
+    i = 1000000
+    x = random.randint(0, i-1)
+
+    import time
+    start = time.perf_counter()
+    points = {Point(i, i): i for i in range(i)}
+    p = points[Point(x, x)]
+    end = time.perf_counter()
+    print(f'Time elapsed: {round((end - start) * 1000, 3)} ms')
+
+    start = time.perf_counter()
+    points = {(i, i): i for i in range(i)}
+    p = points[(x, x)]
+    end = time.perf_counter()
+    print(f'Time elapsed: {round((end - start) * 1000, 3)} ms')
+
+    from collections import namedtuple
+    Point2 = namedtuple('Point2', 'x y')
+    start = time.perf_counter()
+    points = {Point2(i, i): i for i in range(i)}
+    p = points[(x, x)]
+    end = time.perf_counter()
+    print(f'Time elapsed: {round((end - start) * 1000, 3)} ms')
+
+    Point3 = tuple[int, int]
+    start = time.perf_counter()
+    points = {Point3((i, i)): i for i in range(i)}
+    p = points[(x, x)]
+    end = time.perf_counter()
+    print(f'Time elapsed: {round((end - start) * 1000, 3)} ms')
