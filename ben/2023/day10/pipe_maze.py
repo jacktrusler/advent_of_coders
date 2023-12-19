@@ -39,7 +39,7 @@ def find_loop(grid: NDArray, start: aoc.Point) -> Loop:
             return loop
 
 def replace_S(start: aoc.Point, first: aoc.Point, last: aoc.Point) -> str:
-    dirs = {dir for dir, adj in adjacent_points(start) if adj in (first, last)}
+    dirs = {dir for dir, adj in adjacent_points(start, include_dir=True) if adj == first or adj == last}
     new_value = set.intersection(*(set(CONNECTABLE[x.rotate(2)]) for x in dirs)) - {'S'}
     return next(iter(new_value))
 

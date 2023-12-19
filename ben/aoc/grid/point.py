@@ -1,91 +1,77 @@
 from __future__ import annotations
 from collections import namedtuple
-from dataclasses import dataclass
 import math
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from aoc.grid.direction import Direction
 
 
-@dataclass(frozen=True, slots=True)
-class Point:
-    x: int
-    y: int
-
-    def __hash__(self):
-        return hash((self.x, self.y))
-
-    def __repr__(self) -> str:
-        return f'Point({self.x}, {self.y})'
+RAW_POINT = tuple[int, int]
+class Point(namedtuple('Point', ['x', 'y'])):
+    def __repr__(self):
+        return f'Point({self[0]}, {self[1]})'
     
-    def __iter__(self):
-        yield from (self.x, self.y)
-
-    def __getitem__(self, idx: int) -> int:
-        match idx:
-            case 0: return self.x
-            case 1: return self.y
-            case _: raise IndexError
+    def __str__(self):
+        return f'({self[0]}, {self[1]})'
     
-    def __add__(self, other: Point) -> Point:
-        return Point(self.x + other[0], self.y + other[1])
+    def __add__(self, other: Point | RAW_POINT) -> Point:
+        return self.__class__(self[0] + other[0], self[1] + other[1])
     
-    def __sub__(self, other: Point) -> Point:
-        return Point(self.x - other.x, self.y - other.y)
+    def __radd__(self, other: Point | RAW_POINT) -> Point:
+        return self.__class__(self[0] + other[0], self[1] + other[1])
+    
+    def __sub__(self, other: Point | RAW_POINT) -> Point:
+        return self.__class__(self[0] - other[0], self[1] - other[1])
     
     def __mul__(self, val: int) -> Point:
-        return Point(self.x * val, self.y * val)
+        return self.__class__(self.x * val, self.y * val)
     
-    def __mod__(self, other: Point) -> Point:
-        return Point(self.x % other.x, self.y % other.y)
+    def __mod__(self, other: Point | RAW_POINT) -> Point:
+        return self.__class__(self[0] % other[0], self[1] % other[1])
     
-    def __eq__(self, other: Point) -> bool:
-        try:
-            return self.x == other[0] and self.y == other[1]
-        except TypeError:
-            return False
-    
-    def distance(self, other: Point) -> float:
+    def distance(self, other: Point | RAW_POINT) -> float:
         return math.hypot(*(self - other))
     
-    def manhattan_distance(self, other: Point = None) -> int:
-        other = Point(0, 0) if other is None else other
-        return abs(self.x - other.x) + abs(self.y - other.y)
+    def manhattan_distance(self, other: Point | RAW_POINT = (0, 0)) -> int:
+        return abs(self[0] - other[0]) + abs(self[1] - other[1])
     
-    def rotate(self, n: int = 1, clockwise: bool = True) -> Point:
-        n = n % 4 if clockwise else 4 - (n % 4)
-        match n:
-            case 0: return Point(self.x, self.y)
-            case 1: return Point(self.y, -self.x)
-            case 2: return Point(-self.x, -self.y)
-            case 3: return Point(-self.y, self.x)
+    def move(self, direction: Direction, n: int = 1) -> Point:
+        return self + direction.movement * n
+    
 
 if __name__ == '__main__':
     import random
-    i = 1000000
+    i = 1000
     x = random.randint(0, i-1)
 
     import time
-    start = time.perf_counter()
-    points = {Point(i, i): i for i in range(i)}
-    p = points[Point(x, x)]
-    end = time.perf_counter()
-    print(f'Time elapsed: {round((end - start) * 1000, 3)} ms')
+    def test_time(f, *args, **kwargs):
+        start = time.perf_counter()
+        ret = f(*args, **kwargs)
+        end = time.perf_counter()
+        print(f'Time elapsed {f}: {round((end - start) * 1000, 3)} ms')
+        return ret
+    
+    print('--- Create ---')
+    def create_tuple(n):
+        return [(v,v) for v in range(n)]
+    def creator(cls, n):
+        return [cls(v, v) for v in range(n)]
+    
+    t_pts = test_time(create_tuple, i)
+    nt_pts = test_time(creator, Point, i)
 
-    start = time.perf_counter()
-    points = {(i, i): i for i in range(i)}
-    p = points[(x, x)]
-    end = time.perf_counter()
-    print(f'Time elapsed: {round((end - start) * 1000, 3)} ms')
-
-    from collections import namedtuple
-    Point2 = namedtuple('Point2', 'x y')
-    start = time.perf_counter()
-    points = {Point2(i, i): i for i in range(i)}
-    p = points[(x, x)]
-    end = time.perf_counter()
-    print(f'Time elapsed: {round((end - start) * 1000, 3)} ms')
-
-    Point3 = tuple[int, int]
-    start = time.perf_counter()
-    points = {Point3((i, i)): i for i in range(i)}
-    p = points[(x, x)]
-    end = time.perf_counter()
-    print(f'Time elapsed: {round((end - start) * 1000, 3)} ms')
+    print('--- Add ---')
+    def add_em(l):
+        return [p + p for p in l]
+    def add_og(l):
+        return [(p[0] + p[0], p[1] + [1]) for p in l]
+    
+    print(nt_pts[0])
+    asdf = Point(1, 2)
+    import aoc
+    print(asdf.move(aoc.Direction.UP, 2))
+    
+    test_time(add_em, t_pts)
+    test_time(add_em, nt_pts)

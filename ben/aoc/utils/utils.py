@@ -11,4 +11,5 @@ def pairwise(iterable: Iterable):
 def adjacent_points(point: Point, dir_type: Type[Direction] = Direction, include_dir: bool = False) -> Generator[Direction, Point]:
     if include_dir:
         yield from ((d, point + d.movement) for d in dir_type)
-    yield from (point + d.movement for d in dir_type)
+    else:
+        yield from (point + d.movement for d in dir_type)
