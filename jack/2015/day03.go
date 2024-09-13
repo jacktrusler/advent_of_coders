@@ -7,7 +7,7 @@ import (
 )
 
 func Day3() {
-	fileAsString := utils.FileAsString("./data/day3.txt")
+	fileAsString := utils.FileAsString("./data/day03.txt")
 	xIndex, yIndex := 0, 0
 
 	// Part 1

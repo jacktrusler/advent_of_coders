@@ -7,7 +7,7 @@ import (
 )
 
 func Day2() {
-	fileAsString := utils.FileAsString("./data/day2.txt")
+	fileAsString := utils.FileAsString("./data/day02.txt")
 	presents := strings.Split(fileAsString, "\n")
 
 	totalPaper := 0

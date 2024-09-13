@@ -5,7 +5,7 @@ import (
 )
 
 func Day1() {
-	fileAsString := utils.FileAsString("./data/day1.txt")
+	fileAsString := utils.FileAsString("./data/day01.txt")
 	floor := 0
 
 	for pos, char := range fileAsString {

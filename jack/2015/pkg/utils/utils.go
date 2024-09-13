@@ -29,3 +29,11 @@ func StrArr2IntArr(strArr []string) []int {
 	}
 	return t2
 }
+
+func IsUint(s string) bool {
+	_, err := strconv.ParseUint(s, 10, 16)
+	if err != nil {
+		return false
+	}
+	return true
+}
