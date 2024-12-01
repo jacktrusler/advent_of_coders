@@ -17,6 +17,12 @@ class Interval:
     start: int
     end: int
 
+    def __repr__(self):
+        return f'Interval({self.start}, {self.end})'
+    
+    def __str__(self):
+        return f'[{self.start}, {self.end}]'
+
     def __hash__(self):
         return hash((self.start, self.end))
 
@@ -129,3 +135,21 @@ class Interval:
             start = min(self.start, other.start),
             end = max(self.end, other.end)
         )
+    
+
+@dataclass(frozen=True)
+class Interval2D:
+    x: Interval
+    y: Interval
+
+    def __str__(self):
+        return f'[[{self.x}], [{self.y}]]'
+
+    def __repr__(self):
+        return f'Interval2D({self.x}, {self.y})'
+
+    def __len__(self):
+        return len(self.x) * len(self.y)
+    
+    def __contains__(self, other: Interval2D) -> bool:
+        return len(self.x & other.x) != 0 or len(self.y & other.y) != 0

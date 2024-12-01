@@ -29,6 +29,14 @@ class Direction(Enum):
         rotated = self.value + (n if clockwise else -n)
         return Direction((rotated-1) % 4 + 1)
     
+    @property
+    def vertical(self) -> bool:
+        return self in (Direction.UP, Direction.DOWN)
+    
+    @property
+    def horizontal(self) -> bool:
+        return self in (Direction.LEFT, Direction.RIGHT)
+    
 if __name__ == '__main__':
     d = Direction.RIGHT
     print(d.rotate(1))
