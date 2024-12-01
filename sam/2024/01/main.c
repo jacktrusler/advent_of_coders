@@ -2,10 +2,66 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <omp.h>
+#include <xmmintrin.h>
 
 #define ROWS 1000
 #define BUFFER_SIZE 16384
 #define RUNS 1000
+
+void radix_sort(int arr[], int n)
+{
+    int max = arr[0];
+
+#pragma omp parallel for reduction(max : max)
+    for (int i = 1; i < n; i++)
+    {
+        _mm_prefetch(&arr[i + 16], _MM_HINT_T0);
+        if (arr[i] > max)
+            max = arr[i];
+    }
+
+    int *output = malloc(n * sizeof(int));
+
+    for (int exp = 1; max / exp > 0; exp *= 10)
+    {
+        int count[10] = {0};
+
+        {
+            int local_count[10] = {0};
+            for (int i = 0; i < n; i++)
+            {
+                _mm_prefetch(&arr[i + 16], _MM_HINT_T0);
+                local_count[(arr[i] / exp) % 10]++;
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                count[i] += local_count[i];
+            }
+        }
+
+        for (int i = 1; i < 10; i++)
+        {
+            count[i] += count[i - 1];
+        }
+
+        for (int i = n - 1; i >= 0; i--)
+        {
+            _mm_prefetch(&arr[i - 16], _MM_HINT_T0);
+            output[count[(arr[i] / exp) % 10] - 1] = arr[i];
+            count[(arr[i] / exp) % 10]--;
+        }
+
+        for (int i = 0; i < n; i++)
+        {
+            _mm_prefetch(&output[i + 16], _MM_HINT_T0);
+            arr[i] = output[i];
+        }
+    }
+
+    free(output);
+}
 
 int compare(const void *a, const void *b)
 {
@@ -51,8 +107,8 @@ int main(int argc, char *argv[])
             }
         }
 
-        qsort(a, ROWS, sizeof(int), compare);
-        qsort(b, ROWS, sizeof(int), compare);
+        radix_sort(a, ROWS);
+        radix_sort(b, ROWS);
 
         int distance = 0;
         int similarity = 0;

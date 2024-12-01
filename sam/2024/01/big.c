@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include <stdbool.h>
 #include <omp.h>
 #include <xmmintrin.h>
 
