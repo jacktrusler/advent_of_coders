@@ -102,8 +102,8 @@ int main()
             return 1;
         }
 
-        int *a = malloc(ROWS * sizeof(int));
-        int *b = malloc(ROWS * sizeof(int));
+        int *a = malloc(ROWS * 2 * sizeof(int));
+        int *b = a + ROWS;
         int *table = calloc(100000000, sizeof(int)); // Initialize to 0
 
         char buffer[BUFFER_SIZE];
@@ -148,7 +148,7 @@ int main()
         printf("%lld %lld \n", distance, similarity);
 
         free(a);
-        free(b);
+        // free(b);
         free(table);
         fclose(file);
     }
