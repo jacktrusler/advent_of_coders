@@ -16,6 +16,7 @@ func makeLightArray() [][]int {
 }
 
 func Day6() {
+	fmt.Println("Running day 6...")
 	fileAsString := utils.FileAsString("./data/day06.txt")
 	stringArr := strings.Split(fileAsString, "\n")
 

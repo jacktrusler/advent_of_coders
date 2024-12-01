@@ -9,6 +9,7 @@ import (
 )
 
 func Day5() {
+	fmt.Println("Running day 5...")
 	fileAsString := utils.FileAsString("./data/day05.txt")
 	stringArr := strings.Split(fileAsString, "\n")
 

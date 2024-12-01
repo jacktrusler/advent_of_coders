@@ -171,6 +171,7 @@ func containsFalse() bool {
 	return false
 }
 func Day7() {
+	fmt.Println("Running day 7...")
 	// --- Part 1 ---
 	fileAsString := utils.FileAsString("./data/day07.txt")
 	stringArr := strings.Split(fileAsString, "\n")

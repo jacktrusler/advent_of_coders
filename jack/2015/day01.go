@@ -2,9 +2,11 @@ package main
 
 import (
 	"aoc2015/pkg/utils"
+	"fmt"
 )
 
 func Day1() {
+	fmt.Println("Running day 1...")
 	fileAsString := utils.FileAsString("./data/day01.txt")
 	floor := 0
 

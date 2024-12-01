@@ -7,6 +7,7 @@ import (
 )
 
 func Day2() {
+	fmt.Println("Running day 2...")
 	fileAsString := utils.FileAsString("./data/day02.txt")
 	presents := strings.Split(fileAsString, "\n")
 

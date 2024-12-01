@@ -8,6 +8,7 @@ import (
 )
 
 func Day4() {
+	fmt.Println("Running day 4...")
 	// secret key
 	input := "bgvyzdsv"
 
