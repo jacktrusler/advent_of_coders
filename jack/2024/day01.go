@@ -4,64 +4,58 @@ import (
 	"fmt"
 	"goutils"
 	"math"
-	"sort"
+	"slices"
+	"strconv"
 	"strings"
 )
 
 type Occurances map[int]int
 
-func makeIdListsAndMaps(allIds []string) (l1, l2 []int, m1, m2 Occurances) {
-	l1 = make([]int, 0)
-	l2 = make([]int, 0)
-	m1 = make(Occurances)
+func makeIdListsAndMaps(allIds []string) (l1, l2 []int, m2 Occurances) {
+	l1 = make([]int, len(allIds))
+	l2 = make([]int, len(allIds))
 	m2 = make(Occurances)
-	for _, ids := range allIds {
-		var id1, id2 int
-		fmt.Sscanf(ids, "%d %d", &id1, &id2)
-		l1 = append(l1, id1)
-		l2 = append(l2, id2)
-		m1[id1]++
-		m2[id2]++
+
+	for i, ids := range allIds {
+		matches := strings.Fields(ids)
+		var match1, match2 int
+		var err error
+		match1, err = strconv.Atoi(matches[0])
+		match2, err = strconv.Atoi(matches[1])
+		if err != nil {
+			panic("failed string conv")
+		}
+
+		l1[i] = match1
+		l2[i] = match2
+		m2[match2]++
 	}
-	return l1, l2, m1, m2
+	return l1, l2, m2
 }
 
-func part1(input string) {
+func part1and2(input string) {
 	allIds := strings.Split(input, "\n")
-	list1, list2, _, _ := makeIdListsAndMaps(allIds)
+	list1, list2, m2 := makeIdListsAndMaps(allIds)
 
-	sort.Slice(list1, func(i, j int) bool {
-		return list1[i] < list1[j]
-	})
-	sort.Slice(list2, func(i, j int) bool {
-		return list2[i] < list2[j]
-	})
+	slices.Sort(list1)
+	slices.Sort(list2)
 
 	var total float64
-	for i := range list1 {
+	var total2 int
+	for i, id := range list1 {
 		distance := list1[i] - list2[i]
 		total += math.Abs(float64(distance))
-	}
-	fmt.Println(int(total))
-}
-
-func part2(input string) {
-	allIds := strings.Split(input, "\n")
-	list1, _, _, map2 := makeIdListsAndMaps(allIds)
-
-	total := 0
-	for _, id := range list1 {
-		if map2[id] != 0 {
-			total += id * map2[id]
+		if m2[id] != 0 {
+			total2 += id * m2[id]
 		}
 	}
-	fmt.Println(total)
+	fmt.Println("----- Part 1 -----")
+	fmt.Println(int(total))
+	fmt.Println("----- Part 2 -----")
+	fmt.Println(total2)
 }
 
 func Day1() {
 	input := goutils.FileAsString("./input/day01.txt")
-	fmt.Println("----- Part 1 -----")
-	part1(input)
-	fmt.Println("----- Part 2 -----")
-	part2(input)
+	part1and2(input)
 }
