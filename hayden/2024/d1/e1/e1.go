@@ -6,9 +6,11 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
+	start := time.Now()
 	numbers_raw, err := os.ReadFile("../input.txt")
 	if err != nil {
 		panic("It's goever before it even begon")
@@ -42,4 +44,12 @@ func main() {
 		}
 	}
 	fmt.Println(distance)
+	// Code to measure
+	duration := time.Since(start)
+
+	// Formatted string, such as "2h3m0.5s" or "4.503μs"
+	fmt.Println(duration)
+
+	// Nanoseconds as int64
+	fmt.Println(duration.Nanoseconds())
 }
