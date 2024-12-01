@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -10,13 +11,16 @@ import (
 
 func main() {
 	start := time.Now()
-	numbers_raw, err := os.ReadFile("../input.txt")
+	numbers_raw, err := os.ReadFile("input.txt")
 	if err != nil {
 		panic("It's goever before it even begon")
 	}
 	numbers_rows := strings.Split(string(numbers_raw), "\n")
 	leftInput := make([]int, len(numbers_rows))
-	rightInput := make(map[int]int)
+	rightInput := make([]int, len(numbers_rows))
+	rightMap := make(map[int]int)
+	similarity := 0
+	distance := 0
 	for idx, row := range numbers_rows {
 		lr_strs := strings.Fields(row)
 		if len(lr_strs) != 2 {
@@ -28,12 +32,22 @@ func main() {
 			panic("You should've given me 2 integer you fricker")
 		}
 		leftInput[idx] = left
-		rightInput[right] = (rightInput[right] + 1)
+		rightInput[idx] = right
+		rightMap[right] = (rightMap[right] + 1)
 	}
-	similarity := 0
-	for _, lhnum := range leftInput {
-		similarity += lhnum * rightInput[lhnum]
+	//Sorting Time
+	slices.Sort(leftInput)
+	slices.Sort(rightInput)
+	for idx, lhs := range leftInput {
+		thisDist := lhs - rightInput[idx]
+		if thisDist < 0 {
+			distance -= thisDist
+		} else {
+			distance += thisDist
+		}
+		similarity += lhs * rightMap[lhs]
 	}
+	fmt.Println(distance)
 	fmt.Println(similarity)
 	// Code to measure
 	duration := time.Since(start)
