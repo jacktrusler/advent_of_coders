@@ -1,1 +1,16 @@
 hayden/2022/.DS_Store
+
+# Javascript
+node_modules/
+
+# Naughty Macs
+*.DS_Store
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
