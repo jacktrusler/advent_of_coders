@@ -3,10 +3,70 @@
 #include <time.h>
 #include <string.h>
 #include <stdbool.h>
+#include <omp.h>
+#include <xmmintrin.h>
 
 #define ROWS 4000000
-#define BUFFER_SIZE 32768
+#define BUFFER_SIZE 65536
 #define RUNS 1
+
+void radix_sort(int arr[], int n)
+{
+    int max = arr[0];
+
+#pragma omp parallel for reduction(max : max)
+    for (int i = 1; i < n; i++)
+    {
+        _mm_prefetch(&arr[i + 16], _MM_HINT_T0);
+        if (arr[i] > max)
+            max = arr[i];
+    }
+
+    int *output = malloc(n * sizeof(int));
+
+    for (int exp = 1; max / exp > 0; exp *= 10)
+    {
+        int count[10] = {0};
+
+#pragma omp parallel
+        {
+            int local_count[10] = {0};
+#pragma omp for
+            for (int i = 0; i < n; i++)
+            {
+                _mm_prefetch(&arr[i + 16], _MM_HINT_T0);
+                local_count[(arr[i] / exp) % 10]++;
+            }
+
+#pragma omp critical
+            for (int i = 0; i < 10; i++)
+            {
+                count[i] += local_count[i];
+            }
+        }
+
+        for (int i = 1; i < 10; i++)
+        {
+            count[i] += count[i - 1];
+        }
+
+        for (int i = n - 1; i >= 0; i--)
+        {
+            _mm_prefetch(&arr[i - 16], _MM_HINT_T0);
+            output[count[(arr[i] / exp) % 10] - 1] = arr[i];
+            count[(arr[i] / exp) % 10]--;
+        }
+
+#pragma omp parallel for
+        for (int i = 0; i < n; i++)
+        {
+            _mm_prefetch(&output[i + 16], _MM_HINT_T0);
+            arr[i] = output[i];
+        }
+    }
+
+    free(output);
+}
 
 int compare(const void *a, const void *b)
 {
@@ -25,14 +85,18 @@ int fast_atoi(const char *str)
            (str[7] - '0');
 }
 
-int main(int argc, char *argv[])
+int main()
 {
     clock_t start = clock();
+    double duration;
+
+    omp_set_num_threads(16);
 
     for (int run = 0; run < RUNS; run++)
     {
 
         FILE *file = fopen("bigboy.txt", "rb");
+
         if (file == NULL)
         {
             fprintf(stderr, "ERROR: failed to open file");
@@ -42,7 +106,6 @@ int main(int argc, char *argv[])
         int *a = malloc(ROWS * sizeof(int));
         int *b = malloc(ROWS * sizeof(int));
         int *table = calloc(100000000, sizeof(int)); // Initialize to 0
-        int table[10000000] = {0};
 
         char buffer[BUFFER_SIZE];
         setvbuf(file, buffer, _IOFBF, BUFFER_SIZE);
@@ -57,21 +120,30 @@ int main(int argc, char *argv[])
             }
         }
 
-        qsort(a, ROWS, sizeof(int), compare);
-        qsort(b, ROWS, sizeof(int), compare);
+        radix_sort(a, ROWS);
+        radix_sort(b, ROWS);
 
         long long distance = 0;
-        long long similarity = 0;
-
+#pragma omp parallel for reduction(+ : distance)
         for (int i = 0; i < ROWS; i++)
         {
-            distance += (long long)abs(a[i] - b[i]);
+            _mm_prefetch(&a[i + 16], _MM_HINT_T0);
+            _mm_prefetch(&b[i + 16], _MM_HINT_T0);
+            distance += abs(a[i] - b[i]);
+        }
+
+#pragma omp parallel for
+        for (int i = 0; i < ROWS; i++)
+        {
+#pragma omp atomic write
             table[a[i]] = a[i];
         }
 
+        long long similarity = 0;
+#pragma omp parallel for reduction(+ : similarity)
         for (int j = 0; j < ROWS; j++)
         {
-            similarity += (long long)table[b[j]];
+            similarity += table[b[j]];
         }
 
         printf("%lld %lld \n", distance, similarity);
@@ -83,7 +155,7 @@ int main(int argc, char *argv[])
     }
 
     clock_t end = clock();
-    double duration = (double)(end - start) / CLOCKS_PER_SEC;
+    duration = (double)(end - start) / CLOCKS_PER_SEC;
     printf("Completed %d runs\n", RUNS);
     printf("Time taken: %f seconds\n", duration);
     return 0;
