@@ -10,21 +10,25 @@ import (
 
 type Occurances map[int]int
 
-func makeIdLists(allIds []string) (l1, l2 []int) {
+func makeIdListsAndMaps(allIds []string) (l1, l2 []int, m1, m2 Occurances) {
 	l1 = make([]int, 0)
 	l2 = make([]int, 0)
+	m1 = make(Occurances)
+	m2 = make(Occurances)
 	for _, ids := range allIds {
-		var x, y int
-		fmt.Sscanf(ids, "%d %d", &x, &y)
-		l1 = append(l1, x)
-		l2 = append(l2, y)
+		var id1, id2 int
+		fmt.Sscanf(ids, "%d %d", &id1, &id2)
+		l1 = append(l1, id1)
+		l2 = append(l2, id2)
+		m1[id1]++
+		m2[id2]++
 	}
-	return l1, l2
+	return l1, l2, m1, m2
 }
 
 func part1(input string) {
 	allIds := strings.Split(input, "\n")
-	list1, list2 := makeIdLists(allIds)
+	list1, list2, _, _ := makeIdListsAndMaps(allIds)
 
 	sort.Slice(list1, func(i, j int) bool {
 		return list1[i] < list1[j]
@@ -34,7 +38,7 @@ func part1(input string) {
 	})
 
 	var total float64
-	for i, _ := range list1 {
+	for i := range list1 {
 		distance := list1[i] - list2[i]
 		total += math.Abs(float64(distance))
 	}
@@ -43,14 +47,7 @@ func part1(input string) {
 
 func part2(input string) {
 	allIds := strings.Split(input, "\n")
-	list1, _ := makeIdLists(allIds)
-	map2 := make(Occurances)
-
-	for _, ids := range allIds {
-		var x, y int
-		fmt.Sscanf(ids, "%d %d", &x, &y)
-		map2[y]++
-	}
+	list1, _, _, map2 := makeIdListsAndMaps(allIds)
 
 	total := 0
 	for _, id := range list1 {
