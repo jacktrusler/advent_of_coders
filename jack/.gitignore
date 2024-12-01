@@ -1,3 +1,6 @@
 node_modules/
 out/
 megaboys/
+bigboys/
+
+*.DS_Store

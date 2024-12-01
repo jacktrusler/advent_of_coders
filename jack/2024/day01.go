@@ -58,8 +58,8 @@ func part2(input string) {
 	fmt.Println(total)
 }
 
-func main() {
-	input := goutils.FileAsString("./input.txt")
+func Day1() {
+	input := goutils.FileAsString("./input/day01.txt")
 	fmt.Println("----- Part 1 -----")
 	part1(input)
 	fmt.Println("----- Part 2 -----")
