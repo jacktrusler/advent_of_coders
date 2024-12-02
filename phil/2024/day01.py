@@ -1,5 +1,3 @@
-from pathlib import Path
-import aoc_util
 from collections import Counter
 
 def solve(puzzle_input: str):
@@ -11,5 +9,7 @@ def solve(puzzle_input: str):
     return a, b
 
 if __name__ == '__main__':
+    from pathlib import Path
+    import aoc_util
     input_path = Path(__file__).parent / "input" / "01.txt"
     aoc_util.report(*aoc_util.run_solution(solve, input_path))
