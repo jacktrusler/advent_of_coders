@@ -1,4 +1,4 @@
-fn main() -> anyhow::Result<()> {
+fn main() {
     let (mut left, mut right) = advent_of_code_2024::read_input!().lines().fold(
         (vec![], vec![]),
         |(mut left, mut right), line| {
@@ -22,6 +22,4 @@ fn main() -> anyhow::Result<()> {
 
     println!("part 1: {p1}");
     println!("part 2: {p2}");
-
-    Ok(())
 }
