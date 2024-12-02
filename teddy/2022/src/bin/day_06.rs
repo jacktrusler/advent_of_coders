@@ -1,4 +1,4 @@
-fn main() -> std::io::Result<()> {
+fn main() -> anyhow::Result<()> {
     let input = std::fs::read("inputs/day_06.txt")?;
 
     let unique_window_pos = |size: usize| {

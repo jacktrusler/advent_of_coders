@@ -8,3 +8,7 @@ codegen-units = 1
 lto = true
 panic = "abort"
 strip = true
+
+[dependencies]
+anyhow = "1.0.68"
+itertools = "0.10.5"
