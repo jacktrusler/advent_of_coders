@@ -4,11 +4,10 @@
 #include <string.h>
 #include <omp.h>
 #include <xmmintrin.h>
+#include <windows.h>
 
 #define ROWS 4000000
 #define BUFFER_SIZE 65536
-#define RUNS 1
-#define CHUNK_SIZE (BUFFER_SIZE * 1024)
 
 void parallel_radix_sort(int *arr, int n)
 {
@@ -126,17 +125,6 @@ int fast_atoi(const char *str)
            (str[7] - '0');
 }
 
-void process_chunk(char *chunk, int *a, int *b, int offset, int count)
-{
-#pragma omp parallel for
-    for (int i = 0; i < count; i++)
-    {
-        char *line = chunk + (i * 20);
-        a[offset + i] = fast_atoi(line);
-        b[offset + i] = fast_atoi(line + 11);
-    }
-}
-
 int main()
 {
     clock_t start = clock();
@@ -144,76 +132,74 @@ int main()
 
     omp_set_num_threads(16);
 
-    for (int run = 0; run < RUNS; run++)
+    HANDLE hFile = CreateFile("bigboy.txt", GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
     {
-
-        FILE *file = fopen("bigboy.txt", "rb");
-
-        if (file == NULL)
-        {
-            fprintf(stderr, "ERROR: failed to open file");
-            return 1;
-        }
-
-        int *a = malloc(ROWS * 2 * sizeof(int));
-        int *b = a + ROWS;
-
-        duration = (double)(clock() - start) / CLOCKS_PER_SEC;
-        printf("Alloc %f\n", duration);
-
-        char *file_buff = malloc(CHUNK_SIZE);
-        size_t bytes_read;
-        int numbers_processed = 0;
-
-        while ((bytes_read = fread(file_buff, 1, CHUNK_SIZE, file)) > 0)
-        {
-            int lines_in_chunk = bytes_read / 20;
-            process_chunk(file_buff, a, b, numbers_processed, lines_in_chunk);
-            numbers_processed += lines_in_chunk;
-            if (numbers_processed >= ROWS)
-                break;
-        }
-
-        duration = (double)(clock() - start) / CLOCKS_PER_SEC;
-        printf("File parse %f\n", duration);
-
-        parallel_radix_sort(a, ROWS);
-        parallel_radix_sort(b, ROWS);
-
-        duration = (double)(clock() - start) / CLOCKS_PER_SEC;
-        printf("Sort %f\n", duration);
-
-        long long distance = 0;
-        long long similarity = 0;
-#pragma omp parallel for reduction(+ : distance, similarity)
-        for (int i = 0; i < ROWS; i++)
-        {
-            _mm_prefetch(&a[i + 16], _MM_HINT_T0);
-            _mm_prefetch(&b[i + 16], _MM_HINT_T0);
-            int ai = a[i];
-            distance += abs(ai - b[i]);
-            int pos = binary_search(b, ROWS, ai);
-            if (pos >= 0)
-            {
-                int count = 0;
-                while (b[pos + count] == ai)
-                {
-                    count++;
-                }
-                similarity += ai * count;
-            }
-        }
-
-        printf("%lld %lld \n", distance, similarity);
-
-        free(a);
-        free(file_buff);
-        fclose(file);
+        fprintf(stderr, "CreateFile failed\n");
+        return 1;
     }
+
+    HANDLE hMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+    if (hMapping == NULL)
+    {
+        CloseHandle(hFile);
+        fprintf(stderr, "CreateFileMapping failed\n");
+        return 1;
+    }
+
+    char *file_content = (char *)MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0);
+    if (file_content == NULL)
+    {
+        CloseHandle(hMapping);
+        CloseHandle(hFile);
+        fprintf(stderr, "MapViewOfFile failed\n");
+        return 1;
+    }
+
+    int *a = malloc(ROWS * 2 * sizeof(int));
+    int *b = a + ROWS;
+
+#pragma omp parallel for
+    for (int i = 0; i < ROWS; i++)
+    {
+        char *line = file_content + (i * 20);
+        a[i] = fast_atoi(line);
+        b[i] = fast_atoi(line + 11);
+    }
+
+    parallel_radix_sort(a, ROWS);
+    parallel_radix_sort(b, ROWS);
+
+    long long distance = 0;
+    long long similarity = 0;
+#pragma omp parallel for reduction(+ : distance, similarity)
+    for (int i = 0; i < ROWS; i++)
+    {
+        _mm_prefetch(&a[i + 16], _MM_HINT_T0);
+        _mm_prefetch(&b[i + 16], _MM_HINT_T0);
+        int ai = a[i];
+        distance += abs(ai - b[i]);
+        int pos = binary_search(b, ROWS, ai);
+        if (pos >= 0)
+        {
+            int count = 0;
+            while (b[pos + count] == ai)
+            {
+                count++;
+            }
+            similarity += ai * count;
+        }
+    }
+
+    printf("%lld %lld \n", distance, similarity);
+
+    CloseHandle(hMapping);
+    CloseHandle(hFile);
+    UnmapViewOfFile(file_content);
+    free(a);
 
     clock_t end = clock();
     duration = (double)(end - start) / CLOCKS_PER_SEC;
-    printf("Completed %d runs\n", RUNS);
     printf("Time taken: %f seconds\n", duration);
     return 0;
 }
