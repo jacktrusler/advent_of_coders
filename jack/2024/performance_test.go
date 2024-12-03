@@ -8,6 +8,6 @@ import (
 // go test -vet=off -bench=. .
 func BenchmarkPerformance(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Day1()
+		main()
 	}
 }

@@ -24,7 +24,7 @@ func numberedReports(stringReports []string) [][]int {
 	return numReports
 }
 
-func Part1(input string) {
+func day2part1(input string) {
 	reports := strings.Split(input, "\n")
 	numReports := numberedReports(reports)
 
@@ -57,7 +57,7 @@ reports:
 	fmt.Println(safeReports)
 }
 
-func Part2(input string) {
+func day2part2(input string) {
 	reports := strings.Split(input, "\n")
 	numReports := numberedReports(reports)
 
@@ -97,7 +97,7 @@ reports:
 func Day2() {
 	input := goutils.FileAsString("./input/day02.txt")
 	fmt.Println("----- Part 1 -----")
-	Part1(input)
+	day2part1(input)
 	fmt.Println("----- Part 2 -----")
-	Part2(input)
+	day2part2(input)
 }
