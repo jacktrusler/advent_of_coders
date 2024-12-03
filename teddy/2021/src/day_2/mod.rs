@@ -26,7 +26,11 @@ pub struct Submarine {
 
 impl Submarine {
     pub const fn with_aim() -> Self {
-        Self { aim: Some(0), x: 0, y: 0 }
+        Self {
+            aim: Some(0),
+            x: 0,
+            y: 0,
+        }
     }
 
     fn travel(&mut self, direction: Direction, distance: i32) {

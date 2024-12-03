@@ -1,8 +1,8 @@
 use nom::{
+    IResult,
     bytes::complete::tag,
     character::complete::alpha1,
     sequence::{delimited, terminated, tuple},
-    IResult,
 };
 
 enum Direction {

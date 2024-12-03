@@ -1,11 +1,11 @@
 use nom::{
+    IResult,
     branch::alt,
     bytes::complete::tag,
     character::complete::{i32, u8},
     combinator::opt,
     multi::{fold_many1, many1},
     sequence::{pair, terminated, tuple},
-    IResult,
 };
 
 struct Rgb {

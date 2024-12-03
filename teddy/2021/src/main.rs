@@ -1,10 +1,4 @@
-#![warn(
-    clippy::all,
-    clippy::pedantic,
-    clippy::nursery,
-    clippy::cargo,
-    rust_2018_idioms
-)]
+#![warn(clippy::all, clippy::nursery, rust_2018_idioms)]
 #![allow(dead_code)]
 #![windows_subsystem = "console"]
 #![doc = include_str!("../../README.md")]
@@ -32,7 +26,7 @@ fn main() {
 
     // Day 4
     let input_day4 = day_4::parse_input(include_str!("day_4/input.txt"));
-    println!("{:?}", input_day4);
+    println!("{input_day4:?}");
     // println!("{}", day_4::bingo_1(&input_day4)); // 23177
     // println!("{}", day_4::bingo_2(&input_day4)); // 6804
 }

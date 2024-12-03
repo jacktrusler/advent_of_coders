@@ -15,8 +15,11 @@ pub fn power_consumption_1(input: &[u32]) -> u32 {
         .fold(
             (String::with_capacity(cols), String::with_capacity(cols)),
             |(gamma, epsilon), freqs| {
-                if freqs[&0] > freqs[&1] { (gamma + "0", epsilon + "1") } 
-                else { (gamma + "1", epsilon + "0") }
+                if freqs[&0] > freqs[&1] {
+                    (gamma + "0", epsilon + "1")
+                } else {
+                    (gamma + "1", epsilon + "0")
+                }
             },
         );
 
@@ -49,8 +52,8 @@ fn recurse(input: &[u32], op: &str, idx: usize) -> u32 {
     let freqs = frequencies(rows);
 
     let min_max = match op {
-        "gt" => if freqs[&0] > freqs[&1] { 0 } else { 1 },
-        "le" => if freqs[&0] <= freqs[&1] { 0 } else { 1 },
+        "gt" => u32::from(freqs[&0] <= freqs[&1]),
+        "le" => u32::from(freqs[&0] > freqs[&1]),
         _ => unreachable!(),
     };
 
@@ -66,7 +69,8 @@ fn recurse(input: &[u32], op: &str, idx: usize) -> u32 {
                 .filter_map(|&d| char::from_digit(d, 10))
                 .collect::<String>(),
             2,
-        ).unwrap()
+        )
+        .unwrap()
     } else {
         recurse(
             &filtered.into_iter().flatten().copied().collect::<Vec<_>>(),

@@ -1,10 +1,10 @@
 use nom::{
+    IResult,
     bytes::complete::tag,
     character::complete::{i32, multispace1},
     combinator::opt,
     multi::many1,
     sequence::{terminated, tuple},
-    IResult,
 };
 
 fn main() {

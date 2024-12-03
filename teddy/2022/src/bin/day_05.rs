@@ -16,7 +16,7 @@ fn main() -> anyhow::Result<()> {
         .collect::<Vec<_>>();
 
     let mut crates1 = Vec::with_capacity(9);
-    crates1.extend(std::iter::repeat(Vec::with_capacity(64)).take(9));
+    crates1.extend(std::iter::repeat_with(|| Vec::with_capacity(64)).take(9));
 
     for line in crates.into_iter().rev() {
         for (i, c) in line {

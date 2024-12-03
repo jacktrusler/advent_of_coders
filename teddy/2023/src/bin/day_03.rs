@@ -27,7 +27,7 @@ fn main() {
     };
     let is_part_number = |i: usize, j: usize| {
         deltas.iter().any(|&(di, dj)| {
-            char_from_offset(i, j, di, dj).map_or(false, |(c, ..)| !c.is_ascii_digit() && c != &'.')
+            char_from_offset(i, j, di, dj).is_some_and(|(c, ..)| !c.is_ascii_digit() && c != &'.')
         })
     };
     let maybe_gear = |i: usize, j: usize| {
