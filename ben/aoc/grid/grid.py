@@ -1,60 +1,63 @@
 from __future__ import annotations
-from abc import ABC
+from abc import ABC, ABCMeta
 from aoc.grid import Point
-from aoc.utils.numpy import points
-from collections import Counter
+from collections import Counter, defaultdict
 from collections.abc import Iterable
-import functools
+from functools import cached_property
 import itertools
-import numpy as np
-from numpy.typing import NDArray
+import re
 from typing import Iterable, TypeVar, Generic, Generator, Iterator, Type
 
 
+class PostInitCaller(type):
+    def __call__(cls, *args, **kwargs):
+        obj = type.__call__(cls, *args, **kwargs)
+        obj.__post_init__()
+        return obj
+BaseGridMeta = type('BaseGridMeta', (ABCMeta, PostInitCaller), {})
+
+
 T = TypeVar('T')
-class BaseGrid(ABC, Generic[T]):
+class BaseGrid(Generic[T]):
+    __metaclass__ = BaseGridMeta
+
     def __init__(self, width: int, height: int):
         self.width = width
         self.height = height
 
-    def __post_init__(self):
-        pass
+    def __post_init__(self): pass
 
     def binds(self, idx: tuple[int, int] | Point) -> bool:
         return 0 <= idx[0] < self.width and 0 <= idx[1] < self.height
     
-    def top_left(self) -> tuple[int, int]:
-        return (0, 0)
-    
-    def bottom_right(self) -> tuple[int, int]:
-        return (self.width-1, self.height-1)
+    @cached_property
+    def top_left(self) -> Point: return Point(0, 0)
+    @cached_property
+    def top_right(self) -> Point: return Point(self.width-1, 0)
+    @cached_property
+    def bottom_left(self) -> Point: return Point(0, self.height-1)
+    @cached_property
+    def bottom_right(self) -> Point: return Point(self.width-1, self.height-1)
 
 
 class Grid(BaseGrid, Generic[T]):
     def __init__(self, data: Iterable[Iterable[T]], dtype: Type = None):
-        if dtype:
-            self.__data = list(list(dtype(v) for v in row) for row in data)
-        else:
-            self.__data = list(list(v for v in row) for row in data)
+        self.__data = list(list(dtype(v) for v in r) for r in data) if dtype else list(list(v for v in r) for r in data)
+        self.dtype = dtype
 
         height = len(self.__data)
         width = len(self.__data[0]) if height else 0
         super().__init__(width, height)
         if height == 0: return
-        self.dtype = dtype
 
         # Validate data
-        if any(len(row) != width for row in self.__data):
-            raise ValueError(f'Invalid grid dimensions')
+        if any(len(r) != width for r in self.__data): raise ValueError(f'Invalid grid dimensions')
 
-    def __hash__(self):
-        return hash(self.__data)
-    
-    def __eq__(self, other: Grid):
-        return self.__data == other.__data
-
-    def __str__(self):
-        return '\n'.join(str(x) for x in self.__data)
+    def __hash__(self): return hash(self.__data)
+    def __eq__(self, other: Grid): return self.__data == other.__data
+    def __str__(self): return '\n'.join(str(x) for x in self.__data)
+    def __repr__(self): return f'{self.__class__}()'
+    def __iter__(self) -> Iterator[tuple[T]]: return iter(self.__data)
     
     def __contains__(self, value: T) -> bool:
         if self.dtype and not isinstance(value, self.dtype): return False
@@ -92,11 +95,9 @@ class Grid(BaseGrid, Generic[T]):
                     self[p] = value
             case _: raise TypeError(f'Invalid index: {idx}')
     
-    def __iter__(self) -> Iterator[tuple[T]]:
-        return iter(self.__data)
-    
-    def values(self) -> Generator[T]:
-        yield from (v for row in self.__data for v in row)
+    def values(self) -> Generator[T]: yield from (v for r in self.__data for v in r)
+    def rows(self) -> Generator[tuple[T]]: yield from self.__data
+    def columns(self) -> Generator[tuple[T]]: yield from zip(*self.__data)
 
     def __set_slice(self, value: T, x: slice = None, y: slice = None):
         def _slice_to_range(s: slice, default: int) -> range:
@@ -114,12 +115,6 @@ class Grid(BaseGrid, Generic[T]):
         if x:
             return Grid((row[x] for row in data), dtype=self.dtype)
         return Grid(data, dtype=self.dtype)
-    
-    def rows(self) -> Generator[tuple[T]]:
-        yield from self.__data
-
-    def columns(self) -> Generator[tuple[T]]:
-        yield from zip(*self.__data)
 
     def rotate(self, n: int = 1, clockwise: bool = True) -> Grid:
         n = n % 4 if clockwise else (4 - n) % 4
@@ -143,29 +138,32 @@ class Grid(BaseGrid, Generic[T]):
             return sum(row.count(value) for row in self.__data)
         
 
+class KeyGrid(BaseGrid, Generic[T], ABC):
+    def __init__(self, data: str):
+        self.__points: dict[str, set[Point]] = defaultdict(set)
+        members = set(vars(self.__class__)) - set(vars(KeyGrid))
+        targets = dict()
+        for x in members:
+            target = getattr(self.__class__, x)
+            targets[target] = x
+            if isinstance(target, str):
+                setattr(self, x, lambda: self.__points[x])
 
-class _Grid(ABC):
-    def __init__(self, data: Iterable[Iterable[any]]):
-        grid = np.array(data)
-        self.width = grid.shape[1]
-        self.height = grid.shape[0]
-        
-        _members = set(vars(self.__class__)) - set(vars(Grid))
-        for x in _members:
-            method = getattr(self.__class__, x)
-            if callable(method):
-                truth = method(grid)
-                setattr(self, x, set(points(truth)))
-        self._setup(grid)
-
-    def _setup(self, grid: NDArray):
-        pass
-
-        
+        line_length = data.index('\n') + 1
+        regex = rf'[{"".join(targets.keys())}]'
+        def _per_match(m: re.Match):
+            y, x = divmod(m.start(), line_length)
+            key = m.group(0)
+            self.__points[key].add(Point(x, y))
+        [_per_match(m) for m in re.finditer(regex, data)]
+        print(self.__points)
+        two = 2
     
 
-class TestGrid(_Grid):
-    test = lambda x: x > 8
+class TestGrid(KeyGrid):
+    import numpy as np
+
+    test = r'\^'
 
 if __name__ == '__main__':
     import time
@@ -247,6 +245,11 @@ if __name__ == '__main__':
     # print('-- Set str --')
     # test_time(fn, ar, '!')
     # test_time(fn, gr, '!')
+
+    test_str = '...^\n.^..\n^^..\n....'
+    kg = TestGrid(test_str)
+    print(kg)
+    print(kg.test)
 
 
     

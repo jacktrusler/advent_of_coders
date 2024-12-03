@@ -1,40 +1,36 @@
 import aoc
-from aoc.utils import Interval
 import re
-from typing import Match, Iterator, Iterable
+from typing import Match, Iterable, Iterator
 
 
 def process_mul(instruction: Match[str]) -> int:
     data = instruction.groupdict()
     return int(data['x']) * int(data['y'])
 
-def valid_intervals(dos_and_donts: Iterable[Match[str]]) -> Iterator[Interval]:
-    state = True
-    prev = 0
-    instruction = None
-
-    for instruction in dos_and_donts:
-        if not state and instruction.group(1) == 'do()':
-            state = True
-            prev = instruction.end()
-        elif state and instruction.group(1) == "don't()":
-            state = False
-            yield Interval(prev, instruction.start())
-
-    if state and instruction:
-        yield Interval(prev, len(instruction.string))
+def process_do_dont(instructions: Iterable[Match[str]]) -> Iterator[int]:
+    active = True
+    for x in instructions:
+        inst = x.group(0)
+        if inst.startswith('mul') and active:
+            yield process_mul(x)
+        elif inst == "do()":
+            active = True
+        elif inst == "don't()":
+            active = False
 
 @aoc.register(__file__)
 def answers():
     memory = aoc.read_data()
 
     # Part One
-    mul_instructions = [x for x in re.finditer(r'(mul\((?P<x>\d{1,3}),(?P<y>\d{1,3})\))', memory)]
-    yield sum(process_mul(x) for x in mul_instructions)
+    mul_regex = r'mul\((?P<x>\d{1,3}),(?P<y>\d{1,3})\)'
+    instructions = (x for x in re.finditer(f'({mul_regex})', memory))
+    yield sum(process_mul(x) for x in instructions)
 
     # Part Two
-    intervals = list(valid_intervals(x for x in re.finditer(r'(do\(\)|don\'t\(\))', memory)))
-    yield sum(process_mul(x) for x in mul_instructions if any(x.start() in y for y in intervals))
+    do_dont_regex = r'do\(\)|don\'t\(\)'
+    instructions = (x for x in re.finditer(f'({mul_regex}|{do_dont_regex})', memory))
+    yield sum(process_do_dont(instructions))
 
 if __name__ == '__main__':
     aoc.run()
