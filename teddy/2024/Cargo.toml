@@ -3,13 +3,6 @@ name = "advent-of-code-2024"
 version = "0.1.0"
 edition = "2021"
 
-[profile.dev]
-debug = 0
-
-[profile.release]
-codegen-units = 1
-lto = true
-
 [dependencies]
 anyhow = "1.0.93"
 itertools = "0.13.0"

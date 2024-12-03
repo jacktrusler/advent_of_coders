@@ -1,0 +1,11 @@
+[workspace]
+members = ["2021", "2022", "2023", "2024"]
+default-members = ["2024"]
+resolver = "2"
+
+[profile.dev]
+debug = 0
+
+[profile.release]
+codegen-units = 1
+lto = true

@@ -15,8 +15,8 @@ enum Op {
 }
 
 fn main() -> anyhow::Result<()> {
-    let input = std::fs::read_to_string("inputs/day_11.txt")?;
-    let monkeys = vec![];
+    let input = std::fs::read_to_string("2022/inputs/day_11.txt")?;
+    let monkeys: Vec<i32> = vec![];
     let groups = input.split("\n\n").map(|g| {
         let mut lines = g.lines();
         let items = get_digits(&mut lines);

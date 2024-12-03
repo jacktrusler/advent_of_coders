@@ -3,12 +3,6 @@ name = "advent-of-code-2022"
 version = "0.1.0"
 edition = "2021"
 
-[profile.release]
-codegen-units = 1
-lto = true
-panic = "abort"
-strip = true
-
 [dependencies]
-anyhow = "1.0.68"
-itertools = "0.10.5"
+anyhow = "1.0.93"
+itertools = "0.13.0"

@@ -1,5 +1,5 @@
 fn main() -> anyhow::Result<()> {
-    let input = std::fs::read_to_string("inputs/day_10.txt")?;
+    let input = std::fs::read_to_string("2022/inputs/day_10.txt")?;
     let (mut x, mut cycle) = (1, 0_i32);
     let (mut p1, mut p2) = (0, String::new());
 

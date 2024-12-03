@@ -1,5 +1,5 @@
 fn main() -> anyhow::Result<()> {
-    let input = std::fs::read_to_string("inputs/day_03.txt")?;
+    let input = std::fs::read_to_string("2022/inputs/day_03.txt")?;
 
     let p1 = input
         .lines()

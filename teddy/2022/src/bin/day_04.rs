@@ -2,7 +2,7 @@ fn main() -> anyhow::Result<()> {
     let mut p1 = 0;
     let mut p2 = 0;
 
-    for line in std::fs::read_to_string("inputs/day_04.txt")?.lines() {
+    for line in std::fs::read_to_string("2022/inputs/day_04.txt")?.lines() {
         let nums = line
             .split([',', '-'])
             .flat_map(str::parse::<u8>)

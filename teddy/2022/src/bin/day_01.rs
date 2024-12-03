@@ -1,5 +1,5 @@
 fn main() -> anyhow::Result<()> {
-    let mut elves = std::fs::read_to_string("inputs/day_01.txt")?
+    let mut elves = std::fs::read_to_string("2022/inputs/day_01.txt")?
         .split("\n\n")
         .map(|elf| elf.split('\n').flat_map(str::parse::<i32>).sum::<i32>())
         .collect::<Vec<_>>();

@@ -1,7 +1,7 @@
-use itertools::{izip, Itertools};
+use itertools::{Itertools, izip};
 
 fn main() -> anyhow::Result<()> {
-    let input = std::fs::read_to_string("inputs/day_08.txt")?;
+    let input = std::fs::read_to_string("2022/inputs/day_08.txt")?;
     let trees = input.lines().flat_map(str::bytes).collect_vec();
     let (w, h) = (input.lines().next().unwrap().len(), input.lines().count());
 

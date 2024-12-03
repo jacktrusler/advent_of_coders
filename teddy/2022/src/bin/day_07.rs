@@ -1,5 +1,5 @@
 fn main() -> anyhow::Result<()> {
-    let input = std::fs::read_to_string("inputs/day_07.txt")?;
+    let input = std::fs::read_to_string("2022/inputs/day_07.txt")?;
     let mut dirs = vec![];
     let mut sizes = std::collections::HashMap::<Vec<&str>, u32>::new();
 

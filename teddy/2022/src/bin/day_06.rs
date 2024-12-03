@@ -1,5 +1,5 @@
 fn main() -> anyhow::Result<()> {
-    let input = std::fs::read("inputs/day_06.txt")?;
+    let input = std::fs::read("2022/inputs/day_06.txt")?;
 
     let unique_window_pos = |size: usize| {
         input

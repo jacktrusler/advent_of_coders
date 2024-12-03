@@ -6,7 +6,7 @@ fn main() {
                 .flat_map(str::parse::<i32>)
                 .collect::<Vec<_>>()
         })
-        .collect::<Vec<_>>();
+        .collect::<Box<_>>();
     let p1 = input.iter().filter(safe).count();
     let p2 = input
         .iter()

@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 fn main() -> anyhow::Result<()> {
-    let input = std::fs::read_to_string("inputs/day_09.txt")?;
+    let input = std::fs::read_to_string("2022/inputs/day_09.txt")?;
     let mut p1 = HashSet::new();
     let mut p2 = HashSet::new();
     let mut rope = [(0_i32, 0_i32); 10];
