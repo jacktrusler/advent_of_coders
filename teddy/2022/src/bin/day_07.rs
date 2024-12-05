@@ -17,7 +17,7 @@ fn main() -> anyhow::Result<()> {
             [size, _] => {
                 for dir in dirs.iter().enumerate().map(|(i, &dir)| {
                     std::iter::once(dir)
-                        .chain(dirs.iter().cloned().skip(1).take(i))
+                        .chain(dirs.iter().copied().skip(1).take(i))
                         .collect()
                 }) {
                     *sizes.entry(dir).or_default() += size.parse::<u32>()?;

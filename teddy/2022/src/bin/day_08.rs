@@ -12,14 +12,14 @@ fn main() -> anyhow::Result<()> {
             |xi, y| trees[(x1.wrapping_add((direction * xi) as usize)) * x_step + y * y_step];
 
         for y in 0..amount {
-            for x in 0..(1 + x1.abs_diff(x2) as i64) {
+            for x in 0..=x1.abs_diff(x2) as i64 {
                 let shorter = (0..x)
                     .rev()
                     .take_while(|xj| height(*xj, y) < height(x, y))
                     .count();
                 let hidden = x > shorter as i64;
                 let x = x1.wrapping_add((direction * x) as usize);
-                result[x * x_step + y * y_step] = (shorter + hidden as usize, !hidden);
+                result[x * x_step + y * y_step] = (shorter + usize::from(hidden), !hidden);
             }
         }
 

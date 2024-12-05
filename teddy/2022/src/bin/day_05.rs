@@ -11,7 +11,7 @@ fn main() -> anyhow::Result<()> {
                 .skip(1)
                 .step_by(4)
                 .enumerate()
-                .filter_map(|(i, c)| if c != ' ' { Some((i, c)) } else { None })
+                .filter_map(|(i, c)| if c == ' ' { None } else { Some((i, c)) })
         })
         .collect::<Vec<_>>();
 
