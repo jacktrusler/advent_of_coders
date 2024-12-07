@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -58,5 +59,16 @@ func FetchInput(year, day, session string) {
 
 	fmt.Println("Status code:", resp.StatusCode)
 	fmt.Println(bodyString)
+}
 
+func StringArrAtoI(arr []string) ([]int, error) {
+	arr2 := make([]int, 0)
+	for _, i := range arr {
+		j, err := strconv.Atoi(i)
+		if err != nil {
+			return nil, err
+		}
+		arr2 = append(arr2, j)
+	}
+	return arr2, nil
 }
