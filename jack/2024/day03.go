@@ -59,7 +59,7 @@ func day3part2(input string) {
 	bigFatMulSlice := make([]byte, 0)
 
 	toggle := true
-	for i := 0; i < len(input)-7; {
+	for i := 0; i < len(input); {
 
 		if i+4 <= len(input) {
 			do := input[i : i+4]
@@ -81,9 +81,7 @@ func day3part2(input string) {
 		if toggle {
 			bigFatMulSlice = append(bigFatMulSlice, input[i])
 		}
-
 		i++
-
 	}
 
 	ans := processMulString(string(bigFatMulSlice))
@@ -92,7 +90,9 @@ func day3part2(input string) {
 }
 
 func Day3() {
-	input := goutils.FileAsString("./input/day03.txt")
+	input := goutils.FileAsString("./input/2024-03-input.txt")
+	fmt.Println("----- Part 1 -----")
 	day3part1(input)
+	fmt.Println("----- Part 2 -----")
 	day3part2(input)
 }

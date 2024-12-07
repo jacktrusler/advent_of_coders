@@ -85,8 +85,8 @@
 ## Solutions for 2024 - Go
 
 [![Day](https://badgen.net/badge/01/%E2%98%85%E2%98%85/green)](2024/day01.go)
-[![Day](https://badgen.net/badge/02/%E2%98%85%E2%98%85/gray)](2024/day02.go)
-[![Day](https://badgen.net/badge/03/%E2%98%85%E2%98%85/gray)](2024/day03.go)
+[![Day](https://badgen.net/badge/02/%E2%98%85%E2%98%85/green)](2024/day02.go)
+[![Day](https://badgen.net/badge/03/%E2%98%85%E2%98%85/green)](2024/day03.go)
 [![Day](https://badgen.net/badge/04/%E2%98%85%E2%98%85/gray)](2024/day04.go)
 [![Day](https://badgen.net/badge/05/%E2%98%85%E2%98%85/gray)](2024/day05.go)
 [![Day](https://badgen.net/badge/06/%E2%98%85%E2%98%85/gray)](2024/day06.go)

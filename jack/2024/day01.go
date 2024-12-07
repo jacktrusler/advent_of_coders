@@ -56,6 +56,6 @@ func part1and2(input string) {
 }
 
 func Day1() {
-	input := goutils.FileAsString("./input/day01.txt")
+	input := goutils.FileAsString("./input/2024-01-input.txt")
 	part1and2(input)
 }

@@ -95,7 +95,7 @@ reports:
 }
 
 func Day2() {
-	input := goutils.FileAsString("./input/day02.txt")
+	input := goutils.FileAsString("./input/2024-02-input.txt")
 	fmt.Println("----- Part 1 -----")
 	day2part1(input)
 	fmt.Println("----- Part 2 -----")
