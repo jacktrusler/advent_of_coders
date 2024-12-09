@@ -72,3 +72,9 @@ func StringArrAtoI(arr []string) ([]int, error) {
 	}
 	return arr2, nil
 }
+
+func PrintMap(someMap map[any]any) {
+	for k, v := range someMap {
+		fmt.Printf("key: %+v | value: %+v\n", k, v)
+	}
+}

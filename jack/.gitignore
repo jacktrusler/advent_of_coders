@@ -4,3 +4,4 @@ megaboys/
 bigboys/
 
 *.DS_Store
+.env
