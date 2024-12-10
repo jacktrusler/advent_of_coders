@@ -49,8 +49,8 @@ func day8part1() {
 				if a1.y < a2.y {
 					dy = dy * -1
 				}
-				createAntiNodes1(a1, dy, dx, antiNodeMap)
-				createAntiNodes1(a2, -dy, -dx, antiNodeMap)
+				createAntiNodes(a1, dy, dx, antiNodeMap, 1)
+				createAntiNodes(a2, -dy, -dx, antiNodeMap, 1)
 			}
 		}
 	}
@@ -59,7 +59,7 @@ func day8part1() {
 
 }
 
-func createAntiNodes1(a Coord, dy, dx int, aNM map[Coord]bool) {
+func createAntiNodes(a Coord, dy, dx int, aNM map[Coord]bool, part int) {
 	anti := Coord{}
 	anti.x = a.x + dx
 	anti.y = a.y + dy
@@ -68,6 +68,9 @@ func createAntiNodes1(a Coord, dy, dx int, aNM map[Coord]bool) {
 		return
 	}
 	aNM[anti] = true
+	if part == 2 {
+		createAntiNodes(anti, dy, dx, aNM, 2)
+	}
 }
 
 func day8part2() {
@@ -86,24 +89,12 @@ func day8part2() {
 				if a1.x < a2.x {
 					dx = dx * -1
 				}
-				createAntiNodes2(a1, dy, dx, antiNodes2)
-				createAntiNodes2(a2, -dy, -dx, antiNodes2)
+				createAntiNodes(a1, dy, dx, antiNodes2, 2)
+				createAntiNodes(a2, -dy, -dx, antiNodes2, 2)
 			}
 		}
 	}
 	fmt.Println(len(antiNodes2))
-}
-
-func createAntiNodes2(a Coord, dy, dx int, aNM map[Coord]bool) {
-	anti := Coord{}
-	anti.x = a.x + dx
-	anti.y = a.y + dy
-	// exit condition
-	if anti.x < 0 || anti.y < 0 || anti.x >= len(city[0]) || anti.y >= len(city) {
-		return
-	}
-	aNM[anti] = true
-	createAntiNodes2(anti, dy, dx, aNM)
 }
 
 func Day8() {
