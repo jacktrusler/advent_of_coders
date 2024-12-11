@@ -7,8 +7,21 @@ import (
 	"strings"
 )
 
+func digitCount(rock int) int {
+	for (digit)
+}
 func blink(rocks []int) []int {
 	newState := make([]int, len(rocks))
+	newStateCur := 0
+	for rockIdx, rock := range rocks {
+		if rock == 0 {
+			newState[newStateCur] = 1
+			continue
+		}
+		if digitCount(rock) % 2 == 0 {
+
+		}
+	}
 	return newState
 }
 
