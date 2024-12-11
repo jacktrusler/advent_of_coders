@@ -216,6 +216,6 @@ func main() {
 	if err != nil {
 		panic("Failed to open file ./input.txt")
 	}
-	//e1(raw)
+	e1(raw)
 	e2(raw)
 }
