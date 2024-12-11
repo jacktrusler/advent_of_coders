@@ -21,18 +21,31 @@ func digitCount(rock int) int {
 }
 func blink(rocks []int) []int {
 	newState := make([]int, len(rocks))
+	for i := 0; i < len(newState); i++ {
+		newState[i] = -1
+	}
 	newStateCur := 0
 	for _, rock := range rocks {
 		if rock == 0 {
 			newState[newStateCur] = 1
+			newStateCur++
 			continue
 		}
 		digits := digitCount(rock)
 		if digitCount(rock)%2 == 0 {
+			newState = append(newState, -1)
 			leftRock, rightRock := splitRock(rock, digits)
-			fmt.Printf("Split %d, %d & %d\n", rock, leftRock, rightRock)
-			newState1
+			//fmt.Printf("Split %d, %d & %d\n", rock, leftRock, rightRock)
+			newState[newStateCur] = leftRock
+			newState[newStateCur+1] = rightRock
+			newStateCur += 2
+			continue
 		}
+		if rock == -1 {
+			continue
+		}
+		newState[newStateCur] = rock * 2024
+		newStateCur++
 	}
 	return newState
 }
@@ -56,6 +69,13 @@ func main() {
 		panic("Bad File")
 	}
 	stones := processInput(raw)
-	blink(stones)
-	fmt.Println(stones)
+	for i := 0; i < 25; i++ {
+		stones = blink(stones)
+
+	}
+	fmt.Printf("after 25 : %d\n", len(stones))
+	for i := 0; i < 50; i++ {
+		stones = blink(stones)
+	}
+	fmt.Printf("after 75 : %d\n", len(stones))
 }
