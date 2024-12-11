@@ -5,6 +5,7 @@ import (
 	"os"
 	"slices"
 	"strconv"
+	"time"
 )
 
 type fsBlock struct {
@@ -143,7 +144,7 @@ func preprocessInputforContiguous(raw []byte) ([][]int, []fsBlock) {
 	}
 	return freeSpaceLookup, inodes
 }
-func e2(raw []byte) {
+func e2(raw []byte) int {
 	freeSpaceLookup, inodes := preprocessInputforContiguous(raw)
 	for idx, inode := range slices.Backward(inodes) {
 		//Attempt to locate an space in the Free Space Lookup with a size that will fit. Prefer the lower index over the most compact fit
@@ -209,13 +210,19 @@ func e2(raw []byte) {
 	})
 	//fmt.Printf("%v\n", inodes)
 	checksum := calculateChecksum(inodes)
-	fmt.Printf("check sum %d\n", checksum)
+	return checksum
 }
 func main() {
 	raw, err := os.ReadFile("input.txt")
 	if err != nil {
 		panic("Failed to open file ./input.txt")
 	}
+	start := time.Now()
 	e1(raw)
-	e2(raw)
+	duration := time.Since(start)
+	fmt.Printf("On Exercise 1: \t(%s)\n", duration)
+	start = time.Now()
+	total := e2(raw)
+	duration = time.Since(start)
+	fmt.Printf("On Exercise 2: %d\t(%s)\n", total, duration)
 }
