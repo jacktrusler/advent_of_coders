@@ -8,9 +8,18 @@ import (
 
 var (
 	// This is like pokemon ice cave low key
-	ice      []string
-	startPos u.Coord
+	ice         []string
+	startPos    u.Coord
+	rockSet     u.Set[u.Coord]
+	movedSpaces int
 )
+
+// Imaginary Rock Cache
+type IRC struct {
+	Y   int
+	X   int
+	Dir int
+}
 
 // A new genre of music in the AoC-verse
 func guardStep(y, x int, dir rune) {
@@ -38,8 +47,7 @@ func guardStep(y, x int, dir rune) {
 		return
 	} else {
 		// Spot has been moved to
-		thisStr[x] = 'X'
-		ice[y] = string(thisStr)
+		rockSet.Add(u.Coord{Y: y, X: x})
 	}
 
 	switch dir {
@@ -63,6 +71,7 @@ func printIce() {
 }
 
 func day6part1(input string) {
+	rockSet = u.NewSet[u.Coord]()
 	ice = strings.Split(input, "\n")
 	for y, line := range ice {
 		for x, rune := range line {
@@ -73,21 +82,10 @@ func day6part1(input string) {
 		}
 	}
 
-	printIce()
-
-	// count where guard step occurred
-	path := 0
-	for _, line := range ice {
-		for _, rune := range line {
-			if rune == 'X' {
-				path++
-			}
-		}
-	}
-	fmt.Println(path)
+	fmt.Println(len(rockSet))
 }
 
-func isTrapped(y, x, dirI int, iRC IRC) bool {
+func isTrapped(y, x, dirI int, iRC u.Coord, hits *[]IRC) bool {
 	cache := make(map[string]bool)
 	for {
 		dy := Dirs[dirI][0]
@@ -99,9 +97,10 @@ func isTrapped(y, x, dirI int, iRC IRC) bool {
 
 		hitRock := y+dy == iRC.Y && x+dx == iRC.X
 		if ice[y+dy][x+dx] == '#' || hitRock {
-			str := fmt.Sprintf("y%dx%ddir%d", x, y, dirI)
+			str := fmt.Sprintf("y%dx%ddir%d", y, x, dirI)
 			if cache[str] {
 				// clapped in the baguss
+				*hits = append(*hits, IRC{Y: y + dy, X: x + dx, Dir: dirI})
 				return true
 			}
 			cache[str] = true
@@ -113,13 +112,6 @@ func isTrapped(y, x, dirI int, iRC IRC) bool {
 	}
 }
 
-// Imaginary Rock Cache
-type IRC struct {
-	Y   int
-	X   int
-	Dir int
-}
-
 func day6part2(input string) {
 	ice = strings.Split(input, "\n")
 	thisStr := []byte(ice[startPos.Y])
@@ -127,54 +119,27 @@ func day6part2(input string) {
 	ice[startPos.Y] = string(thisStr)
 	loops := 0
 
-	// record original path
-	// place rock at every point
-	// send guard to every point
-
+	hits := make([]IRC, 0)
 	for y, line := range ice {
 		for x, rune := range line {
-			dirI := 0
 			if rune == '^' {
 				startY := y
 				startX := x
-				for {
-					dy := Dirs[dirI][0]
-					dx := Dirs[dirI][1]
-					if x+dx == -1 || y+dy == -1 || y+dy >= len(ice) || x+dx >= len(ice[y]) {
-						// Freedom
-						fmt.Println(loops)
-						return
-					}
+				// Remove starting position from set... Guard will notice!
+				rockSet.Remove(u.Coord{Y: startY, X: startX})
+				for k := range rockSet {
+					imagRock := u.Coord{Y: k.Y, X: k.X}
 
-					turn := (dirI + 1) % 4
-					if ice[y+dy][x+dx] == '#' {
-						// turn 90 right
-						dirI = turn
-						continue
-					}
-					if ice[y][x] == '^' {
-						// Walk forward
-						y += dy
-						x += dx
-						continue
-					}
-
-					imagRock := IRC{Y: y + dy, X: x + dx, Dir: dirI}
-					inTheClapHouse := isTrapped(startY, startX, 0, imagRock)
+					inTheClapHouse := isTrapped(startY, startX, 0, imagRock, &hits)
 
 					if inTheClapHouse {
 						loops++
 					}
-
-					// Walk forward
-					y += dy
-					x += dx
-
 				}
 			}
 		}
 	}
-
+	fmt.Println(loops)
 }
 
 func Day6() {

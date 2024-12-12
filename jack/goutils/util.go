@@ -53,3 +53,33 @@ func IntArrayToLinkedList(arr []int) *Node {
 
 	return head
 }
+
+// Create a Set type
+type Set[T comparable] map[T]bool
+
+func NewSetFromArr[T comparable](items []T) {
+	s := NewSet[T]()
+	for _, item := range items {
+		s.Add(item)
+	}
+	fmt.Println(s)
+}
+
+func NewSet[T comparable]() Set[T] {
+	return make(Set[T])
+}
+
+func (s Set[T]) Add(e T) Set[T] {
+	s[e] = true
+	return s
+}
+
+func (s Set[T]) Remove(e T) Set[T] {
+	delete(s, e)
+	return s
+}
+
+func (s Set[T]) Has(e T) bool {
+	_, ok := s[e]
+	return ok
+}
