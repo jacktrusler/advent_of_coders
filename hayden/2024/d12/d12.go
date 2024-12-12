@@ -44,23 +44,26 @@ func processInput(raw []byte) ([][]rune, Point2D) {
 func myAdjacents(start Point2D) []Point2D {
 	return []Point2D{up(start), down(start), left(start), right(start)}
 }
-func adjacentFlowerSearch(start Point2D, boundary Point2D, flowerMap [][]rune, flowerPlot map[Point2D]bool) {
-	fmt.Printf("Entry for (%v)\n", start)
+func adjacentFlowerSearch(start Point2D, boundary Point2D, flowerMap [][]rune, flowerPlot map[Point2D]bool, area *int, perimeter *int) {
+	//fmt.Printf("Entry for (%v)\n", start)
 	flowerPlot[start] = true
 	directions := myAdjacents(start)
 	for _, direction := range directions {
 		if oob(direction, boundary) {
-			fmt.Printf("\tMove from (%v) to (%v) is oob, skipping\n", start, direction)
+			//fmt.Printf("\tMove from (%v) to (%v) is oob, skipping\n", start, direction)
+			*perimeter++
 			continue
 		}
 		if flowerPlot[direction] {
 			continue
 		}
 		if flowerMap[start.y][start.x] == flowerMap[direction.y][direction.x] {
-			fmt.Printf("\tAdjacent from (%v) is (%v) jumping\n", start, direction)
-			adjacentFlowerSearch(direction, boundary, flowerMap, flowerPlot)
+			//fmt.Printf("\tAdjacent from (%v) is (%v) jumping\n", start, direction)
+			*area++
+			adjacentFlowerSearch(direction, boundary, flowerMap, flowerPlot, area, perimeter)
 		} else {
-			fmt.Printf("\tBoundary from (%v) is (%v) val: %c\n", start, direction, flowerMap[direction.y][direction.x])
+			//fmt.Printf("\tBoundary from (%v) is (%v) val: %c\n", start, direction, flowerMap[direction.y][direction.x])
+			*perimeter++
 		}
 	}
 }
@@ -71,5 +74,21 @@ func main() {
 	}
 	gardenTiles, boundary := processInput(raw)
 	visited := make(map[Point2D]bool)
-	adjacentFlowerSearch(Point2D{x: 0, y: 0}, boundary, gardenTiles, visited)
+	totalCost := 0
+	for yCur := 0; yCur < boundary.y; yCur++ {
+		for xCur := 0; xCur < boundary.x; xCur++ {
+			if (!visited[Point2D{x: xCur, y: yCur}]) {
+				myVisits := make(map[Point2D]bool)
+				perimeter := 0
+				area := 1
+				adjacentFlowerSearch(Point2D{x: xCur, y: yCur}, boundary, gardenTiles, myVisits, &area, &perimeter)
+				totalCost += perimeter * area
+				for key := range myVisits {
+					visited[key] = true
+				}
+				fmt.Printf("Region %c starting at (%d,%d), area: %d, perimeter: %d\n", gardenTiles[yCur][xCur], xCur, yCur, area, perimeter)
+			}
+		}
+	}
+	fmt.Printf("Cost: %d\n", totalCost)
 }
