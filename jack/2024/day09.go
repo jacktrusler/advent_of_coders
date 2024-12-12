@@ -11,11 +11,8 @@ import (
 func createDiskMap(input string) []int {
 	blocks := []int{}
 	nums := strings.Split(input, "")
-	diskMap, err := goutils.StringArrAtoI(nums)
-	if err != nil {
-		fmt.Println("Problem converting string arr to int arr: ", err)
-		panic(err)
-	}
+	diskMap := goutils.StringArrAtoI(nums)
+
 	var counter int
 	for i := 0; i < len(diskMap); i += 2 {
 		for j := 0; j < diskMap[i]; j++ {

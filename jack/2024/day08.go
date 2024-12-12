@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"goutils"
+	u "goutils"
 	"math"
 	"strings"
 )
@@ -12,41 +13,36 @@ var (
 	// antennae mapping
 	aM = make(AntennaMap)
 	// part 2 antenna are also antinodes ig
-	antiNodes2 = make(map[Coord]bool)
+	antiNodes2 = make(map[u.Coord]bool)
 )
 
-type Coord struct {
-	y int
-	x int
-}
-
-type AntennaMap map[rune][]Coord
+type AntennaMap map[rune][]u.Coord
 
 func day8part1() {
 	for y, line := range city {
 		for x, rune := range line {
 			// some antennae found
 			if rune != '.' {
-				aM[rune] = append(aM[rune], Coord{y, x})
-				antiNodes2[Coord{y, x}] = true
+				aM[rune] = append(aM[rune], u.Coord{Y: y, X: x})
+				antiNodes2[u.Coord{Y: y, X: x}] = true
 			}
 		}
 	}
 
-	antiNodeMap := make(map[Coord]bool)
+	antiNodeMap := make(map[u.Coord]bool)
 	for _, v := range aM {
 		for i := 0; i < len(v); i++ {
 			for j := i + 1; j < len(v); j++ {
-				var a1, a2 Coord
-				a1.x, a1.y = v[i].x, v[i].y
-				a2.x, a2.y = v[j].x, v[j].y
-				dy := int(math.Abs(float64(a1.y - a2.y)))
-				dx := int(math.Abs(float64(a1.x - a2.x)))
+				var a1, a2 u.Coord
+				a1.X, a1.Y = v[i].X, v[i].Y
+				a2.X, a2.Y = v[j].X, v[j].Y
+				dy := int(math.Abs(float64(a1.Y - a2.Y)))
+				dx := int(math.Abs(float64(a1.X - a2.X)))
 
-				if a1.x < a2.x {
+				if a1.X < a2.X {
 					dx = dx * -1
 				}
-				if a1.y < a2.y {
+				if a1.Y < a2.Y {
 					dy = dy * -1
 				}
 				createAntiNodes(a1, dy, dx, antiNodeMap, 1)
@@ -59,12 +55,12 @@ func day8part1() {
 
 }
 
-func createAntiNodes(a Coord, dy, dx int, aNM map[Coord]bool, part int) {
-	anti := Coord{}
-	anti.x = a.x + dx
-	anti.y = a.y + dy
+func createAntiNodes(a u.Coord, dy, dx int, aNM map[u.Coord]bool, part int) {
+	anti := u.Coord{}
+	anti.X = a.X + dx
+	anti.Y = a.Y + dy
 	// exit condition
-	if anti.x < 0 || anti.y < 0 || anti.x >= len(city[0]) || anti.y >= len(city) {
+	if anti.X < 0 || anti.Y < 0 || anti.X >= len(city[0]) || anti.Y >= len(city) {
 		return
 	}
 	aNM[anti] = true
@@ -77,16 +73,16 @@ func day8part2() {
 	for _, v := range aM {
 		for i := 0; i < len(v); i++ {
 			for j := i + 1; j < len(v); j++ {
-				var a1, a2 Coord
-				a1.x, a1.y = v[i].x, v[i].y
-				a2.x, a2.y = v[j].x, v[j].y
-				dy := int(math.Abs(float64(a1.y - a2.y)))
-				dx := int(math.Abs(float64(a1.x - a2.x)))
+				var a1, a2 u.Coord
+				a1.X, a1.Y = v[i].X, v[i].Y
+				a2.X, a2.Y = v[j].X, v[j].Y
+				dy := int(math.Abs(float64(a1.Y - a2.Y)))
+				dx := int(math.Abs(float64(a1.X - a2.X)))
 
-				if a1.y < a2.y {
+				if a1.Y < a2.Y {
 					dy = dy * -1
 				}
-				if a1.x < a2.x {
+				if a1.X < a2.X {
 					dx = dx * -1
 				}
 				createAntiNodes(a1, dy, dx, antiNodes2, 2)

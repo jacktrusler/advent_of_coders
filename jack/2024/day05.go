@@ -27,11 +27,7 @@ func day5part1and2(input string) {
 
 	for _, update := range updates {
 		pages := strings.Split(update, ",")
-		pagesNum, err := goutils.StringArrAtoI(pages)
-		if err != nil {
-			fmt.Println("error converting string array to int")
-			return
-		}
+		pagesNum := goutils.StringArrAtoI(pages)
 		correctOrder := true
 
 		for i := 0; i < len(pagesNum); {

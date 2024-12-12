@@ -15,10 +15,8 @@ func convertToInt(eq string) (int, []int) {
 		panic(err)
 	}
 	rhsStr := strings.Trim(e[1], " ")
-	rhs, err := goutils.StringArrAtoI(strings.Split(rhsStr, " "))
-	if err != nil {
-		panic(err)
-	}
+	rhs := goutils.StringArrAtoI(strings.Split(rhsStr, " "))
+
 	return lhs, rhs
 }
 

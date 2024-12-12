@@ -2,15 +2,14 @@ package main
 
 import (
 	"fmt"
-	"goutils"
+	u "goutils"
 	"strings"
 )
 
 var (
 	// This is like pokemon ice cave low key
-	ice       []string
-	loop      int
-	rockLoops int
+	ice      []string
+	startPos u.Coord
 )
 
 // A new genre of music in the AoC-verse
@@ -56,31 +55,25 @@ func guardStep(y, x int, dir rune) {
 	return
 }
 
-func dropRock(y, x int) {
-	// out of bounds, therefore no rock dropped
-	if x == -1 || y == -1 || y >= len(ice) || x >= len(ice[y]) {
-		return
+func printIce() {
+	// Print it out for fun :>
+	for _, line := range ice {
+		fmt.Println(line)
 	}
-	// for every step, drop a rock in front of the guard
-	thisStr := []rune(ice[y])
-	thisStr[x] = '0'
-	ice[y] = string(thisStr)
-	return
 }
 
-func day6part1() {
+func day6part1(input string) {
+	ice = strings.Split(input, "\n")
 	for y, line := range ice {
 		for x, rune := range line {
 			if rune == '^' {
+				startPos = u.Coord{Y: y, X: x}
 				guardStep(y, x, 'N')
 			}
 		}
 	}
 
-	// Print it out for fun :>
-	for _, line := range ice {
-		fmt.Println(line)
-	}
+	printIce()
 
 	// count where guard step occurred
 	path := 0
@@ -91,30 +84,103 @@ func day6part1() {
 			}
 		}
 	}
-
 	fmt.Println(path)
-
 }
 
-func day6part2() {
+func isTrapped(y, x, dirI int, iRC IRC) bool {
+	cache := make(map[string]bool)
+	for {
+		dy := Dirs[dirI][0]
+		dx := Dirs[dirI][1]
+		if x+dx < 0 || y+dy < 0 || y+dy >= len(ice) || x+dx >= len(ice[y]) {
+			// Freedom
+			return false
+		}
+
+		hitRock := y+dy == iRC.Y && x+dx == iRC.X
+		if ice[y+dy][x+dx] == '#' || hitRock {
+			str := fmt.Sprintf("y%dx%ddir%d", x, y, dirI)
+			if cache[str] {
+				// clapped in the baguss
+				return true
+			}
+			cache[str] = true
+			dirI = (dirI + 1) % 4
+			continue
+		}
+		y += dy
+		x += dx
+	}
+}
+
+// Imaginary Rock Cache
+type IRC struct {
+	Y   int
+	X   int
+	Dir int
+}
+
+func day6part2(input string) {
+	ice = strings.Split(input, "\n")
+	thisStr := []byte(ice[startPos.Y])
+	thisStr[startPos.X] = '^'
+	ice[startPos.Y] = string(thisStr)
+	loops := 0
+
+	// record original path
+	// place rock at every point
+	// send guard to every point
+
 	for y, line := range ice {
 		for x, rune := range line {
+			dirI := 0
 			if rune == '^' {
-				// not the foggiest idea how to do this
-				guardStep(y, x, 'N')
+				startY := y
+				startX := x
+				for {
+					dy := Dirs[dirI][0]
+					dx := Dirs[dirI][1]
+					if x+dx == -1 || y+dy == -1 || y+dy >= len(ice) || x+dx >= len(ice[y]) {
+						// Freedom
+						fmt.Println(loops)
+						return
+					}
+
+					turn := (dirI + 1) % 4
+					if ice[y+dy][x+dx] == '#' {
+						// turn 90 right
+						dirI = turn
+						continue
+					}
+					if ice[y][x] == '^' {
+						// Walk forward
+						y += dy
+						x += dx
+						continue
+					}
+
+					imagRock := IRC{Y: y + dy, X: x + dx, Dir: dirI}
+					inTheClapHouse := isTrapped(startY, startX, 0, imagRock)
+
+					if inTheClapHouse {
+						loops++
+					}
+
+					// Walk forward
+					y += dy
+					x += dx
+
+				}
 			}
 		}
 	}
 
-	fmt.Println(rockLoops)
-
 }
 
 func Day6() {
-	input := goutils.FileAsString("./input/06-example.txt")
-	ice = strings.Split(input, "\n")
+	input := u.FileAsString("./input/2024-06-input.txt")
 	fmt.Println("----- Part 1 -----")
-	// day6part1()
+	day6part1(input)
 	fmt.Println("----- Part 2 -----")
-	day6part2()
+	day6part2(input)
 }

@@ -2,28 +2,26 @@ package main
 
 import (
 	"fmt"
-	"goutils"
+	u "goutils"
 	"strings"
 )
 
 var (
 	topog    [][]int
-	findable map[Coord]int
+	findable map[u.Coord]int
 )
 
 func makeTrail(input string) {
 	mapStr := strings.Split(input, "\n")
 	for _, str := range mapStr {
 		runes := strings.Split(str, "")
-		thing, err := goutils.StringArrAtoI(runes)
-		if err != nil {
-			fmt.Printf("error converting: %v", err)
-		}
+		thing := u.StringArrAtoI(runes)
+
 		topog = append(topog, thing)
 	}
 }
 
-func hike(y, x, past int, paths map[Coord]int) {
+func hike(y, x, past int, paths map[u.Coord]int) {
 	// if out of bounds
 	if x == -1 || y == -1 || y >= len(topog) || x >= len(topog[y]) {
 		return
@@ -39,8 +37,8 @@ func hike(y, x, past int, paths map[Coord]int) {
 	}
 
 	if curr == 9 {
-		findable[Coord{y, x}]++
-		paths[Coord{y, x}]++
+		findable[u.Coord{Y: y, X: x}]++
+		paths[u.Coord{Y: y, X: x}]++
 		return
 	}
 	//N
@@ -55,12 +53,12 @@ func hike(y, x, past int, paths map[Coord]int) {
 }
 
 func day10part1and2() {
-	findable = make(map[Coord]int)
+	findable = make(map[u.Coord]int)
 	ans1 := 0
 	for y, line := range topog {
 		for x, h := range line {
 			if h == 0 {
-				paths := make(map[Coord]int)
+				paths := make(map[u.Coord]int)
 				//N
 				hike(y-1, x, h, paths)
 				//E
@@ -85,7 +83,7 @@ func day10part1and2() {
 }
 
 func Day10() {
-	input := goutils.FileAsString("./input/2024-10-input.txt")
+	input := u.FileAsString("./input/2024-10-input.txt")
 	makeTrail(input)
 	fmt.Println("----- Part 1 -----")
 	day10part1and2()
