@@ -1,93 +1,42 @@
-def row_moves(row, size, obstacles):
-        moves = dict()
-        last_obstacle = row, 0, None
-        for col in range(size):
-            if (row, col) in obstacles:
-                last_obstacle = row, col + 1, 'up'
-            else:
-                moves[row, col, 'left'] = last_obstacle
-        last_obstacle = row, size-1, None
-        for col in range(size-1, -1, -1):
-            if (row, col) in obstacles:
-                last_obstacle = row, col - 1, 'down'
-            else:
-                moves[row, col, 'right'] = last_obstacle
-        return moves
+DIRECTIONS = {(-1, 0): (0, 1), (0, 1): (1, 0), (1, 0): (0, -1), (0, -1): (-1, 0)}
 
-def col_moves(col, size, obstacles):
-    moves = dict()
-    last_obstacle = 0, col, None
-    for row in range(size):
-        if (row, col) in obstacles:
-            last_obstacle = row + 1, col, 'right'
+def patrol(size: int, obstacles: set, x: int, y: int, dx: int, dy: int):
+    while True:
+        x2 = x + dx
+        y2 = y + dy
+        if (x2, y2) in obstacles:
+            dx, dy = DIRECTIONS[dx, dy]
         else:
-            moves[row, col, 'up'] = last_obstacle
-    last_obstacle = size - 1, col, None
-    for row in range(size-1, -1, -1):
-        if (row, col) in obstacles:
-            last_obstacle = row - 1, col, 'left'
-        else:
-            moves[row, col, 'down'] = last_obstacle
-    return moves
+            x = x2
+            y = y2
+            if 0 <= x < size and 0 <= y < size:
+                yield x, y, dx, dy
+            else:
+                break
 
-def move(x, y, direction):
-    match direction:
-        case 'up':
-            return x - 1, y
-        case 'down':
-            return x + 1, y
-        case 'left':
-            return x, y - 1
-        case 'right':
-            return x, y + 1
+def position_from_index(grid_size, i):
+    return i // (grid_size + 1), i % (grid_size + 1)
 
 def solve(puzzle_input: str):
-    size = puzzle_input.index('\n')
-    obstacles = set()
-    for i in range(len(puzzle_input)):
-        if puzzle_input[i] == '#':
-            obstacles.add((i // (size + 1), i % (size + 1)))
-    moves = dict()
-    for row in range(size):
-        moves.update(row_moves(row, size, obstacles))
-    for col in range(size):
-        moves.update(col_moves(col, size, obstacles))
-    position = puzzle_input.index('^')
-    row, col = position // (size + 1), position % (size + 1)
-    r, c, d = row, col, 'up'
-    positions = list(((r, c, d),))
-    while d is not None:
-        positions.append((r, c, d))
-        r1, c1, d1 = moves[r, c, d]
-        while (r, c) != (r1, c1):
-            r, c = move(r, c, d)
-            positions.append((r, c, d))
-        d = d1
-    b = 0
-    r, c, d = positions[0]
-    visited = set(((r, c),))
-    visited_with_direction = {(r, c, d)}
-    for (orow, ocol, od) in positions[1:]:
-        if (orow, ocol) in visited:
-            continue
-        visited.add((orow, ocol))
-        b_obstacles = obstacles | {(orow, ocol)}
-        rmoves = row_moves(orow, size, b_obstacles)
-        cmoves = col_moves(ocol, size, b_obstacles)
-        visited_with_direction_inner = visited_with_direction.copy()
-        while d is not None:
-            for move_dict in (rmoves, cmoves, moves):
-                try:
-                    r, c, d = move_dict[r, c, d]
-                except KeyError:
-                    continue
-            if (r, c, d) in visited_with_direction_inner:
-                b += 1
-                break
-            visited_with_direction_inner.add((r, c, d))
-        r, c, d = orow, ocol, od
-        visited_with_direction.add((r, c, d))
-    return len(visited), b
+    grid_size = puzzle_input.index('\n')
+    obstacles = {position_from_index(grid_size, i) for i, v in enumerate(puzzle_input) if v == '#'}
+    x, y = position_from_index(grid_size, puzzle_input.index('^'))
+    dx, dy = list(DIRECTIONS.keys())[0]
+    visited = set(((x, y),))
+    visited_dir = set(((x, y, dx, dy),))
+    loop_obstacles = set()
+    for x2, y2, dx2, dy2 in patrol(grid_size, obstacles, x, y, dx, dy):
+        if (x2, y2) not in obstacles and (x2, y2) not in visited:
+            visited_dir_2 = set()
+            for x3, y3, dx3, dy3 in patrol(grid_size, obstacles | {(x2, y2)}, x, y, dx, dy):
+                if (x3, y3, dx3, dy3) in visited_dir or (x3, y3, dx3, dy3) in visited_dir_2:
+                    loop_obstacles.add((x2, y2))
+                    break
+                visited_dir_2.add((x3, y3, dx3, dy3))
+        x, y, dx, dy = x2, y2, dx2, dy2
+        visited.add((x, y))
+        visited_dir.add((x, y, dx, dy))
+    return len(visited), len(loop_obstacles)
 
 if __name__ == '__main__':
     from pathlib import Path
