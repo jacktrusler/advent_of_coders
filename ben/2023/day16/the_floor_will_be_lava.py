@@ -28,7 +28,7 @@ class Contraption:
         def _per_match(layout: dict, m: re.Match):
             y, x = divmod(m.start(), line_length)
             key = m.group(0)
-            layout[(x,y)] = Lens(key)
+            layout[aoc.Point(x,y)] = Lens(key)
             return layout
         self.layout = functools.reduce(lambda l, m: _per_match(l, m), re.finditer(r'[-|\/\\]', layout), dict())
         self.height = layout.count('\n') + 1

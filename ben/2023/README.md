@@ -28,7 +28,7 @@
 [![Day](https://badgen.net/badge/17/%E2%98%85%E2%98%85/green)](#d17)
 [![Day](https://badgen.net/badge/18/%E2%98%85%E2%98%85/green)](#d18)
 [![Day](https://badgen.net/badge/19/%E2%98%85%E2%98%85/green)](#d19)
-[![Day](https://badgen.net/badge/20/%E2%98%86%E2%98%86/gray)](#d20)
+[![Day](https://badgen.net/badge/20/%E2%98%85%E2%98%85/green)](#d20)
 [![Day](https://badgen.net/badge/21/%E2%98%86%E2%98%86/gray)](#d21)
 [![Day](https://badgen.net/badge/22/%E2%98%86%E2%98%86/gray)](#d22)
 [![Day](https://badgen.net/badge/23/%E2%98%86%E2%98%86/gray)](#d23)
@@ -888,6 +888,16 @@ Runtime: ...
 ## <a name="d19"></a> Day 19: Aplenty
 
 [Task description](https://adventofcode.com/2023/day/19) - [Complete solution](day19/aplenty.py) - [Back to top](#top)  
+
+Runtime: ...  
+
+### Notes
+
+...  
+
+## <a name="d20"></a> Day 20: Pulse Propogation
+
+[Task description](https://adventofcode.com/2023/day/20) - [Complete solution](day20/pulse_propogation.py) - [Back to top](#top)  
 
 Runtime: ...  
 

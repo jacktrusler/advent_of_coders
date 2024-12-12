@@ -1,5 +1,6 @@
 from __future__ import annotations
 import aoc
+from aoc.grid import Direction, Point, Grid
 from dataclasses import dataclass
 import heapq
 from typing import Generator
@@ -12,8 +13,8 @@ class Crucible:
     
     @dataclass(frozen=True)
     class State:
-        position: aoc.Point
-        direction: aoc.Direction = aoc.Direction.RIGHT
+        position: Point
+        direction: Direction = Direction.RIGHT
         heat_loss: int = 0
         estimate: int = 0
 
@@ -26,15 +27,16 @@ class Crucible:
         def __lt__(self, other: Crucible.State):
             return self.estimate < other.estimate
 
-class CityBlockMap(aoc.Grid[int]):
-    def _heat_loss(self, p1: aoc.Point, p2: aoc.Point) -> int:
+
+class CityBlockMap(Grid[int]):
+    def _heat_loss(self, p1: Point, p2: Point) -> int:
         if p1 == p2: return 0
-        if p1[0] == p2[0]:
-            step = 1 if p2[1] > p1[1] else -1
-            return sum(self[(p1[0], i)] for i in range(p1[1]+step, p2[1]+step, step))
-        if p1[1] == p2[1]:
-            step = 1 if p2[0] > p1[0] else -1
-            return sum(self[(i, p1[1])] for i in range(p1[0]+step, p2[0]+step, step))
+        if p1.x == p2.x:
+            step = 1 if p2.y > p1.y else -1
+            return sum(self[(p1.x, i)] for i in range(p1.y+step, p2.y+step, step))
+        if p1.y == p2.y:
+            step = 1 if p2.x > p1.x else -1
+            return sum(self[(i, p1.y)] for i in range(p1.x+step, p2.x+step, step))
         raise ValueError
     
     def _possibilities(self, crucible: Crucible, state: Crucible.State) -> Generator[Crucible.State]:
@@ -51,12 +53,12 @@ class CityBlockMap(aoc.Grid[int]):
                     position = new_pos,
                     direction = d,
                     heat_loss = heat_loss,
-                    estimate = heat_loss + new_pos.manhattan_distance(self.bottom_right())
+                    estimate = heat_loss + new_pos.manhattan_distance(self.bottom_right)
                 )
 
     def travel(self, crucible: Crucible) -> int:
         stack = []
-        start, end = aoc.Point(*self.top_left()), aoc.Point(*self.bottom_right())
+        start, end = self.top_left, self.bottom_right
         visited = set()
         heapq.heappush(stack, Crucible.State(start))
 

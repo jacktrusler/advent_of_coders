@@ -20,8 +20,7 @@ def answers():
         for step, dir in enumerate(itertools.cycle(INSTRUCTIONS), start=1):
             node = NODE_MAP[node][dir]
             if node in end:
-                break
-        return step
+                return step
     yield traverse(start='AAA', end={'ZZZ'})
 
     a_nodes = {x for x in NODE_MAP.keys() if x.endswith('A')}

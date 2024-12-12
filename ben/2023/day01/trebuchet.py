@@ -5,28 +5,15 @@ import re
 from typing import Generator
 
 
-DIGIT_STRINGS = {
-    'zero': '0',
-    'one': '1',
-    'two': '2',
-    'three': '3',
-    'four': '4',
-    'five': '5',
-    'six': '6',
-    'seven': '7',
-    'eight': '8',
-    'nine': '9'
-}
+DIGIT_STRINGS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+DIGIT_CHARS = [str(n) for n in range(1, len(DIGIT_STRINGS) + 1)]
+DIGIT_MAP = {k: v for k, v in zip(DIGIT_STRINGS, DIGIT_CHARS)} | {v: v for v in DIGIT_CHARS}
 
 def pull_digits(calibrations: str, pattern: str) -> Generator[int]:
     matches = re.findall(pattern, calibrations)
-    for key, group in itertools.groupby(matches, lambda x: x == '\n'):
-        if key:
-            continue
-        group = list(group)
-        first = DIGIT_STRINGS.get(group[0], group[0])
-        last = DIGIT_STRINGS.get(group[-1], group[-1])
-        yield int(f'{first}{last}')
+    matches = (list(g) for k, g in itertools.groupby(matches, lambda x: x == '\n') if not k)
+    for group in matches:
+        yield int(DIGIT_MAP[group[0]] + DIGIT_MAP[group[-1]])
 
 
 @aoc.register(__file__)
@@ -36,7 +23,7 @@ def answers():
     pattern1 = fr'(?=(\n|\d))'
     yield sum(pull_digits(calibrations, pattern1))
 
-    pattern2 = fr'(?=(\n|\d|{"|".join(list(DIGIT_STRINGS.keys()))}))'
+    pattern2 = fr'(?=(\n|\d|{"|".join(list(DIGIT_STRINGS))}))'
     yield sum(pull_digits(calibrations, pattern2))
 
 if __name__ == '__main__':

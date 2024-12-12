@@ -31,7 +31,7 @@ def answers():
     idx = PREAMBLE
     while (is_valid(data[idx-PREAMBLE:idx], data[idx])):
         idx += 1
-    yield idx
+    yield data[idx]
 
     weakness = find_weakness(data[:idx], data[idx])
     yield min(weakness) + max(weakness)

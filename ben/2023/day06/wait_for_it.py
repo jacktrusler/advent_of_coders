@@ -1,15 +1,11 @@
 import aoc
+from aoc.utils import quadratic
 import math
 
 
-def quadratic(a: int, b: int, c: int) -> tuple[float, float]:
-    _sqrt = math.sqrt(b**2 - 4*a*c)
-    _denom = 2*a
-    return sorted(((-b + _sqrt) / _denom, (-b - _sqrt) / _denom))
-
 def win_possibilities(max_time: int, distance: int) -> int:
     min_t, max_t = quadratic(-1, max_time, -distance)
-    return math.ceil(max_t-1) - math.floor(min_t+1) + 1
+    return math.floor(max_t) - math.ceil(min_t) + 1
 
 
 @aoc.register(__file__)

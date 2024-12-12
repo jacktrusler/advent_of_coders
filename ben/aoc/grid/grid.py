@@ -1,12 +1,11 @@
 from __future__ import annotations
-from abc import ABC, ABCMeta
+from abc import ABCMeta
 from aoc.grid import Point
-from collections import Counter, defaultdict
+from collections import Counter
 from collections.abc import Iterable
-from functools import cached_property
+from functools import cached_property, cache
 import itertools
 import operator
-import re
 from typing import Iterable, TypeVar, Generic, Generator, Iterator, Type, Callable
 
 
@@ -25,11 +24,15 @@ class BaseGrid(Generic[T]):
     def __init__(self, width: int, height: int):
         self.width = width
         self.height = height
+        self.__post_init__()
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}()'
 
     def __post_init__(self):
         pass
 
-    def binds(self, idx: tuple[int, int] | Point) -> bool:
+    def binds(self, idx: Point | tuple[int, int]) -> bool:
         try:
             return 0 <= idx.x < self.width and 0 <= idx.y < self.height
         except AttributeError:
@@ -61,7 +64,6 @@ class Grid(BaseGrid, Generic[T]):
     def __hash__(self): return hash(self.__data)
     def __eq__(self, other: Grid): return self.__data == other.__data
     def __str__(self): return '\n'.join(str(x) for x in self.__data)
-    def __repr__(self): return f'{self.__class__.__name__}()'
     def __iter__(self) -> Iterator[list[T]]: return iter(self.__data)
     
     def __contains__(self, value: T) -> bool:
@@ -78,6 +80,11 @@ class Grid(BaseGrid, Generic[T]):
                     if not self.binds(idx):
                         raise IndexError
                     return self.__data[idx[1]][idx[0]]
+                return tuple(self[x] for x in idx)
+            case Point():
+                if idx.x < self.top_left.x or idx.y < self.top_left.y or idx.x > self.bottom_right.x or idx.y > self.bottom_right.y:
+                    raise IndexError
+                return self.__data[idx.y][idx.x]
             case int(): return self.__data[idx]
             case slice(): return self.slice(idx)
             case tuple() | list() | set(): return tuple(self[x] for x in idx)
@@ -183,39 +190,6 @@ class Grid(BaseGrid, Generic[T]):
         return Grid[T]((value for _ in range(width)) for _ in range(height))
 
 
-class KeyGrid(BaseGrid, Generic[T], ABC):
-    def __init__(self, data: str):
-        self.__points: dict[str, set[Point]] = defaultdict(set)
-        members = set(vars(self.__class__)) - set(vars(KeyGrid))
-        targets = dict()
-        for x in members:
-            target = getattr(self.__class__, x)
-            targets[target] = x
-
-        escaped = '.^$*+?()[{\|-]\\'
-        line_length = data.index('\n') + 1
-        regex = rf'[{"|".join(x if x not in escaped else f"{chr(92)}{x}" for x in targets.keys())}]'
-        def _per_match(m: re.Match):
-            y, x = divmod(m.start(), line_length)
-            key = targets[m.group(0)]
-            self.__points[key].add(Point(x, y))
-        [_per_match(m) for m in re.finditer(regex, data)]
-
-        all_points = set.union(*self.__points.values())
-        self.width = max(p.x for p in all_points) + 1
-        self.height = max(p.y for p in all_points) + 1
-
-    def __getattribute__(self, name):
-        points = object.__getattribute__(self, '_KeyGrid__points')
-        if name in points:
-            return points[name]
-        else:
-            return object.__getattribute__(self, name)
-    
-
-class TestGrid(KeyGrid):
-    test = '^'
-
 if __name__ == '__main__':
     import time
     def test_time(f, *args, **kwargs):
@@ -244,6 +218,8 @@ if __name__ == '__main__':
     print('-- Create str --')
     ar = test_time(_str_np, i=i)
     gr = test_time(_str_g, i=i)
+
+    asdf = igr[Point(1,1)]
 
     print('-- Rotate --')
     n = 3
@@ -310,11 +286,6 @@ if __name__ == '__main__':
     fn = lambda x: x + x
     test_time(fn, iar)
     test_time(fn, igr)
-
-    test_str = '...^\n.^..\n^^..\n....'
-    kg = TestGrid(test_str)
-    print(kg)
-    print(kg.test)
 
 
     

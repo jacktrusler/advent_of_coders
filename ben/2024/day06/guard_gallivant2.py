@@ -6,8 +6,10 @@ import functools
 
 
 class GuardMap(KeyGrid):
-    obstacles = '#'
-    guard = '^'
+    fields = {
+        'obstacles': '#',
+        'guard': '^'
+    }
 
 class InfiniteLoopError(Exception):
     pass
@@ -17,6 +19,8 @@ def run_patrol(guard_map: GuardMap, obstacles: set[tuple[int, int]]) -> set[tupl
     guard = Point(guard.x, guard.y)
     state = ((guard.x, guard.y), (0, -1))
     visited = {state}
+
+    width, height = guard_map.width, guard_map.height
     
     while True:
         next_state = ((state[0][0] + state[1][0], state[0][1] + state[1][1]), state[1])
@@ -28,6 +32,9 @@ def run_patrol(guard_map: GuardMap, obstacles: set[tuple[int, int]]) -> set[tupl
 
         if not guard_map.binds(next_state[0]):
             break
+
+        # if not (0 <= next_state[0][0] < width and 0 <= next_state[0][1] < height):
+        #     break
 
         if next_state in visited:
             raise InfiniteLoopError
@@ -45,7 +52,7 @@ def check_for_loop(guard_map: GuardMap, obstacles: set[tuple[int, int]], new_obs
 
 @aoc.register(__file__)
 def answers():
-    guard_map = GuardMap(aoc.read_data('small'))
+    guard_map = GuardMap(aoc.read_data())
     obstacles = {(p.x, p.y) for p in guard_map.obstacles}
     p = list(guard_map.guard)[0]
     print(p)

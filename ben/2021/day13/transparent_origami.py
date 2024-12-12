@@ -23,7 +23,8 @@ def answers():
     points = reduce(lambda x,y: fold(x, *y), folds, points)
     code = np.full(np.amax(points, axis=1) + 1, '.')
     code[tuple(zip(*points.T))] = '#'
-    yield np.flip(code, axis=1)
+    code = np.rot90(np.flip(code, axis=1))
+    yield f'\n{'\n'.join([''.join(x) for x in code])}'
 
 if __name__ == '__main__':
     aoc.run()

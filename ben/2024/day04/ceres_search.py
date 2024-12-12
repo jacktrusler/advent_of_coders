@@ -3,11 +3,11 @@ from aoc.grid import Grid, Point
 import itertools
 
 
-def count_xmas(row: list[int]) -> int:
+def count_xmas(row: list[str]) -> int:
     arr_as_str = ''.join(row)
     return arr_as_str.count('XMAS') + arr_as_str.count('SAMX')
 
-def is_x_mas(grid: Grid[int], point: Point) -> bool:
+def is_x_mas(grid: Grid[str], point: Point) -> bool:
     try:
         diag_one = grid[point + (-1, -1), point + (1, 1)]
         diag_two = grid[point + (-1, 1), point + (1, -1)]

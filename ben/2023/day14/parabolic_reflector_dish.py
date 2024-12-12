@@ -6,11 +6,9 @@ import itertools
 
 def tilt(grid: aoc.Grid[str]) -> aoc.Grid[str]:
     def _tilt(line: str) -> str:
-        groups = []
-        for group in line.split('#'):
-            groups.append(''.join(sorted(group)))
+        groups = (''.join(sorted(group)) for group in line.split('#'))
         return '#'.join(groups)
-    return aoc.Grid(tuple(_tilt(''.join(x))) for x in grid)
+    return aoc.Grid(_tilt(''.join(x)) for x in grid)
 
 def load(grid: aoc.Grid[str]) -> int:
     def _load(line: str) -> int:
@@ -19,7 +17,6 @@ def load(grid: aoc.Grid[str]) -> int:
 
 def cycle(grid: aoc.Grid[str]) -> aoc.Grid[str]:
     return functools.reduce(lambda g, _: tilt(g).rotate(), range(4), grid)
-
 
 @aoc.register(__file__)
 def answers():

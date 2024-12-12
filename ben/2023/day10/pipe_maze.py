@@ -1,6 +1,7 @@
 from __future__ import annotations
 import aoc
 from aoc.utils import adjacent_points
+import functools
 import numpy as np
 from numpy.typing import NDArray
 
@@ -14,6 +15,7 @@ CONNECTABLE = {
     aoc.Direction.LEFT: 'S-LF',
 }
 
+@functools.cache
 def travel(pipe: str, dir: aoc.Direction) -> aoc.Direction:
     match pipe:
         case '|'|'-': return dir
@@ -27,11 +29,11 @@ def find_loop(grid: NDArray, start: aoc.Point) -> Loop:
         visited = [start]
         point = start + dir.movement
         while point != start:
-            visited.append(point)
             if (pipe := grid[point.y][point.x]) not in CONNECTABLE[dir]:
                 return None
+            visited.append(point)
             dir = travel(pipe, dir)
-            point = point + dir.movement
+            point += dir.movement
         return visited
 
     for dir in aoc.Direction:
@@ -39,7 +41,7 @@ def find_loop(grid: NDArray, start: aoc.Point) -> Loop:
             return loop
 
 def replace_S(start: aoc.Point, first: aoc.Point, last: aoc.Point) -> str:
-    dirs = {dir for dir, adj in adjacent_points(start, include_dir=True) if adj == first or adj == last}
+    dirs = {dir for dir, adj in adjacent_points(start, include_dir=True) if adj in (first, last)}
     new_value = set.intersection(*(set(CONNECTABLE[x.rotate(2)]) for x in dirs)) - {'S'}
     return next(iter(new_value))
 

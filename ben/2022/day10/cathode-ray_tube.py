@@ -27,10 +27,8 @@ def answers():
     yield sum(signal_strength)
 
     rows = [pixels[i:i+39] for i in range(0, len(pixels), 40)]
-    iamge = '\n'.join(rows)
-    print(iamge)
-
-
+    image = '\n'.join(rows)
+    print(image)
 
 if __name__ == '__main__':
     aoc.run()

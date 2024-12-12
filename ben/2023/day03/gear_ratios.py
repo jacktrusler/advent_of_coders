@@ -13,8 +13,8 @@ def answers():
 
     non_symbols = {str(n) for n in range(10)} | {"."}
     gear_values = defaultdict(list)
-
     part_total = 0
+    
     for _match in re.finditer(r'(\d+)', schematic):
         y, x = divmod(_match.start(), line_length)
         val = _match.group()

@@ -1,56 +1,37 @@
 import aoc
-from aoc.grid import Point
-from collections import defaultdict
+from aoc.grid import Point, KeyGrid, Line, LineSegment
 import itertools
 from typing import Iterator
 
 
-def parse_map(antenna_map: list[list[str]]) -> dict[str, set[Point]]:
-    retval = defaultdict(set)
-    for y, row in enumerate(antenna_map):
-        for x, v in enumerate(row):
-            if v != '.':
-                retval[v].add(Point(x, y))
-    return retval
+class AntennaMap(KeyGrid):
+    ignore = '.'
 
-def slope(a: Point, b: Point) -> tuple[int, int]:
-    return b.x - a.x, b.y - a.y
+    def pairs(self) -> Iterator[tuple[Point, Point]]:
+        yield from itertools.chain((a, b) for v in self.values() for a, b in itertools.combinations(v, r=2))
 
-def within(shape: Point, p: Point):
-    return 0 <= p.x < shape.x and 0 <= p.y < shape.y
+    def antinodes(self) -> set[Point]:
+        def _antinodes(a: Point, b: Point) -> Iterator[Point]:
+            line = LineSegment(a, b)
+            possibilities = {line.prev(a), line.next(a), line.prev(b), line.next(b)}
+            for antinode in possibilities - {a, b}:
+                if self.binds(antinode):
+                    yield antinode
 
-def antinodes(shape: Point, a: Point, b: Point) -> Iterator[Point]:
-    _slope = slope(a, b)
+        return set(p for a, b in self.pairs() for p in _antinodes(a, b))
 
-    for antinode in (a - _slope, b + _slope):
-        if within(shape, antinode):
-            yield antinode
+    def resonant_antinodes(self) -> Iterator[Point]:
+        def _antinodes(a: Point, b: Point) -> Iterator[Point]:
+            line = Line(a, b)
+            yield from (p for p in line.points(self.top_left.x, self.bottom_right.x) if self.binds(p))
 
-def resonant_antinodes(shape: Point, a: Point, b: Point) -> Iterator[Point]:
-    _slope = slope(a, b)
-    
-    def _check(p: Point, slope: Point):
-        while within(shape, p):
-            yield p
-            p += slope
-
-    yield from _check(a, (-_slope[0], -_slope[1]))
-    yield from _check(b, _slope)
+        return set(p for a, b in self.pairs() for p in _antinodes(a, b))
 
 @aoc.register(__file__)
 def answers():
-    antenna_map = aoc.read_grid()
-    width, height = len(antenna_map[0]), len(antenna_map)
-    antenna_map = parse_map(antenna_map)
-    shape = Point(width, height)
-
-    # Part One
-    all_antinodes = set(an for v in antenna_map.values() for a, b in itertools.combinations(v, r=2) for an in antinodes(shape, a, b))
-    yield len(all_antinodes)
-
-    # Part Two
-    all_antinodes = set(an for v in antenna_map.values() for a, b in itertools.combinations(v, r=2) for an in resonant_antinodes(shape, a, b))
-    yield len(all_antinodes)
+    antenna_map = AntennaMap(aoc.read_data())
+    yield len(antenna_map.antinodes())
+    yield len(antenna_map.resonant_antinodes())
     
 if __name__ == '__main__':
     aoc.run()

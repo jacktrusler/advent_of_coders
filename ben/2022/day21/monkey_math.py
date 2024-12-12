@@ -67,7 +67,7 @@ def value(monkeys: dict[str, str], name: str) -> int:
 
 @aoc.register(__file__)
 def answers():
-    monkeys = (line.split(':') for line in aoc.read_lines('small'))
+    monkeys = (line.split(':') for line in aoc.read_lines())
     monkeys = {name: value.strip() for name, value in monkeys}
     yield value(monkeys, 'root')
 

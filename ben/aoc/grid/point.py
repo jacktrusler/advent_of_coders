@@ -9,9 +9,75 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class PointDC:
+class Point:
     x: int
     y: int
+
+    def __repr__(self):
+        return f'Point({self.x}, {self.y})'
+    
+    def __str__(self):
+        return f'({self.x}, {self.y})'
+    
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    def __getitem__(self, i):
+        match i:
+            case 0: return self.x
+            case 1: return self.y
+            case _: raise IndexError
+
+    def __add__(self, other: Point | RAW_POINT) -> Point:
+        try:
+            return Point(self.x + other.x, self.y + other.y)
+        except AttributeError:
+            return Point(self.x + other[0], self.y + other[1])
+        
+    def __radd__(self, other: Point | RAW_POINT) -> Point:
+        try:
+            return Point(self.x + other.x, self.y + other.y)
+        except AttributeError:
+            return Point(self.x + other[0], self.y + other[1])
+        
+    def __sub__(self, other: Point | RAW_POINT) -> Point:
+        try:
+            return Point(self.x - other.x, self.y - other.y)
+        except AttributeError:
+            return Point(self.x - other[0], self.y - other[1])
+        
+    def __mul__(self, val: int) -> Point:
+        return Point(self.x * val, self.y * val)
+    
+    def __rmul__(self, val: int) -> Point:
+        return Point(self.x * val, self.y * val)
+    
+    def __mod__(self, other: Point | RAW_POINT) -> Point:
+        try:
+            return Point(self.x % other.x, self.y % other.y)
+        except AttributeError:
+            return Point(self.x % other[0], self.y % other[1])
+    
+    def distance(self, other: Point | RAW_POINT) -> float:
+        diff = self - other
+        return math.hypot(diff.x, diff.y)
+    
+    def manhattan_distance(self, other: Point | RAW_POINT = (0, 0)) -> int:
+        try:
+            return abs(self.x - other.x) + abs(self.y - other.y)
+        except AttributeError:
+            return abs(self.x - other[0]) + abs(self.y - other[1])
+    
+    def move(self, direction: Direction, n: int = 1) -> Point:
+        return Point(self.x + (direction.movement[0] * n), self.y + (direction.movement[1] * n))
+    
+RAW_POINT = tuple[int, int]
+class PointSlots:
+    __slots__ = ['x', 'y']
+    
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
     def __repr__(self):
         return f'Point({self.x}, {self.y})'
@@ -25,104 +91,51 @@ class PointDC:
             case 1: return self.y
             case _: raise IndexError
 
-    def __add__(self, other: PointDC | RAW_POINT) -> PointDC:
+    def __add__(self, other: Point | RAW_POINT) -> Point:
         try:
-            return PointDC(self.x + other.x, self.y + other.y)
+            return Point(self.x + other.x, self.y + other.y)
         except AttributeError:
-            return PointDC(self.x + other[0], self.y + other[1])
+            return Point(self.x + other[0], self.y + other[1])
         
-    def __radd__(self, other: PointDC | RAW_POINT) -> PointDC:
+    def __radd__(self, other: Point | RAW_POINT) -> Point:
         try:
-            return PointDC(self.x + other.x, self.y + other.y)
+            return Point(self.x + other.x, self.y + other.y)
         except AttributeError:
-            return PointDC(self.x + other[0], self.y + other[1])
+            return Point(self.x + other[0], self.y + other[1])
         
-    def __sub__(self, other: PointDC | RAW_POINT) -> PointDC:
+    def __sub__(self, other: Point | RAW_POINT) -> Point:
         try:
-            return PointDC(self.x - other.x, self.y - other.y)
+            return Point(self.x - other.x, self.y - other.y)
         except AttributeError:
-            return PointDC(self.x - other[0], self.y - other[1])
+            return Point(self.x - other[0], self.y - other[1])
         
-    def __mul__(self, val: int) -> PointDC:
-        return PointDC(self.x * val, self.y * val)
+    def __mul__(self, val: int) -> Point:
+        return Point(self.x * val, self.y * val)
     
-    def __rmul__(self, val: int) -> PointDC:
-        return PointDC(self.x * val, self.y * val)
+    def __rmul__(self, val: int) -> Point:
+        return Point(self.x * val, self.y * val)
     
-    def distance(self, other: PointDC | RAW_POINT) -> float:
+    def __eq__(self, other: Point | RAW_POINT) -> Point:
+        try:
+            return self.x == other.x and self.y == other.y
+        except AttributeError:
+            return self.x == other[0] and self.y == other[1]
+        
+    def __hash__(self):
+        return hash((self.x, self.y))
+    
+    def distance(self, other: Point | RAW_POINT) -> float:
         return math.hypot(self - other)
     
-    def manhattan_distance(self, other: PointDC | RAW_POINT = (0, 0)) -> int:
+    def manhattan_distance(self, other: Point | RAW_POINT = (0, 0)) -> int:
         return abs(self.x - other.x) + abs(self.y - other.y)
     
-    def move(self, direction: Direction, n: int = 1) -> PointDC:
-        return PointDC(self.x + (direction.movement.x * n), self.y + (direction.movement.y * n))
-    
-# RAW_POINT = tuple[int, int]
-# class Point:
-#     __slots__ = ['x', 'y']
-    
-#     def __init__(self, x, y):
-#         self.x = x
-#         self.y = y
-
-#     def __repr__(self):
-#         return f'Point({self.x}, {self.y})'
-    
-#     def __str__(self):
-#         return f'({self.x}, {self.y})'
-
-#     def __getitem__(self, i):
-#         match i:
-#             case 0: return self.x
-#             case 1: return self.y
-#             case _: raise IndexError
-
-#     def __add__(self, other: Point | RAW_POINT) -> Point:
-#         try:
-#             return Point(self.x + other.x, self.y + other.y)
-#         except AttributeError:
-#             return Point(self.x + other[0], self.y + other[1])
-        
-#     def __radd__(self, other: Point | RAW_POINT) -> Point:
-#         try:
-#             return Point(self.x + other.x, self.y + other.y)
-#         except AttributeError:
-#             return Point(self.x + other[0], self.y + other[1])
-        
-#     def __sub__(self, other: Point | RAW_POINT) -> Point:
-#         try:
-#             return Point(self.x - other.x, self.y - other.y)
-#         except AttributeError:
-#             return Point(self.x - other[0], self.y - other[1])
-        
-#     def __mul__(self, val: int) -> Point:
-#         return Point(self.x * val, self.y * val)
-    
-#     def __rmul__(self, val: int) -> Point:
-#         return Point(self.x * val, self.y * val)
-    
-#     def __eq__(self, other: Point | RAW_POINT) -> Point:
-#         try:
-#             return self.x == other.x and self.y == other.y
-#         except AttributeError:
-#             return self.x == other[0] and self.y == other[1]
-        
-#     def __hash__(self):
-#         return hash((self.x, self.y))
-    
-#     def distance(self, other: Point | RAW_POINT) -> float:
-#         return math.hypot(self - other)
-    
-#     def manhattan_distance(self, other: Point | RAW_POINT = (0, 0)) -> int:
-#         return abs(self.x - other.x) + abs(self.y - other.y)
-    
-#     def move(self, direction: Direction, n: int = 1) -> Point:
-#         return Point(self.x + (direction.movement[0] * n), self.y + (direction.movement[1] * n))
+    def move(self, direction: Direction, n: int = 1) -> Point:
+        return Point(self.x + (direction.movement[0] * n), self.y + (direction.movement[1] * n))
 
 
 
-class Point(namedtuple('Point', ['x', 'y'])):
+class PointTuple(namedtuple('Point', ['x', 'y'])):
     def __repr__(self):
         return f'Point({self[0]}, {self[1]})'
     
@@ -178,8 +191,8 @@ if __name__ == '__main__':
     
     t_pts = test_time(create_tuple, i)
     nt_pts = test_time(creator, Point, i)
-    dc_pts = test_time(creator, PointDC, i)
-    # slot_pts = test_time(creator, PointSlots, i)
+    dc_pts = test_time(creator, Point, i)
+    slot_pts = test_time(creator, PointSlots, i)
 
     print('--- Add ---')
     def add_em(l):
@@ -195,4 +208,4 @@ if __name__ == '__main__':
     test_time(add_og, t_pts)
     test_time(add_em, nt_pts)
     test_time(add_em, dc_pts)
-    # test_time(add_em, slot_pts)
+    test_time(add_em, slot_pts)

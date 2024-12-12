@@ -1,4 +1,5 @@
 import aoc
+from aoc.grid import LineSegment
 import itertools
 
 
@@ -8,15 +9,15 @@ DIRECTION_MAP = {
     'D': aoc.Direction.DOWN,
     'L': aoc.Direction.LEFT,
 }
-Wire = list[aoc.OrthogonalLine]
+Wire = list[LineSegment]
 
 def parse_wire(data: str) -> Wire:
     point = aoc.Point(0, 0)
     retval = []
 
-    def _parse_instruction(start: aoc.Point, instruction: str) -> aoc.OrthogonalLine:
+    def _parse_instruction(start: aoc.Point, instruction: str) -> LineSegment:
         direction, distance = instruction[0], int(instruction[1:])
-        return aoc.OrthogonalLine(start, start.move(DIRECTION_MAP[direction], distance))
+        return LineSegment(start, start.move(DIRECTION_MAP[direction], distance))
 
     for i in data.split(','):
         line = _parse_instruction(point, i)

@@ -1,4 +1,5 @@
+from .point import Point, PointSlots, PointTuple
 from .direction import Direction
-from .point import Point
-from .line import Line, OrthogonalLine
-from .grid import Grid, KeyGrid
+from .line import Line, LineSegment
+from .grid import Grid
+from .key_grid import KeyGrid

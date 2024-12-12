@@ -3,7 +3,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 
-def extrapolate(histories: NDArray) -> list[int]:
+def extrapolate(histories: NDArray[np.int_]) -> list[int]:
     _histories = np.copy(histories)
     ages = _histories[:,-1]
 
@@ -17,7 +17,6 @@ def extrapolate(histories: NDArray) -> list[int]:
 @aoc.register(__file__)
 def answers():
     histories = np.array([x.split() for x in aoc.read_lines()], dtype=int)
-
     yield sum(extrapolate(histories))
     yield sum(extrapolate(np.flip(histories, axis=1)))
 

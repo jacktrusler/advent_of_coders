@@ -36,10 +36,10 @@ class JokerHand(Hand):
 def answers():
     data = [x.split() for x in aoc.read_lines()]
 
-    hands = [Hand(*x) for x in data]
+    hands = (Hand(*x) for x in data)
     yield sum(rank * hand.bid for rank, hand in enumerate(sorted(hands), start=1))
 
-    hands = [JokerHand(*x) for x in data]
+    hands = (JokerHand(*x) for x in data)
     yield sum(rank * hand.bid for rank, hand in enumerate(sorted(hands), start=1))
 
 if __name__ == '__main__':

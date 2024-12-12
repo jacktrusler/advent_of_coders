@@ -55,7 +55,7 @@ def perform_round(ar: NDArray, dirs: Iterable[Direction]) -> NDArray:
 
 @aoc.register(__file__)
 def answers():
-    grid = np.where(np.asarray(aoc.read_grid('small')) == '#', 1, 0)
+    grid = np.where(np.asarray(aoc.read_grid()) == '#', 1, 0)
     dirs = np.array(list(Direction))
 
     i = 0

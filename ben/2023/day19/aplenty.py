@@ -1,15 +1,15 @@
 from __future__ import annotations
 import aoc
 from aoc.utils import Interval
-from collections import defaultdict, deque
-from dataclasses import dataclass, replace
+from collections import deque
+from dataclasses import dataclass, field, replace
 from operator import lt, gt
 from math import prod
 import re
-from typing import Iterable, Callable
+from typing import Iterable, Callable, Generator
 
 
-@dataclass
+@dataclass(frozen=True)
 class MachinePart:
     x: Interval
     m: Interval
@@ -36,26 +36,28 @@ class MachinePart:
         return replace(self, **{key: val})
 
 
+@dataclass(frozen=True)
 class Workflow:
+    id: str
+    rules: list[Workflow.Rule] = field(default_factory=list)
+
     @dataclass(frozen=True)
     class Rule:
-        result: str
+        destination: str
         category: str = None
-        operation: Callable = None
+        operation: Callable[[int, int], bool] = None
         value: int = None
 
         @classmethod
         def from_string(cls, rule: str) -> Workflow.Rule:
             if ':' not in rule:
                 return cls(rule)
-            m = re.match(r'(?P<category>.*)(?P<cond>[<>])(?P<value>\d+):(?P<result>.*)', rule).groupdict()
+            m = re.match(r'(?P<category>.*)(?P<cond>[<>])(?P<value>\d+):(?P<destination>.*)', rule).groupdict()
             op = lt if m['cond'] == '<' else gt
-            return cls(m['result'], m['category'], op, int(m['value']))
+            return cls(m['destination'], m['category'], op, int(m['value']))
 
-        def process(self, part: MachinePart) -> bool:
-            if self.category is None:
-                return True
-            return self.operation(part[self.category].start, self.value)
+        def allow(self, part: MachinePart) -> bool:
+            return self.operation(part[self.category].start, self.value) if self.category else True
         
         def filter(self, part: MachinePart) -> tuple[MachinePart, MachinePart]:
             if self.category is None:
@@ -64,60 +66,52 @@ class Workflow:
                 return None, part
             
             below = Interval(v.start, self.value-1 if self.operation == lt else self.value)
-            above = Interval(self.value + 1 if self.operation == gt else self.value, v.end)
+            above = Interval(self.value+1 if self.operation == gt else self.value, v.end)
             passed = below if self.operation == lt else above
             failed = above if self.operation == lt else below
             return part.replace(self.category, passed), part.replace(self.category, failed)
-            
-
-    def __init__(self, id: int, rules: list[str]):
-        self.id = id
-        self.rules = list(map(Workflow.Rule.from_string, rules))
 
     @classmethod
     def from_string(cls, workflow: str) -> Workflow:
         id, rules = re.match(r'(?P<id>.*){(?P<rules>.*)}', workflow).groups()
-        return cls(id, rules.split(','))
+        rules = list(map(Workflow.Rule.from_string, rules.split(',')))
+        return cls(id, rules)
 
     def process(self, part: MachinePart) -> str:
         for rule in self.rules:
-            if rule.process(part):
-                return rule.result
+            if rule.allow(part):
+                return rule.destination
 
-    def filter(self, part: MachinePart) -> dict[str, list[MachinePart]]:
-        results = defaultdict(list)
+    def filter(self, part: MachinePart) -> Generator[tuple[str, MachinePart]]:
         for rule in self.rules:
             passed, part = rule.filter(part)
             if passed is not None:
-                results[rule.result].append(passed)
-        return results
+                yield rule.destination, passed
     
 
 class System:
+    ACCEPT = 'A'
+    REJECT = 'R'
+
     def __init__(self, workflows: Iterable[Workflow]):
         self.__wf_map = {w.id : w for w in workflows}
 
     def accept(self, part: MachinePart, start='in') -> bool:
-        workflow = self.__wf_map[start]
+        id = start
         while True:
-            if (result := workflow.process(part)) in 'AR':
-                return result == 'A'
-            workflow = self.__wf_map[result]
+            workflow = self.__wf_map[id]
+            if (id := workflow.process(part)) in (self.ACCEPT, self.REJECT):
+                return id == self.ACCEPT
 
     def count(self, min_rating, max_rating, start='in') -> int:
-        all_parts = MachinePart(*[Interval(min_rating, max_rating)] * 4)
-        queue = deque([(self.__wf_map[start], all_parts)])
+        queue = deque([(start, MachinePart(*[Interval(min_rating, max_rating)] * 4))])
         possibilities = 0
         while queue:
-            workflow, part = queue.popleft()
-            results = workflow.filter(part)
-
-            for id, parts in results.items():
-                if id == 'A':
-                    possibilities += sum(p.possibilities for p in parts)
-                if id in 'AR':
-                    continue
-                queue.append((self.__wf_map[id], parts[0]))
+            id, part = queue.popleft()
+            if id == self.ACCEPT:
+                possibilities += part.possibilities
+                continue
+            queue.extend((i, p) for i, p in self.__wf_map[id].filter(part) if i != self.REJECT)
         return possibilities
     
 
@@ -125,7 +119,7 @@ class System:
 def answers():
     workflows, parts = aoc.read_chunks()
     workflows = map(Workflow.from_string, workflows.splitlines())
-    parts = list(map(MachinePart.from_string, parts.splitlines()))
+    parts = map(MachinePart.from_string, parts.splitlines())
 
     system = System(workflows)
     yield sum(p.rating for p in parts if system.accept(p))
