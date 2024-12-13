@@ -23,8 +23,8 @@ type IRC struct {
 // A new genre of music in the AoC-verse
 func guardStep(y, x int, dirI int) {
 	// out of bounds, therefore finished
-	dy := Dirs[dirI][0]
-	dx := Dirs[dirI][1]
+	dy := u.Dirs[dirI][0]
+	dx := u.Dirs[dirI][1]
 	if x == -1 || y == -1 || y >= len(ice) || x >= len(ice[y]) {
 		return
 	}
@@ -74,8 +74,8 @@ func day6part1() {
 func isTrapped(y, x, dirI int, iRC u.Coord) bool {
 	cache := make(map[string]bool)
 	for {
-		dy := Dirs[dirI][0]
-		dx := Dirs[dirI][1]
+		dy := u.Dirs[dirI][0]
+		dx := u.Dirs[dirI][1]
 		if x+dx < 0 || y+dy < 0 || y+dy >= len(ice) || x+dx >= len(ice[y]) {
 			// Freedom
 			return false

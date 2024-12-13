@@ -83,3 +83,61 @@ func (s Set[T]) Has(e T) bool {
 	_, ok := s[e]
 	return ok
 }
+
+// Depth First Search
+func DFS(y, x int, grid []string, visited map[Coord]bool, target byte) *Coord {
+	// Row: Y | Col: X
+	rows := len(grid)
+	cols := len(grid[0])
+
+	if y < 0 || y >= rows || x < 0 || x >= cols || visited[Coord{Y: y, X: x}] {
+		// oob or already visited!
+		return nil
+	}
+
+	if grid[y][x] == target {
+		return &Coord{y, x}
+	}
+
+	visited[Coord{Y: y, X: x}] = true
+
+	for _, dir := range Dirs {
+		newY, newX := y+dir[0], x+dir[1]
+		if point := DFS(newY, newX, grid, visited, target); point != nil {
+			return point
+		}
+	}
+
+	return nil
+}
+
+// Breadth First Search
+func BFS(y, x int, grid []string, target byte) *Coord {
+	visited := make(map[Coord]bool)
+
+	rows := len(grid)
+	cols := len(grid[0])
+	start := Coord{y, x}
+
+	queue := []Coord{start}
+	visited[start] = true
+
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+
+		if grid[current.Y][current.X] == target {
+			return &Coord{current.Y, current.X}
+		}
+
+		for _, dir := range Dirs {
+			newY, newX := current.Y+dir[0], current.X+dir[1]
+			// Check in bounds and not visited
+			if newY >= 0 && newY < rows && newX >= 0 && newX < cols && !visited[Coord{newY, newX}] {
+				queue = append(queue, Coord{newY, newX})
+				visited[Coord{newY, newX}] = true
+			}
+		}
+	}
+	return nil
+}
