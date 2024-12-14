@@ -3,6 +3,7 @@ package goutils
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -27,6 +28,18 @@ func StringArrAtoI(arr []string) []int {
 			panic(err)
 		}
 		arr2 = append(arr2, j)
+	}
+	return arr2
+}
+
+func StringArrToFloat(arr []string) []float64 {
+	arr2 := make([]float64, 0)
+	for _, i := range arr {
+		j, err := strconv.Atoi(i)
+		if err != nil {
+			panic(err)
+		}
+		arr2 = append(arr2, float64(j))
 	}
 	return arr2
 }
@@ -140,4 +153,9 @@ func BFS(y, x int, grid []string, target byte) *Coord {
 		}
 	}
 	return nil
+}
+
+func IsWholeNumber(f float64) bool {
+	tolerance := 1e-6
+	return math.Abs(f-math.Round(f)) < tolerance
 }
