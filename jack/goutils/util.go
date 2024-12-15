@@ -9,6 +9,27 @@ import (
 	"strings"
 )
 
+// Marginally more efficient grid creation because go allocates every element to 0 value when using make()
+func MakeZeroGrid(colsX, rowsY int) [][]int {
+	grid := make([][]int, rowsY)
+	for y := 0; y < rowsY; y++ {
+		grid[y] = make([]int, colsX)
+	}
+	return grid
+}
+
+// In case you need 0's for some reason, -1 to indicate it hasn't been traveled to
+func MakeNegativeOneGrid(colsX, rowsY int) [][]int {
+	grid := make([][]int, rowsY)
+	for y := 0; y < rowsY; y++ {
+		grid[y] = make([]int, colsX)
+		for x := 0; x < colsX; x++ {
+			grid[y][x] = -1
+		}
+	}
+	return grid
+}
+
 func FileAsString(file string) string {
 	content, err := os.ReadFile(file)
 	if err != nil {
@@ -98,7 +119,7 @@ func (s Set[T]) Has(e T) bool {
 }
 
 // Depth First Search
-func DFS(y, x int, grid []string, visited map[Coord]bool, target byte) *Coord {
+func DFS(x, y int, grid []string, visited map[Coord]bool, target byte) *Coord {
 	// Row: Y | Col: X
 	rows := len(grid)
 	cols := len(grid[0])
@@ -125,7 +146,7 @@ func DFS(y, x int, grid []string, visited map[Coord]bool, target byte) *Coord {
 }
 
 // Breadth First Search
-func BFS(y, x int, grid []string, target byte) *Coord {
+func BFS(x, y int, grid []string, target byte) *Coord {
 	visited := make(map[Coord]bool)
 
 	rows := len(grid)

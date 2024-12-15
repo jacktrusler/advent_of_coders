@@ -1,8 +1,8 @@
 package goutils
 
 var (
-	// N, E, S, W  ---  { Y, X }
-	Dirs = [][]int{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}
+	// N, E, S, W  ---  { X, Y }
+	Dirs = [][]int{{0, -1}, {1, 0}, {0, 1}, {-1, 0}}
 )
 
 type Node struct {
@@ -11,6 +11,6 @@ type Node struct {
 }
 
 type Coord struct {
-	Y int
 	X int
+	Y int
 }
