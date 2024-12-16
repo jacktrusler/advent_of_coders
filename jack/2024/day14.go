@@ -79,10 +79,10 @@ func MovedRobotoGrid(robots [][]int, seconds int, w int, h int) [][]int {
 func day14part2(robots [][]int) {
 	// Make a chrimbussa tree somehow
 	possibleTrees := []int{}
-	for i := 1; i < 100000; i++ {
+	w := 101
+	h := 103
+	for i := 1; i < w*h; i++ {
 
-		w := 101
-		h := 103
 		time := i
 		robotGrid := MovedRobotoGrid(robots, time, w, h)
 		visited := make(map[u.Coord]bool)
@@ -100,8 +100,6 @@ func day14part2(robots [][]int) {
 
 	treeIndex := slices.Min(possibleTrees)
 
-	w := 101
-	h := 103
 	time := treeIndex
 	robotGrid := MovedRobotoGrid(robots, time, w, h)
 	for _, line := range robotGrid {

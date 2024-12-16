@@ -97,7 +97,7 @@
 [![Day](https://badgen.net/badge/11/%E2%98%85%E2%98%85/green)](2024/day11.go)
 [![Day](https://badgen.net/badge/12/%E2%98%85%E2%98%85/green)](2024/day12.go)
 [![Day](https://badgen.net/badge/13/%E2%98%85%E2%98%85/green)](2024/day13.go)
-[![Day](https://badgen.net/badge/14/%E2%98%85%E2%98%85/gray)](2024/day14.go)
+[![Day](https://badgen.net/badge/14/%E2%98%85%E2%98%85/green)](2024/day14.go)
 [![Day](https://badgen.net/badge/15/%E2%98%86%E2%98%86/gray)](2024/day15.go)
 [![Day](https://badgen.net/badge/16/%E2%98%86%E2%98%86/gray)](2024/day16.go)
 [![Day](https://badgen.net/badge/17/%E2%98%86%E2%98%86/gray)](2024/day17.go)
