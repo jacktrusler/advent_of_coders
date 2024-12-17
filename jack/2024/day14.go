@@ -76,13 +76,10 @@ func MovedRobotoGrid(robots [][]int, seconds int, w int, h int) [][]int {
 
 }
 
-func day14part2(robots [][]int) {
-	// Make a chrimbussa tree somehow
-	possibleTrees := []int{}
+func splitTouchers(robots [][]int, start, end int, c chan int) {
 	w := 101
 	h := 103
-	for i := 1; i < w*h; i++ {
-
+	for i := start; i < end; i++ {
 		time := i
 		robotGrid := MovedRobotoGrid(robots, time, w, h)
 		visited := make(map[u.Coord]bool)
@@ -91,20 +88,30 @@ func day14part2(robots [][]int) {
 				if r > 0 {
 					area := RTS(y, x, robotGrid, visited)
 					if area > 100 {
-						possibleTrees = append(possibleTrees, i)
+						c <- i
 					}
 				}
 			}
 		}
 	}
+}
 
-	treeIndex := slices.Min(possibleTrees)
-
-	time := treeIndex
-	robotGrid := MovedRobotoGrid(robots, time, w, h)
-	for _, line := range robotGrid {
-		fmt.Println(line)
+func day14part2(robots [][]int) {
+	// Find a chrimbussa tree somehow
+	c := make(chan int)
+	w := 101
+	h := 103
+	gridArea := w * h
+	for i := 0; i < gridArea; i += gridArea / 10 {
+		go splitTouchers(robots, i, i+gridArea/10, c)
 	}
+	treeIndex := <-c
+
+	// time := treeIndex
+	// robotGrid := MovedRobotoGrid(robots, time, w, h)
+	// for _, line := range robotGrid {
+	// 	fmt.Println(line)
+	// }
 
 	fmt.Println(treeIndex)
 }
@@ -160,7 +167,7 @@ func Day14() {
 	}
 
 	fmt.Println("----- Part 1 -----")
-	day14part1(robots)
+	// day14part1(robots)
 	fmt.Println("----- Part 2 -----")
 	day14part2(robots)
 }
