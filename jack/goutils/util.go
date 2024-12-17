@@ -119,21 +119,21 @@ func (s Set[T]) Has(e T) bool {
 }
 
 // Depth First Search
-func DFS(x, y int, grid []string, visited map[Coord]bool, target byte) *Coord {
+func DFS(x, y int, grid []string, visited map[Point]bool, target byte) *Point {
 	// Row: Y | Col: X
 	rows := len(grid)
 	cols := len(grid[0])
 
-	if y < 0 || y >= rows || x < 0 || x >= cols || visited[Coord{Y: y, X: x}] {
+	if y < 0 || y >= rows || x < 0 || x >= cols || visited[Point{Y: y, X: x}] {
 		// oob or already visited!
 		return nil
 	}
 
 	if grid[y][x] == target {
-		return &Coord{y, x}
+		return &Point{y, x}
 	}
 
-	visited[Coord{Y: y, X: x}] = true
+	visited[Point{Y: y, X: x}] = true
 
 	for _, dir := range Dirs {
 		newY, newX := y+dir[0], x+dir[1]
@@ -146,14 +146,14 @@ func DFS(x, y int, grid []string, visited map[Coord]bool, target byte) *Coord {
 }
 
 // Breadth First Search
-func BFS(x, y int, grid []string, target byte) *Coord {
-	visited := make(map[Coord]bool)
+func BFS(x, y int, grid []string, target byte) *Point {
+	visited := make(map[Point]bool)
 
 	rows := len(grid)
 	cols := len(grid[0])
-	start := Coord{y, x}
+	start := Point{y, x}
 
-	queue := []Coord{start}
+	queue := []Point{start}
 	visited[start] = true
 
 	for len(queue) > 0 {
@@ -161,15 +161,15 @@ func BFS(x, y int, grid []string, target byte) *Coord {
 		queue = queue[1:]
 
 		if grid[current.Y][current.X] == target {
-			return &Coord{current.Y, current.X}
+			return &Point{current.Y, current.X}
 		}
 
 		for _, dir := range Dirs {
 			newY, newX := current.Y+dir[0], current.X+dir[1]
 			// Check in bounds and not visited
-			if newY >= 0 && newY < rows && newX >= 0 && newX < cols && !visited[Coord{newY, newX}] {
-				queue = append(queue, Coord{newY, newX})
-				visited[Coord{newY, newX}] = true
+			if newY >= 0 && newY < rows && newX >= 0 && newX < cols && !visited[Point{newY, newX}] {
+				queue = append(queue, Point{newY, newX})
+				visited[Point{newY, newX}] = true
 			}
 		}
 	}
@@ -179,4 +179,7 @@ func BFS(x, y int, grid []string, target byte) *Coord {
 func IsWholeNumber(f float64) bool {
 	tolerance := 1e-6
 	return math.Abs(f-math.Round(f)) < tolerance
+}
+
+func aStar() {
 }

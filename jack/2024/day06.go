@@ -9,8 +9,8 @@ import (
 var (
 	// This is like pokemon ice cave low key
 	ice      []string
-	startPos u.Coord
-	rockSet  u.Set[u.Coord]
+	startPos u.Point
+	rockSet  u.Set[u.Point]
 )
 
 // Imaginary Rock Cache
@@ -44,7 +44,7 @@ func guardStep(y, x int, dirI int) {
 		return
 	} else {
 		// Spot has been moved to
-		rockSet.Add(u.Coord{Y: y, X: x})
+		rockSet.Add(u.Point{Y: y, X: x})
 	}
 	guardStep(y+dy, x+dx, dirI)
 	return
@@ -58,11 +58,11 @@ func printIce() {
 }
 
 func day6part1() {
-	rockSet = u.NewSet[u.Coord]()
+	rockSet = u.NewSet[u.Point]()
 	for y, line := range ice {
 		for x, rune := range line {
 			if rune == '^' {
-				startPos = u.Coord{Y: y, X: x}
+				startPos = u.Point{Y: y, X: x}
 				guardStep(y, x, 0)
 			}
 		}
@@ -71,7 +71,7 @@ func day6part1() {
 	fmt.Println(len(rockSet))
 }
 
-func isTrapped(y, x, dirI int, iRC u.Coord) bool {
+func isTrapped(y, x, dirI int, iRC u.Point) bool {
 	cache := make(map[string]bool)
 	for {
 		dy := u.Dirs[dirI][0]
@@ -103,9 +103,9 @@ func day6part2() {
 	startY := startPos.Y
 	startX := startPos.X
 	// Remove starting position from set... Guard will notice!
-	rockSet.Remove(u.Coord{Y: startY, X: startX})
+	rockSet.Remove(u.Point{Y: startY, X: startX})
 	for k := range rockSet {
-		imagRock := u.Coord{Y: k.Y, X: k.X}
+		imagRock := u.Point{Y: k.Y, X: k.X}
 
 		inTheClapHouse := isTrapped(startY, startX, 0, imagRock)
 		if inTheClapHouse {

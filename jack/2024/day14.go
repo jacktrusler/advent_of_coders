@@ -82,7 +82,7 @@ func splitTouchers(robots [][]int, start, end int, c chan int) {
 	for i := start; i < end; i++ {
 		time := i
 		robotGrid := MovedRobotoGrid(robots, time, w, h)
-		visited := make(map[u.Coord]bool)
+		visited := make(map[u.Point]bool)
 		for y, line := range robotGrid {
 			for x, r := range line {
 				if r > 0 {
@@ -117,13 +117,13 @@ func day14part2(robots [][]int) {
 }
 
 // Robot Touchy Search
-func RTS(y, x int, robots [][]int, visited map[u.Coord]bool) int {
-	start := u.Coord{Y: y, X: x}
+func RTS(y, x int, robots [][]int, visited map[u.Point]bool) int {
+	start := u.Point{Y: y, X: x}
 	rows := len(robots)    // y
 	cols := len(robots[0]) // x
-	queue := []u.Coord{start}
+	queue := []u.Point{start}
 
-	robotLoc := []u.Coord{}
+	robotLoc := []u.Point{}
 	robotLoc = append(robotLoc, start)
 
 	area := 0
@@ -131,7 +131,7 @@ func RTS(y, x int, robots [][]int, visited map[u.Coord]bool) int {
 	for len(queue) > 0 {
 		current := queue[0]
 		queue = queue[1:]
-		curr := u.Coord{Y: current.Y, X: current.X}
+		curr := u.Point{Y: current.Y, X: current.X}
 		if visited[curr] {
 			continue
 		} else {
@@ -142,11 +142,11 @@ func RTS(y, x int, robots [][]int, visited map[u.Coord]bool) int {
 		for _, dir := range u.Dirs {
 			newY, newX := current.Y+dir[0], current.X+dir[1]
 			if newY >= 0 && newY < rows && newX >= 0 && newX < cols && robots[newY][newX] > 0 {
-				if !visited[u.Coord{Y: newY, X: newX}] {
-					newCoord := u.Coord{Y: newY, X: newX}
-					queue = append(queue, u.Coord{Y: newY, X: newX})
-					if !slices.Contains(robotLoc, newCoord) {
-						robotLoc = append(robotLoc, u.Coord{Y: newY, X: newX})
+				if !visited[u.Point{Y: newY, X: newX}] {
+					newPoint := u.Point{Y: newY, X: newX}
+					queue = append(queue, u.Point{Y: newY, X: newX})
+					if !slices.Contains(robotLoc, newPoint) {
+						robotLoc = append(robotLoc, u.Point{Y: newY, X: newX})
 					}
 				}
 			}

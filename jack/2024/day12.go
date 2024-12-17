@@ -10,16 +10,16 @@ import (
 var (
 	garden   []string
 	plantSet u.Set[byte]
-	plots    = make(map[byte][][]u.Coord)
+	plots    = make(map[byte][][]u.Point)
 )
 
-func counter(y, x int, garden []string, visited map[u.Coord]bool, target byte) int {
-	start := u.Coord{Y: y, X: x}
+func counter(y, x int, garden []string, visited map[u.Point]bool, target byte) int {
+	start := u.Point{Y: y, X: x}
 	rows := len(garden)    // y
 	cols := len(garden[0]) // x
-	queue := []u.Coord{start}
+	queue := []u.Point{start}
 
-	plantLoc := []u.Coord{}
+	plantLoc := []u.Point{}
 	plantLoc = append(plantLoc, start)
 
 	perimeter := 0
@@ -28,7 +28,7 @@ func counter(y, x int, garden []string, visited map[u.Coord]bool, target byte) i
 	for len(queue) > 0 {
 		current := queue[0]
 		queue = queue[1:]
-		curr := u.Coord{Y: current.Y, X: current.X}
+		curr := u.Point{Y: current.Y, X: current.X}
 		if visited[curr] {
 			continue
 		} else {
@@ -43,11 +43,11 @@ func counter(y, x int, garden []string, visited map[u.Coord]bool, target byte) i
 			newY, newX := current.Y+dir[0], current.X+dir[1]
 			if newY >= 0 && newY < rows && newX >= 0 && newX < cols && garden[newY][newX] == target {
 				surroundingPlants++
-				if !visited[u.Coord{Y: newY, X: newX}] {
-					newCoord := u.Coord{Y: newY, X: newX}
-					queue = append(queue, u.Coord{Y: newY, X: newX})
-					if !slices.Contains(plantLoc, newCoord) {
-						plantLoc = append(plantLoc, u.Coord{Y: newY, X: newX})
+				if !visited[u.Point{Y: newY, X: newX}] {
+					newPoint := u.Point{Y: newY, X: newX}
+					queue = append(queue, u.Point{Y: newY, X: newX})
+					if !slices.Contains(plantLoc, newPoint) {
+						plantLoc = append(plantLoc, u.Point{Y: newY, X: newX})
 					}
 				}
 			}
@@ -72,13 +72,13 @@ func makePlantSet(garden []string) u.Set[byte] {
 func day12part1() {
 	plantSet := makePlantSet(garden)
 
-	visited := make(map[u.Coord]bool)
+	visited := make(map[u.Point]bool)
 
 	total := 0
 	for plant := range plantSet {
 		for y, line := range garden {
 			for x, p := range line {
-				if byte(p) == plant && !visited[u.Coord{Y: y, X: x}] {
+				if byte(p) == plant && !visited[u.Point{Y: y, X: x}] {
 					ans := counter(y, x, garden, visited, byte(p))
 					total += ans
 				}
@@ -88,40 +88,40 @@ func day12part1() {
 	fmt.Printf("%+v\n", plots)
 }
 
-func calcArea(arr []u.Coord, p byte) int {
+func calcArea(arr []u.Point, p byte) int {
 	rows := len(garden)    // y
 	cols := len(garden[0]) // x
-	dirMap := make(map[string]u.Set[u.Coord])
+	dirMap := make(map[string]u.Set[u.Point])
 
 	if dirMap["North"] == nil {
-		dirMap["North"] = make(u.Set[u.Coord])
+		dirMap["North"] = make(u.Set[u.Point])
 	}
 	if dirMap["East"] == nil {
-		dirMap["East"] = make(u.Set[u.Coord])
+		dirMap["East"] = make(u.Set[u.Point])
 	}
 	if dirMap["South"] == nil {
-		dirMap["South"] = make(u.Set[u.Coord])
+		dirMap["South"] = make(u.Set[u.Point])
 	}
 	if dirMap["West"] == nil {
-		dirMap["West"] = make(u.Set[u.Coord])
+		dirMap["West"] = make(u.Set[u.Point])
 	}
 
-	for _, coord := range arr {
+	for _, Point := range arr {
 		for i, dir := range u.Dirs {
-			newY, newX := coord.Y+dir[0], coord.X+dir[1]
+			newY, newX := Point.Y+dir[0], Point.X+dir[1]
 			if newY < 0 || newY >= rows || newX < 0 || newX >= cols || garden[newY][newX] != p {
 				// N
-				if i == 0 && (newY < 0 || garden[newY][coord.X] != p) {
-					dirMap["North"][coord] = true
+				if i == 0 && (newY < 0 || garden[newY][Point.X] != p) {
+					dirMap["North"][Point] = true
 				}
-				if i == 1 && (newX >= cols || garden[coord.Y][newX] != p) {
-					dirMap["East"][coord] = true
+				if i == 1 && (newX >= cols || garden[Point.Y][newX] != p) {
+					dirMap["East"][Point] = true
 				}
-				if i == 2 && (newY >= rows || garden[newY][coord.X] != p) {
-					dirMap["South"][coord] = true
+				if i == 2 && (newY >= rows || garden[newY][Point.X] != p) {
+					dirMap["South"][Point] = true
 				}
-				if i == 3 && (newX < 0 || garden[coord.Y][newX] != p) {
-					dirMap["West"][coord] = true
+				if i == 3 && (newX < 0 || garden[Point.Y][newX] != p) {
+					dirMap["West"][Point] = true
 				}
 			}
 		}
@@ -130,14 +130,14 @@ func calcArea(arr []u.Coord, p byte) int {
 	sides := 0
 	for dir, v := range dirMap {
 		// the band
-		oneDirection := make([]u.Coord, 0)
+		oneDirection := make([]u.Point, 0)
 		for k2 := range v {
 			oneDirection = append(oneDirection, k2)
 		}
 
 		if dir == "North" || dir == "South" {
 			// North / South Sort
-			slices.SortFunc(oneDirection, func(a, b u.Coord) int {
+			slices.SortFunc(oneDirection, func(a, b u.Point) int {
 				if a.Y == b.Y {
 					return a.X - b.X
 				}
@@ -146,26 +146,26 @@ func calcArea(arr []u.Coord, p byte) int {
 
 			y := -1
 			prevX := -1
-			for _, coord := range oneDirection {
+			for _, Point := range oneDirection {
 				if prevX == -1 {
-					prevX = coord.X
+					prevX = Point.X
 				}
-				if coord.Y != y {
-					y = coord.Y
+				if Point.Y != y {
+					y = Point.Y
 					sides++
-					prevX = coord.X
+					prevX = Point.X
 					continue
 				}
 
-				if coord.X-prevX > 1 {
+				if Point.X-prevX > 1 {
 					sides++
 				}
-				prevX = coord.X
+				prevX = Point.X
 
 			}
 		} else {
 			// East / West Sort
-			slices.SortFunc(oneDirection, func(a, b u.Coord) int {
+			slices.SortFunc(oneDirection, func(a, b u.Point) int {
 				if a.X == b.X {
 					return a.Y - b.Y
 				}
@@ -174,21 +174,21 @@ func calcArea(arr []u.Coord, p byte) int {
 
 			x := -1
 			prevY := -1
-			for _, coord := range oneDirection {
+			for _, Point := range oneDirection {
 				if prevY == -1 {
-					prevY = coord.Y
+					prevY = Point.Y
 				}
-				if coord.X != x {
-					x = coord.X
+				if Point.X != x {
+					x = Point.X
 					sides++
-					prevY = coord.Y
+					prevY = Point.Y
 					continue
 				}
 
-				if coord.Y-prevY > 1 {
+				if Point.Y-prevY > 1 {
 					sides++
 				}
-				prevY = coord.Y
+				prevY = Point.Y
 
 			}
 		}

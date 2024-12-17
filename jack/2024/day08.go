@@ -13,27 +13,27 @@ var (
 	// antennae mapping
 	aM = make(AntennaMap)
 	// part 2 antenna are also antinodes ig
-	antiNodes2 = make(map[u.Coord]bool)
+	antiNodes2 = make(map[u.Point]bool)
 )
 
-type AntennaMap map[rune][]u.Coord
+type AntennaMap map[rune][]u.Point
 
 func day8part1() {
 	for y, line := range city {
 		for x, rune := range line {
 			// some antennae found
 			if rune != '.' {
-				aM[rune] = append(aM[rune], u.Coord{Y: y, X: x})
-				antiNodes2[u.Coord{Y: y, X: x}] = true
+				aM[rune] = append(aM[rune], u.Point{Y: y, X: x})
+				antiNodes2[u.Point{Y: y, X: x}] = true
 			}
 		}
 	}
 
-	antiNodeMap := make(map[u.Coord]bool)
+	antiNodeMap := make(map[u.Point]bool)
 	for _, v := range aM {
 		for i := 0; i < len(v); i++ {
 			for j := i + 1; j < len(v); j++ {
-				var a1, a2 u.Coord
+				var a1, a2 u.Point
 				a1.X, a1.Y = v[i].X, v[i].Y
 				a2.X, a2.Y = v[j].X, v[j].Y
 				dy := int(math.Abs(float64(a1.Y - a2.Y)))
@@ -55,8 +55,8 @@ func day8part1() {
 
 }
 
-func createAntiNodes(a u.Coord, dy, dx int, aNM map[u.Coord]bool, part int) {
-	anti := u.Coord{}
+func createAntiNodes(a u.Point, dy, dx int, aNM map[u.Point]bool, part int) {
+	anti := u.Point{}
 	anti.X = a.X + dx
 	anti.Y = a.Y + dy
 	// exit condition
@@ -73,7 +73,7 @@ func day8part2() {
 	for _, v := range aM {
 		for i := 0; i < len(v); i++ {
 			for j := i + 1; j < len(v); j++ {
-				var a1, a2 u.Coord
+				var a1, a2 u.Point
 				a1.X, a1.Y = v[i].X, v[i].Y
 				a2.X, a2.Y = v[j].X, v[j].Y
 				dy := int(math.Abs(float64(a1.Y - a2.Y)))

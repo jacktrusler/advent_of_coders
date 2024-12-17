@@ -8,7 +8,7 @@ import (
 
 var (
 	topog    [][]int
-	findable map[u.Coord]int
+	findable map[u.Point]int
 )
 
 func makeTrail(input string) {
@@ -21,7 +21,7 @@ func makeTrail(input string) {
 	}
 }
 
-func hike(y, x, past int, paths map[u.Coord]int) {
+func hike(y, x, past int, paths map[u.Point]int) {
 	// if out of bounds
 	if x == -1 || y == -1 || y >= len(topog) || x >= len(topog[y]) {
 		return
@@ -37,8 +37,8 @@ func hike(y, x, past int, paths map[u.Coord]int) {
 	}
 
 	if curr == 9 {
-		findable[u.Coord{Y: y, X: x}]++
-		paths[u.Coord{Y: y, X: x}]++
+		findable[u.Point{Y: y, X: x}]++
+		paths[u.Point{Y: y, X: x}]++
 		return
 	}
 	//N
@@ -53,12 +53,12 @@ func hike(y, x, past int, paths map[u.Coord]int) {
 }
 
 func day10part1and2() {
-	findable = make(map[u.Coord]int)
+	findable = make(map[u.Point]int)
 	ans1 := 0
 	for y, line := range topog {
 		for x, h := range line {
 			if h == 0 {
-				paths := make(map[u.Coord]int)
+				paths := make(map[u.Point]int)
 				//N
 				hike(y-1, x, h, paths)
 				//E

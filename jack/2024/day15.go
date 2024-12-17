@@ -33,7 +33,7 @@ func day15part1(warehouse [][]byte, instructions string) {
 		for x, r := range line {
 			if r == '@' {
 				// start location
-				curr := u.Coord{X: x, Y: y}
+				curr := u.Point{X: x, Y: y}
 				for _, ins := range instructions {
 					// warehouse[curr.Y][curr.X] = '@'
 					// printWarehouse(warehouse)
@@ -42,20 +42,20 @@ func day15part1(warehouse [][]byte, instructions string) {
 					dx = dM[ins][0]
 					dy = dM[ins][1]
 
-					var next u.Coord
+					var next u.Point
 					next.X, next.Y = curr.X+dx, curr.Y+dy
 
 					if warehouse[next.Y][next.X] == '#' {
 						continue
 					} else if warehouse[next.Y][next.X] == 'O' {
 						// collect stones
-						stoneCache := []u.Coord{{Y: next.Y, X: next.X}}
-						var next2 u.Coord
+						stoneCache := []u.Point{{Y: next.Y, X: next.X}}
+						var next2 u.Point
 						next2.X, next2.Y = next.X+dx, next.Y+dy
 						for {
 
 							if warehouse[next2.Y][next2.X] == 'O' {
-								stoneCache = append(stoneCache, u.Coord{Y: next2.Y, X: next2.X})
+								stoneCache = append(stoneCache, u.Point{Y: next2.Y, X: next2.X})
 								next2.X, next2.Y = next2.X+dx, next2.Y+dy
 								continue
 							}

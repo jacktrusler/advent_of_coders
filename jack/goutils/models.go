@@ -10,7 +10,7 @@ type Node struct {
 	Next *Node
 }
 
-type Coord struct {
+type Point struct {
 	X int
 	Y int
 }
