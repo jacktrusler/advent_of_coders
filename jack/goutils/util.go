@@ -181,5 +181,15 @@ func IsWholeNumber(f float64) bool {
 	return math.Abs(f-math.Round(f)) < tolerance
 }
 
-func aStar() {
+func ManhattanD(x1, y1, x2, y2 int) int {
+	return Abs(x1-x2) + Abs(y1-y2)
+}
+
+// Helper function to calculate absolute value of an integer using ints
+// the math.Abs library only uses float64
+func Abs(a int) int {
+	if a < 0 {
+		return -a
+	}
+	return a
 }
