@@ -181,8 +181,14 @@ func IsWholeNumber(f float64) bool {
 	return math.Abs(f-math.Round(f)) < tolerance
 }
 
-func ManhattanD(x1, y1, x2, y2 int) int {
+func ManhattanD(x1, x2, y1, y2 int) int {
 	return Abs(x1-x2) + Abs(y1-y2)
+}
+
+func EuclideanD(x1, x2, y1, y2 int) float64 {
+	xSquared := (x1 - x2) * (x1 - x2)
+	ySquared := (y1 - y2) * (y1 - y2)
+	return math.Sqrt(float64(Abs(xSquared) + Abs(ySquared)))
 }
 
 // Helper function to calculate absolute value of an integer using ints
