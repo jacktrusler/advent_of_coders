@@ -1,0 +1,24 @@
+package y2025
+
+templ day06() {
+	<section id="day06">
+		<div class="button-container">
+			<div class="text-center">
+				<div class="part-title">Both Parts</div>
+				<button
+					data-on:click="@get('/year/2025/day/6')"
+				>
+					Calculate
+				</button>
+			</div>
+			@BothPartsD6(0, 0)
+		</div>
+	</section>
+}
+
+templ BothPartsD6(ans1, ans2 int) {
+	<div id="day06ans">
+		<div>{ ans1 }</div>
+		<div>{ ans2 }</div>
+	</div>
+}
